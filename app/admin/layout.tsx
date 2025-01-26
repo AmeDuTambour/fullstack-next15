@@ -17,10 +17,18 @@ export default function AdminLayout({
           <div className="flex items-center h-16 px-4">
             <Link href="/" className="w-22">
               <Image
-                src={"/images/logo.svg"}
+                src="/images/brand/logo-square-light.png"
+                alt={`${APP_NAME} logo`}
+                className="object-contain dark:hidden"
                 height={48}
                 width={48}
-                alt={APP_NAME}
+              />
+              <Image
+                src="/images/brand/logo-square-dark.png"
+                alt={`${APP_NAME} logo`}
+                className="object-contain hidden dark:block"
+                height={48}
+                width={48}
               />
             </Link>
             <MainNav className="mx-6" />

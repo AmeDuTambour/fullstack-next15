@@ -35,15 +35,25 @@ const SignInPage = async (props: {
         <CardHeader className="space-y-4">
           <Link href="/" className="flex-center">
             <Image
-              src="/images/logo.svg"
+              src="/images/brand/logo-square-light.png"
               alt={`${APP_NAME} logo`}
+              className="object-contain dark:hidden"
+              priority={true}
+              height={100}
+              width={100}
+            />
+            <Image
+              src="/images/brand/logo-square-dark.png"
+              alt={`${APP_NAME} logo`}
+              className="object-contain hidden dark:block"
+              priority={true}
               height={100}
               width={100}
             />
           </Link>
-          <CardTitle className="text-center">Sign In</CardTitle>
+          <CardTitle className="text-center">Se connecter</CardTitle>
           <CardDescription className="text-center">
-            Sign in to your account
+            Connectez-vous à votre compte
           </CardDescription>
         </CardHeader>
         <CardContent>

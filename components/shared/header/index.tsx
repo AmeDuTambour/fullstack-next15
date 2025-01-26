@@ -11,13 +11,36 @@ const Header = () => {
       <div className="wrapper flex-between">
         <div className="flex-start">
           <CategoryDrawer />
-          <Link href="/" className="flex-start ml-4">
-            <div className="relative w-80 aspect-[3/1]">
+          <Link href="/" className="flex-start">
+            <div className="relative w-16 h-16 ml-4">
               <Image
-                src="/images/logo-banner-light.png"
+                src="/images/brand/logo-square-light.png"
                 alt={`${APP_NAME} logo`}
                 fill
-                className="object-contain"
+                className="object-contain dark:hidden"
+                priority={true}
+              />
+              <Image
+                src="/images/brand/logo-square-dark.png"
+                alt={`${APP_NAME} logo`}
+                fill
+                className="object-contain hidden dark:block"
+                priority={true}
+              />
+            </div>
+            <div className="relative h-16 aspect-[3/1] ">
+              <Image
+                src="/images/brand/logo-banner-light.png"
+                alt={`${APP_NAME} logo`}
+                fill
+                className="object-contain dark:hidden"
+                priority={true}
+              />
+              <Image
+                src="/images/brand/logo-banner-dark.png"
+                alt={`${APP_NAME} logo`}
+                fill
+                className="object-contain hidden dark:block"
                 priority={true}
               />
             </div>

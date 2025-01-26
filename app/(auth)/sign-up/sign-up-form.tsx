@@ -34,29 +34,29 @@ const SignUpForm = () => {
       <input type="hidden" name="callbackUrl" value={callbackUrl} />
       <div className="space-y-6">
         <div>
-          <Label htmlFor="name">Name</Label>
+          <Label htmlFor="name">Nom</Label>
           <Input
             id="name"
             name="name"
             type="text"
-            // required
+            required
             autoComplete="name"
             defaultValue={signUpFormDefaultValues.name}
           />
         </div>
         <div>
-          <Label htmlFor="email">Email</Label>
+          <Label htmlFor="email">E-mail</Label>
           <Input
             id="email"
             name="email"
             type="email"
-            // required
+            required
             autoComplete="email"
             defaultValue={signUpFormDefaultValues.email}
           />
         </div>
         <div>
-          <Label htmlFor="password">Password</Label>
+          <Label htmlFor="password">Mot de passe</Label>
           <Input
             id="password"
             name="password"
@@ -67,7 +67,7 @@ const SignUpForm = () => {
           />
         </div>
         <div>
-          <Label htmlFor="confirmPassword">Confirm Password</Label>
+          <Label htmlFor="confirmPassword">Confirmation du mot de passe</Label>
           <Input
             id="confirmPassword"
             name="confirmPassword"
@@ -84,9 +84,9 @@ const SignUpForm = () => {
           ) : null}
         </div>
         <div className="text-sm text-center text-muted-foreground">
-          Already have an account?{" "}
-          <Link href="/sign-in" target="_self" className="link">
-            Sign In
+          Vous avez déjà un compte ?{" "}
+          <Link href="/sign-in" target="_self" className="link underline">
+            Connectez-vous
           </Link>
         </div>
       </div>
