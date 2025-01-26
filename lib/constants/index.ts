@@ -1,8 +1,7 @@
-export const APP_NAME =
-  process.env.NEXT_PUBLIC_APP_NAME || "Proto-e-commerce-app";
+export const APP_NAME = process.env.NEXT_PUBLIC_APP_NAME || "L'Âme Du Tambour";
 export const APP_DESCRIPTION =
   process.env.NEXT_PUBLIC_APP_DESCRIPTION ||
-  "A prototype for an ecommerce app built with Next.js 15";
+  "Fabrication artisanale de tambours traditionnels";
 export const SERVER_URL =
   process.env.NEXT_PUBLIC_SERVER_URL || "http://localhost:3000";
 export const LATEST_PRODUCTS_LIMIT =
