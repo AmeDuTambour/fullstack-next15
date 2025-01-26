@@ -16,7 +16,7 @@ const HomePage = async () => {
       {featuredProducts.length > 0 ? (
         <ProductCarousel data={featuredProducts} />
       ) : null}
-      <ProductList data={latestProducts} title="Newest Arrival" limit={4} />
+      <ProductList data={latestProducts} title="Nouvel arrivage" limit={4} />
       <ViewAllProductsButton />
       <IconBoxes />
     </>

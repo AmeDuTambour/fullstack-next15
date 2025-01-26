@@ -61,7 +61,7 @@ const CartTable: React.FC<CartTableProps> = ({ cart }) => {
 
   return (
     <>
-      <h1 className="py-4 h2-bold">Paniert</h1>
+      <h1 className="py-4 h2-bold">Panier</h1>
       {!cart || cart.items.length === 0 ? (
         <div>
           Le panier est vide.{" "}

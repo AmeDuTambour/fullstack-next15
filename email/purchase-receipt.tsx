@@ -44,7 +44,7 @@ PurchaseReceiptEmail.PreviewProps = {
       orderId: "123",
       productId: "123",
       slug: product.slug,
-      qty: product.stock,
+      qty: product.qty,
       image: product.images[0],
       price: product.price.toString(),
     })),
