@@ -7,7 +7,7 @@ import { auth } from "@/auth";
 import Stripe from "stripe";
 
 export const metadata: Metadata = {
-  title: "Order Details",
+  title: "Détails de la commande",
 };
 
 const OrderDetailsPage = async (props: {

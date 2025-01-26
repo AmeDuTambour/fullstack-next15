@@ -3,7 +3,7 @@ import CartTable from "./cart-table";
 import { getUserCart } from "@/lib/actions/cart.actions";
 
 export const metadata: Metadata = {
-  title: "Shopping Cart",
+  title: "Panier",
 };
 const CartPage = async () => {
   const cart = await getUserCart();

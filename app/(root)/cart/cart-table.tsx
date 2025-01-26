@@ -61,10 +61,13 @@ const CartTable: React.FC<CartTableProps> = ({ cart }) => {
 
   return (
     <>
-      <h1 className="py-4 h2-bold">Shopping Cart</h1>
+      <h1 className="py-4 h2-bold">Paniert</h1>
       {!cart || cart.items.length === 0 ? (
         <div>
-          Cart is empty. <Link href="/">Go shopping</Link>
+          Le panier est vide.{" "}
+          <Link href="/" className="link underline">
+            Retourner vers la boutique
+          </Link>
         </div>
       ) : (
         <div className="grid md:grid-cols-4 md:gap-5">
@@ -72,9 +75,9 @@ const CartTable: React.FC<CartTableProps> = ({ cart }) => {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Item</TableHead>
-                  <TableHead className="text-center">Quantity</TableHead>
-                  <TableHead className="text-right">Price</TableHead>
+                  <TableHead>Produit</TableHead>
+                  <TableHead className="text-center">Quantité</TableHead>
+                  <TableHead className="text-right">Prix</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -132,7 +135,8 @@ const CartTable: React.FC<CartTableProps> = ({ cart }) => {
           <Card>
             <CardContent className="p-4 gap-4">
               <div className="pb-3 text-xl">
-                Subtotal ({cart.items.reduce((acc, curr) => acc + curr.qty, 0)}
+                Sous-total (
+                {cart.items.reduce((acc, curr) => acc + curr.qty, 0)}
                 ):
                 <span className="font-bold">
                   {formatCurrency(cart.itemsPrice)}
@@ -148,7 +152,7 @@ const CartTable: React.FC<CartTableProps> = ({ cart }) => {
                 ) : (
                   <ArrowRight className="h-4 w-4" />
                 )}{" "}
-                Proceed to Checkout
+                Passer au paiement
               </Button>
             </CardContent>
           </Card>

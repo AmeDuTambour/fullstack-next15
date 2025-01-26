@@ -10,7 +10,7 @@ const IconBoxes = () => {
             <ShoppingBag />
             <div className="text-sm font-bold">Livraison Gratuite</div>
             <div className="text-sm text-muted-foreground">
-              Livraison offerte pour les commandes supérieures à 100 €
+              Livraison offerte pour les commandes supérieures à 150 €
             </div>
           </div>
           <div className="space-y-2">

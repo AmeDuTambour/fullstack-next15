@@ -19,6 +19,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             alt={product.name}
             height={300}
             width={300}
+            objectFit="cover"
           />
         </Link>
       </CardHeader>

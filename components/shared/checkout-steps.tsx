@@ -18,13 +18,13 @@ const CheckoutSteps: React.FC<CheckoutStepsProps> = ({ current = 0 }) => {
           <div
             className={cn(
               "p-2 w-56 rounded-full text-center text-sm",
-              index === current ? "bg-secondary" : ""
+              index === current ? "bg-secondary text-secondary-foreground" : ""
             )}
           >
             {step}
           </div>
           {step !== "Place Order" ? (
-            <hr className="w-16 border-t border-gray-300 mx-2" />
+            <hr className="w-16 border border-t-accent  mx-2" />
           ) : null}
         </React.Fragment>
       ))}

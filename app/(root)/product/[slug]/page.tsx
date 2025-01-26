@@ -31,13 +31,10 @@ const ProductDetailPage = async (props: {
           </div>
           <div className="col-span-2 p-5">
             <div className="flex flex-col gap-6">
-              <p>
-                {product.name} {product.category}
-              </p>
               <h1 className="h3-bold">{product.name}</h1>
               <div>
                 <Rating value={Number(product.rating)} />
-                <p>{product.numReviews} reviews</p>
+                <p>{product.numReviews} avis</p>
               </div>
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
                 <ProductPrice
@@ -63,9 +60,9 @@ const ProductDetailPage = async (props: {
                 <div className="mb-2 flex justify-between">
                   <div>Status</div>
                   {product.stock > 0 ? (
-                    <Badge variant="outline">In Stock</Badge>
+                    <Badge variant="outline">En stock</Badge>
                   ) : (
-                    <Badge variant="destructive">Out Of Stock</Badge>
+                    <Badge variant="destructive">Stock épuisé</Badge>
                   )}
                 </div>
                 {product.stock > 0 ? (
@@ -89,7 +86,7 @@ const ProductDetailPage = async (props: {
         </div>
       </section>
       <section className="mt-10">
-        <h2 className="h2-bold">Customer reviews</h2>
+        <h2 className="h2-bold">Avis clients</h2>
         <ReviewList
           userId={userId || ""}
           productId={product.id}

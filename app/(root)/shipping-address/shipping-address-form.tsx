@@ -58,9 +58,9 @@ const ShippingAddressForm: React.FC<ShippingAddressFormProps> = ({
   return (
     <>
       <div className="max-w-md mx-auto space-y-4">
-        <h1 className="h2-bold mt-4">Shipping Address</h1>
+        <h1 className="h2-bold mt-4">Adresse de livraison</h1>
         <p className="text-sm text-muted-foreground">
-          Please enter an address to ship to
+          Saisissez une adresse de livraison
         </p>
         <Form {...form}>
           <form
@@ -81,9 +81,12 @@ const ShippingAddressForm: React.FC<ShippingAddressFormProps> = ({
                   >;
                 }) => (
                   <FormItem className="w-full">
-                    <FormLabel>Full Name</FormLabel>
+                    <FormLabel>Nom et prénom</FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter full name" {...field} />
+                      <Input
+                        placeholder="Saisissez votre nom et votre prénom"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -103,9 +106,9 @@ const ShippingAddressForm: React.FC<ShippingAddressFormProps> = ({
                   >;
                 }) => (
                   <FormItem className="w-full">
-                    <FormLabel>Street Address</FormLabel>
+                    <FormLabel>Adresse</FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter address" {...field} />
+                      <Input placeholder="Saisissez votre adresse" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -125,9 +128,12 @@ const ShippingAddressForm: React.FC<ShippingAddressFormProps> = ({
                   >;
                 }) => (
                   <FormItem className="w-full">
-                    <FormLabel>Postal Code</FormLabel>
+                    <FormLabel>Code postal</FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter postal code" {...field} />
+                      <Input
+                        placeholder="Saisissez votre code postal"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -147,9 +153,9 @@ const ShippingAddressForm: React.FC<ShippingAddressFormProps> = ({
                   >;
                 }) => (
                   <FormItem className="w-full">
-                    <FormLabel>City</FormLabel>
+                    <FormLabel>Ville</FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter city" {...field} />
+                      <Input placeholder="Saisissez votre ville" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -169,9 +175,9 @@ const ShippingAddressForm: React.FC<ShippingAddressFormProps> = ({
                   >;
                 }) => (
                   <FormItem className="w-full">
-                    <FormLabel>Country</FormLabel>
+                    <FormLabel>Pays</FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter country" {...field} />
+                      <Input placeholder="Saisissez votre pays" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -185,7 +191,7 @@ const ShippingAddressForm: React.FC<ShippingAddressFormProps> = ({
                 ) : (
                   <ArrowRight className="w-4 h-4" />
                 )}{" "}
-                Continue
+                Continuer
               </Button>
             </div>
           </form>

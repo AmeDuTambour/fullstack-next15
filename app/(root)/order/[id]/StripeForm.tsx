@@ -50,7 +50,7 @@ const StripeForm: React.FC<StripeFormProps> = ({ priceInCents, orderId }) => {
 
   return (
     <form className="space-y-4" onSubmit={handleSubmit}>
-      <div className="text-xl">Stripe Checkout</div>
+      <div className="text-xl">Paiement Stripe(CB)</div>
       {errorMessage && <div className="text-destructive">{errorMessage}</div>}
       <PaymentElement />
       <div>

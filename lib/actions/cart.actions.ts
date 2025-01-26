@@ -11,17 +11,17 @@ import { Prisma } from "@prisma/client";
 
 const calcPrice = (items: CartItem[]) => {
   const itemsPrice = round2(
-      items.reduce((acc, item) => acc + Number(item.price) * item.qty, 0)
+      items.reduce((acc, item) => acc + Number(item.price) * item.qty, 0) // Prix TTC
     ),
-    shippingPrice = round2(itemsPrice > 100 ? 0 : 10),
-    taxPrice = round2(0.2 * itemsPrice),
-    totalPrice = round2(itemsPrice + taxPrice + shippingPrice);
+    taxPrice = round2(itemsPrice / 6), // Montant de la TVA
+    shippingPrice = round2(itemsPrice > 150 ? 0 : 10), // Frais de port
+    totalPrice = round2(itemsPrice + shippingPrice); // Prix total avec port
 
   return {
-    itemsPrice: itemsPrice.toFixed(2),
-    shippingPrice: shippingPrice.toFixed(2),
-    taxPrice: taxPrice.toFixed(2),
-    totalPrice: totalPrice.toFixed(2),
+    itemsPrice: itemsPrice.toFixed(2), // Prix TTC des articles
+    shippingPrice: shippingPrice.toFixed(2), // Frais de port
+    taxPrice: taxPrice.toFixed(2), // Montant TVA (dont TVA)
+    totalPrice: totalPrice.toFixed(2), // Prix total final (TTC avec port)
   };
 };
 

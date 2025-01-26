@@ -5,7 +5,7 @@ import { getUserById } from "@/lib/actions/user.actions";
 import CheckoutSteps from "@/components/shared/checkout-steps";
 
 export const metadata: Metadata = {
-  title: "Select payment method",
+  title: "Méthode de paiement",
 };
 
 const PaymentMethodPage = async () => {

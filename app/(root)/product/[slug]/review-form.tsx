@@ -91,15 +91,15 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <Button onClick={handleOpenForm} variant="default">
-        Write a Review
+        Laisser un avis
       </Button>
       <DialogContent className="sm:max-w-[425px">
         <Form {...form}>
           <form method="POST" onSubmit={form.handleSubmit(onSubmit)}>
             <DialogHeader>
-              <DialogTitle>Write a Review</DialogTitle>
+              <DialogTitle>Laisser un avis</DialogTitle>
               <DialogDescription>
-                Share your thoughts with other customers
+                Partagez votre avis avec les autres clients
               </DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
@@ -108,9 +108,9 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
                 name="title"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Title</FormLabel>
+                    <FormLabel>Titre</FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter title" {...field} />
+                      <Input placeholder="Saisissez un titre" {...field} />
                     </FormControl>
                   </FormItem>
                 )}
@@ -122,7 +122,10 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
                   <FormItem>
                     <FormLabel>Description</FormLabel>
                     <FormControl>
-                      <Textarea placeholder="Enter description" {...field} />
+                      <Textarea
+                        placeholder="Saisissez description"
+                        {...field}
+                      />
                     </FormControl>
                   </FormItem>
                 )}
@@ -132,14 +135,14 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
                 name="rating"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Rating</FormLabel>
+                    <FormLabel>Note</FormLabel>
                     <Select
                       onValueChange={field.onChange}
                       value={field.value.toString()}
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select a rating" />
+                          <SelectValue placeholder="Selectionnez une note" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -165,7 +168,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
                 className="w-full"
                 disabled={form.formState.isSubmitting}
               >
-                {form.formState.isSubmitting ? "Submitting..." : "Submit"}
+                {form.formState.isSubmitting ? "Envoi en cours..." : "Envoyer"}
               </Button>
             </DialogFooter>
           </form>

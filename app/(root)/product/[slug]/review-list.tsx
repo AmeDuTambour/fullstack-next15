@@ -44,7 +44,7 @@ const ReviewList: React.FC<ReviewListProps> = ({
   };
   return (
     <div className="space-y-4">
-      {reviews.length === 0 ? <div>No Reviews Yet</div> : null}
+      {reviews.length === 0 ? <div>Aucun avis pour le moment</div> : null}
       {userId ? (
         <ReviewForm
           userId={userId}
@@ -53,14 +53,13 @@ const ReviewList: React.FC<ReviewListProps> = ({
         />
       ) : (
         <div>
-          Please{" "}
           <Link
             className="text-blue-700 px-2"
             href={`/sign-in?callbackUrl=/product/${productSlug}`}
           >
-            sign in
+            Connectez-vous
           </Link>
-          to write a review
+          pour laisser un avis
         </div>
       )}
       <div className="flex flex-col gap-3">

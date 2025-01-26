@@ -56,9 +56,9 @@ const PaymentMethodForm: React.FC<PaymentMethodFormProps> = ({
   return (
     <>
       <div className="max-w-md mx-auto space-y-4">
-        <h1 className="h2-bold mt-4">Payment Method</h1>
+        <h1 className="h2-bold mt-4">Méthode de paiement</h1>
         <p className="text-sm text-muted-foreground">
-          Please select a payment method
+          Veuillez selectionner une méthode de paiement
         </p>
         <Form {...form}>
           <form
@@ -89,7 +89,10 @@ const PaymentMethodForm: React.FC<PaymentMethodFormProps> = ({
                               />
                             </FormControl>
                             <FormLabel className="font-normal">
-                              {paymentMethod}
+                              {paymentMethod}{" "}
+                              {paymentMethod === "Stripe"
+                                ? "( Carte Bancaire )"
+                                : null}
                             </FormLabel>
                           </FormItem>
                         ))}
@@ -108,7 +111,7 @@ const PaymentMethodForm: React.FC<PaymentMethodFormProps> = ({
                 ) : (
                   <ArrowRight className="w-4 h-4" />
                 )}{" "}
-                Continue
+                Continuer
               </Button>
             </div>
           </form>
