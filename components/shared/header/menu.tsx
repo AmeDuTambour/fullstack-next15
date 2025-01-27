@@ -14,7 +14,7 @@ import UserButton from "./user-button";
 const Menu = () => {
   return (
     <div className="flex justify-end gap-3">
-      <nav className="hidden md:flex w-full max-w-xs gap-1">
+      <nav className="hidden lg:flex w-full max-w-xs gap-1">
         <ModeToggle />
         <Button asChild variant="ghost">
           <Link href="/cart">
@@ -23,7 +23,7 @@ const Menu = () => {
         </Button>
         <UserButton />
       </nav>
-      <nav className="md:hidden">
+      <nav className="lg:hidden">
         <Sheet>
           <SheetTrigger className="align-middle">
             <EllipsisVertical />
@@ -33,12 +33,12 @@ const Menu = () => {
             <ModeToggle />
             <Button asChild variant="ghost">
               <Link href="/cart">
-                <ShoppingCart /> Cart
+                <ShoppingCart /> Panier
               </Link>
             </Button>
             <Button asChild>
               <Link href="/sign-in">
-                <UserIcon /> Sign In
+                <UserIcon /> Se connecter
               </Link>
             </Button>
             <SheetDescription></SheetDescription>

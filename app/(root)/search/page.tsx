@@ -126,7 +126,7 @@ const SearchPage = async (props: {
   return (
     <div className="grid md:grid-cols-5 md:gap-5">
       <div className="filter-links">
-        <div className="text-xl mb-2 mt-3">Category</div>
+        <div className="text-xl mb-2 mt-3">Categorie</div>
         <div>
           <ul className="space-y-1">
             <li>
@@ -136,7 +136,7 @@ const SearchPage = async (props: {
                 }`}
                 href={getFilterUrl({ c: "all" })}
               >
-                Any
+                Tous
               </Link>
             </li>
             {categories.map((el) => (
@@ -151,7 +151,7 @@ const SearchPage = async (props: {
             ))}
           </ul>
         </div>
-        <div className="text-xl mb-2 mt-8">Price</div>
+        <div className="text-xl mb-2 mt-8">Prix</div>
         <div>
           <ul className="space-y-1">
             <li>
@@ -159,7 +159,7 @@ const SearchPage = async (props: {
                 className={`${price === "all" && "font-bold"}`}
                 href={getFilterUrl({ p: "all" })}
               >
-                Any
+                Tous
               </Link>
             </li>
             {prices.map((el) => (
@@ -174,7 +174,7 @@ const SearchPage = async (props: {
             ))}
           </ul>
         </div>
-        <div className="text-xl mb-2 mt-8">Customer Ratings</div>
+        <div className="text-xl mb-2 mt-8">Avis clients</div>
         <div>
           <ul className="space-y-1">
             <li>
@@ -182,7 +182,7 @@ const SearchPage = async (props: {
                 className={`${price === "all" && "font-bold"}`}
                 href={getFilterUrl({ r: "all" })}
               >
-                Any
+                Tous
               </Link>
             </li>
             {ratings.map((el) => (
@@ -191,7 +191,7 @@ const SearchPage = async (props: {
                   href={getFilterUrl({ r: `${el}` })}
                   className={`${rating === el.toString() && "font-bold"}`}
                 >
-                  {`${el} stars & up`}
+                  {`${el} étoiles & plus`}
                 </Link>
               </li>
             ))}
@@ -203,20 +203,20 @@ const SearchPage = async (props: {
           <div className="flex items-center">
             {q !== "all" && q !== "" && "Query: " + q}
             {category !== "all" && category !== "" && " Category: " + category}
-            {price !== "all" && " Price: " + price}
-            {rating !== "all" && " Rating: " + rating + " stars & up"}
+            {price !== "all" && " Prix: " + price}
+            {rating !== "all" && " Note: " + rating + " étoiles & plus"}
             &nbsp;
             {(q !== "all" && q !== "") ||
             (category !== "all" && category !== "") ||
             rating !== "all" ||
             price !== "all" ? (
               <Button variant="link" asChild>
-                <Link href="/search">Clear</Link>
+                <Link href="/search">Effacer</Link>
               </Button>
             ) : null}
           </div>
           <div>
-            Sort by{" "}
+            Trier par{" "}
             {sortOrders.map((el) => (
               <Link
                 key={el}
@@ -229,7 +229,7 @@ const SearchPage = async (props: {
           </div>
         </div>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-          {products.data.length === 0 ? <div>No products found</div> : null}
+          {products.data.length === 0 ? <div>Aucun produit</div> : null}
           {products.data.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
