@@ -132,3 +132,18 @@ export const insertReviewSchema = z.object({
     .min(1, "Rating must be at least 1")
     .max(5, "Rating must be at most 5"),
 });
+
+export const insertArticleSchema = z.object({
+  title: z.string().min(1, "Title must be at least 1 character"),
+  paragraphs: z
+    .array(z.string())
+    .nonempty({ message: "Paragraphs must contain at least 1 block" }),
+  images: z.array(z.string()),
+  youTubeUrl: z.string().nullable(),
+  isFeatured: z.boolean(),
+  banner: z.string().nullable(),
+});
+
+export const updateArticleSchema = insertArticleSchema.extend({
+  id: z.string().min(1, "ID is required"),
+});

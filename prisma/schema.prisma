@@ -143,3 +143,14 @@ model Review {
   product            Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
+
+model Article {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title      String
+  paragraphs String[] @default([])
+  images     String[] @default([])
+  youTubeUrl String?
+  isFeatured Boolean  @default(false)
+  banner     String?
+  createdAt  DateTime @default(now()) @db.Timestamp(6)
+}
