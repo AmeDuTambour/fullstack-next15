@@ -135,6 +135,7 @@ export const insertReviewSchema = z.object({
 
 export const insertArticleSchema = z.object({
   title: z.string().min(1, "Title must be at least 1 character"),
+  slug: z.string().min(3, "Slug must be at least 3 characters"),
   paragraphs: z
     .array(z.string())
     .nonempty({ message: "Paragraphs must contain at least 1 block" }),

@@ -10,6 +10,7 @@ const links = [
   { title: "Products", href: "/admin/products" },
   { title: "Orders", href: "/admin/orders" },
   { title: "Users", href: "/admin/users" },
+  { title: "Articles", href: "/admin/articles" },
 ];
 
 type MainNavProps = React.HTMLAttributes<HTMLElement>;
