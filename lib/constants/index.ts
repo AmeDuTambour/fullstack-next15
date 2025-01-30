@@ -65,9 +65,14 @@ export const SENDER_EMAIL = process.env.SENDER_EMAIL || "onboarding@resend.dev";
 
 export const articleFormDefaultValues = {
   title: "",
-  paragraphs: [],
-  images: [],
-  youTubeUrl: "",
+  slug: "",
   isFeatured: false,
   banner: "",
+};
+
+export const articleSectionFormDefaultValues = {
+  title: "",
+  body: "",
+  image: null,
+  youTubeUrl: null,
 };

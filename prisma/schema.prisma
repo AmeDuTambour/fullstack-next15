@@ -146,25 +146,37 @@ model Review {
 }
 
 model Article {
-  id              String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  title           String
-  slug            String           @unique(map: "article_slug_idx")
-  paragraphs      String[]         @default([])
-  images          String[]         @default([])
-  youTubeUrl      String?
-  isFeatured      Boolean          @default(false)
-  banner          String?
-  createdAt       DateTime         @default(now()) @db.Timestamp(6)
-  ArticleComments ArticleComment[]
+  id          String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title       String
+  slug        String           @unique(map: "article_slug_idx")
+  sections    ArticleSection[]
+  comments    ArticleComment[]
+  isFeatured  Boolean?         @default(false)
+  banner      String?
+  isPublished Boolean?         @default(false)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+}
+
+model ArticleSection {
+  id         String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  position   Int
+  title      String
+  body       String
+  image      String?
+  youTubeUrl String?
+  articleId  String  @unique @db.Uuid
+  article    Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
 }
 
 model ArticleComment {
-  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  userId      String   @db.Uuid
-  articleId   String   @db.Uuid
-  title       String
-  description String
-  createdAt   DateTime @default(now()) @db.Timestamp(6)
-  article     Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String   @db.Uuid
+  articleId String   @unique @db.Uuid
+  title     String
+  body      String
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  updatedAt DateTime @default(now()) @db.Timestamp(6)
+  article   Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

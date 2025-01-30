@@ -1,6 +1,6 @@
 import { prisma } from "@/db/prisma";
 import { formatError } from "../utils";
-import { insertArticleSchema } from "../validators";
+import { insertArticleSchema, insertArticleSectionSchema } from "../validators";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
@@ -11,6 +11,21 @@ export async function createArticle(data: z.infer<typeof insertArticleSchema>) {
 
     revalidatePath("/admin/articles");
     return { success: true, message: "Article created successfully" };
+  } catch (error) {
+    return { success: false, message: formatError(error) };
+  }
+}
+
+export async function createArticleSection(
+  data: z.infer<typeof insertArticleSectionSchema>
+) {
+  try {
+    const newSection = insertArticleSectionSchema.parse(data);
+    await prisma.articleSection.create({
+      data: newSection,
+    });
+
+    return { success: true, message: "Section added successfully" };
   } catch (error) {
     return { success: false, message: formatError(error) };
   }

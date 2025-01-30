@@ -8,6 +8,7 @@ import {
   paymentResultSchema,
   insertReviewSchema,
   insertArticleSchema,
+  insertArticleSectionSchema,
 } from "@/lib/validators";
 import { z } from "zod";
 
@@ -42,4 +43,9 @@ export type Review = z.infer<typeof insertReviewSchema> & {
 export type Article = z.infer<typeof insertArticleSchema> & {
   id: string;
   createdAt: Date;
+  updatedAt: Date;
+};
+
+export type ArticleSection = z.infer<typeof insertArticleSectionSchema> & {
+  id: string;
 };

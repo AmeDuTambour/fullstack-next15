@@ -15,6 +15,7 @@ import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { insertArticleSchema } from "@/lib/validators";
 import { z } from "zod";
+import { useEffect } from "react";
 
 type ParagraphEditorProps = {
   index: number;
@@ -28,6 +29,14 @@ export const ParagraphEditor = ({ index, name }: ParagraphEditorProps) => {
   const paragraphs = watch("paragraphs") || [];
   const images = watch("images") || [];
   const mediaType = watch(`mediaType.${index}`) || "none";
+
+  useEffect(() => {
+    console.log("====================================");
+    console.log("paragrah: ", paragraphs);
+    console.log("Media type : ", mediaType);
+    console.log("Images : ", images);
+    console.log("====================================");
+  }, [paragraphs, mediaType, images]);
 
   return (
     <div key={index} className="space-y-4">
@@ -48,6 +57,7 @@ export const ParagraphEditor = ({ index, name }: ParagraphEditorProps) => {
 
       {/* Choix du média */}
       <RadioGroup
+        className="flex flex-grow"
         defaultValue={mediaType}
         onValueChange={(value) => setValue(`mediaType.${index}`, value)}
       >
