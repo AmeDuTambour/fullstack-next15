@@ -28,11 +28,7 @@ type ArticleFormProps = {
   articleId?: string;
 };
 
-const ArticleForm: React.FC<ArticleFormProps> = ({
-  type,
-  article,
-  articleId,
-}) => {
+const ArticleForm: React.FC<ArticleFormProps> = ({ type, article }) => {
   const [paragraphFields, setParagraphFields] = useState([""]);
 
   const form = useForm<Zod.infer<typeof insertArticleSchema>>({
@@ -52,10 +48,6 @@ const ArticleForm: React.FC<ArticleFormProps> = ({
     return;
   };
 
-  const images = form.watch("images");
-  const isFeatured = form.watch("isFeatured");
-  const banner = form.watch("banner");
-
   return (
     <Form {...form}>
       <form
@@ -63,60 +55,6 @@ const ArticleForm: React.FC<ArticleFormProps> = ({
         onSubmit={form.handleSubmit(onSubmit)}
         className="space-y-8"
       >
-        <div className="flex flex-col md:flex-row gap-5">
-          <FormField
-            control={form.control}
-            name="title"
-            render={({
-              field,
-            }: {
-              field: ControllerRenderProps<
-                z.infer<typeof insertArticleSchema>,
-                "title"
-              >;
-            }) => (
-              <FormItem className="w-full">
-                <FormLabel>Title</FormLabel>
-                <FormControl>
-                  <Input placeholder="Enter article title" {...field} />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="slug"
-            render={({
-              field,
-            }: {
-              field: ControllerRenderProps<
-                z.infer<typeof insertArticleSchema>,
-                "slug"
-              >;
-            }) => (
-              <FormItem className="w-full">
-                <FormLabel>Slug</FormLabel>
-                <FormControl>
-                  <div className="relative">
-                    <Input placeholder="Enter slug" {...field} />
-                    <Button
-                      type="button"
-                      className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-1 mt-2"
-                      onClick={() => {
-                        form.setValue(
-                          "slug",
-                          slugify(form.getValues("title"), { lower: true })
-                        );
-                      }}
-                    >
-                      Generate
-                    </Button>
-                  </div>
-                </FormControl>
-              </FormItem>
-            )}
-          />
-        </div>
         {paragraphFields.map((_, i) => (
           <ParagraphEditor key={i} index={i} name={`Paragraph ${i + 1}`} />
         ))}

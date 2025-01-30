@@ -1,3 +1,5 @@
+"use server";
+
 import { prisma } from "@/db/prisma";
 import { formatError } from "../utils";
 import { insertArticleSchema, insertArticleSectionSchema } from "../validators";
@@ -7,10 +9,14 @@ import { z } from "zod";
 export async function createArticle(data: z.infer<typeof insertArticleSchema>) {
   try {
     const newArticle = insertArticleSchema.parse(data);
-    await prisma.article.create({ data: newArticle });
+    const res = await prisma.article.create({ data: newArticle });
 
     revalidatePath("/admin/articles");
-    return { success: true, message: "Article created successfully" };
+    return {
+      success: true,
+      message: "Article created successfully",
+      data: res,
+    };
   } catch (error) {
     return { success: false, message: formatError(error) };
   }
