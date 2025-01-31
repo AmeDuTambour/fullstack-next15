@@ -136,8 +136,8 @@ export const insertReviewSchema = z.object({
 export const insertArticleSchema = z.object({
   title: z.string().min(1, "Title must be at least 1 character"),
   slug: z.string().min(3, "Slug must be at least 3 characters"),
-  isFeatured: z.boolean(),
-  banner: z.string(),
+  isFeatured: z.boolean().nullable().default(false),
+  banner: z.string().nullable().default(""),
 });
 
 export const updateArticleSchema = insertArticleSchema.extend({
@@ -155,4 +155,9 @@ export const insertArticleSectionSchema = z.object({
 
 export const updateArticleSectionSchema = insertArticleSectionSchema.extend({
   id: z.string().min(1, "ID is required"),
+});
+
+export const insertArticleCommentSchema = z.object({
+  title: z.string().min(1, "Title must contain at least 1 character"),
+  body: z.string().min(1, "Body must contain at least 1 character"),
 });

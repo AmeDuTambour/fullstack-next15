@@ -9,6 +9,7 @@ import {
   insertReviewSchema,
   insertArticleSchema,
   insertArticleSectionSchema,
+  insertArticleCommentSchema,
 } from "@/lib/validators";
 import { z } from "zod";
 
@@ -42,10 +43,20 @@ export type Review = z.infer<typeof insertReviewSchema> & {
 
 export type Article = z.infer<typeof insertArticleSchema> & {
   id: string;
+  sections: ArticleSection[];
+  comments: ArticleComment[]; //Should be replace by comment type
   createdAt: Date;
   updatedAt: Date;
 };
 
 export type ArticleSection = z.infer<typeof insertArticleSectionSchema> & {
   id: string;
+};
+
+export type ArticleComment = z.infer<typeof insertArticleCommentSchema> & {
+  id: string;
+  userId: string;
+  articleId: string;
+  createdAt: Date;
+  updatedAt: Date;
 };

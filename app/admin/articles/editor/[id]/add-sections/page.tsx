@@ -1,5 +1,7 @@
-import ArticleForm from "@/components/admin/article-form";
+import AddSectionsForm from "@/components/admin/add-sections-form";
 import EditorSteps from "@/components/shared/editor-steps";
+import { getArticleById } from "@/lib/actions/article.actions";
+import { notFound } from "next/navigation";
 
 const AddSectionsPage = async ({
   params,
@@ -8,12 +10,15 @@ const AddSectionsPage = async ({
 }) => {
   const articleId = (await params).id;
 
+  const article = await getArticleById(articleId);
+  if (!article) notFound();
+
   return (
     <>
       <EditorSteps current={1} />
       <div className="space-y-8 max-w-5xl mx-auto">
-        <h1 className="h2-bold">Create Article</h1>
-        <ArticleForm type="Create" />
+        <h1 className="h2-bold">Add Sections</h1>
+        <AddSectionsForm article={article} />
       </div>
     </>
   );
