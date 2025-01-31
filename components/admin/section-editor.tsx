@@ -24,37 +24,44 @@ type SectionEditorProps = {
 };
 
 export const SectionEditor = ({ index, data, onSave }: SectionEditorProps) => {
-  const { control, setValue, watch } = useFormContext();
+  const { control, setValue, watch, formState } = useFormContext();
   const { toast } = useToast();
 
   const sections = watch("sections") || [];
   const title = sections[index]?.title || "";
   const paragraph = sections[index]?.paragraph || "";
-  const mediaType = sections[index]?.media?.type || "none";
+  const mediaType = data?.image
+    ? "image"
+    : data?.youTubeUrl
+      ? "video"
+      : sections[index]?.media?.type || "none";
+
   const mediaUrl = sections[index]?.media?.url || "";
 
-  const debouncedTitle = useDebounce(title, 3000);
-  const debouncedParagraph = useDebounce(paragraph, 3000);
-  const debouncedMediaUrl = useDebounce(mediaUrl, 3000);
-  const debouncedMediaType = useDebounce(mediaType, 3000);
+  const debouncedTitle = useDebounce(title, 400);
+  const debouncedParagraph = useDebounce(paragraph, 800);
+  const debouncedMediaUrl = useDebounce(mediaUrl, 400);
+  const debouncedMediaType = useDebounce(mediaType, 400);
 
   useEffect(() => {
-    console.log(`Section ${index + 1} mise à jour:`, {
-      paragraph: debouncedParagraph,
-      media:
-        mediaType !== "none"
-          ? { type: mediaType, url: debouncedMediaUrl }
-          : null,
-    });
-    const section = {
-      title: debouncedTitle,
-      position: index + 1,
-      body: debouncedParagraph,
-      image: mediaType === "image" ? debouncedMediaUrl : "",
-      youTubeUrl: mediaType === "video" ? debouncedMediaUrl : "",
-    };
+    console.log("==============DATA EDITOR======================");
+    console.log(data);
+    console.log("====================================");
+    if (Object.keys(formState.dirtyFields).length > 0) {
+      const section = {
+        title: debouncedTitle,
+        position: index + 1,
+        body: debouncedParagraph,
+        image: mediaType === "image" ? debouncedMediaUrl : null,
+        youTubeUrl: mediaType === "video" ? debouncedMediaUrl : null,
+        ...(data?.sectionId && { sectionId: data.sectionId }),
+      };
 
-    onSave(section);
+      // This id was added by react-hook-form when using the  useFieldArray hook and we don't want it
+      delete section.id;
+      onSave(section);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     debouncedParagraph,
     debouncedMediaUrl,
@@ -63,12 +70,11 @@ export const SectionEditor = ({ index, data, onSave }: SectionEditorProps) => {
   ]);
 
   return (
-    <div key={index} className="space-y-4">
-      {/* Champ de texte obligatoire */}
+    <div className="space-y-4">
       <Controller
         control={control}
         name={`sections.${index}.title`}
-        defaultValue=""
+        defaultValue={data?.title}
         render={({ field }) => (
           <FormItem className="w-full">
             <FormLabel className="h2-bold">Section {index + 1}</FormLabel>
@@ -82,7 +88,7 @@ export const SectionEditor = ({ index, data, onSave }: SectionEditorProps) => {
       <Controller
         control={control}
         name={`sections.${index}.paragraph`}
-        defaultValue=""
+        defaultValue={data?.body}
         render={({ field }) => (
           <FormItem className="w-full">
             <FormControl>
@@ -99,9 +105,9 @@ export const SectionEditor = ({ index, data, onSave }: SectionEditorProps) => {
         defaultValue={mediaType}
         onValueChange={(value) => {
           if (value === "none") {
-            setValue(`sections.${index}.media`, undefined); // Supprimer le média
+            setValue(`sections.${index}.media`, undefined);
           } else {
-            setValue(`sections.${index}.media`, { type: value, url: "" }); // Initialiser
+            setValue(`sections.${index}.media`, { type: value, url: "" });
           }
         }}
       >
@@ -124,7 +130,7 @@ export const SectionEditor = ({ index, data, onSave }: SectionEditorProps) => {
         <Controller
           control={control}
           name={`sections.${index}.media.url`}
-          defaultValue=""
+          defaultValue={data?.image ?? ""}
           render={({ field }) => (
             <FormItem className="w-full">
               <FormLabel>Image</FormLabel>
@@ -164,7 +170,7 @@ export const SectionEditor = ({ index, data, onSave }: SectionEditorProps) => {
         <Controller
           control={control}
           name={`sections.${index}.media.url`}
-          defaultValue=""
+          defaultValue={data?.youTubeUrl ?? ""}
           render={({ field }) => (
             <FormItem className="w-full">
               <FormLabel>Video URL</FormLabel>

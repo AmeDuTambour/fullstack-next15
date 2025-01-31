@@ -14,15 +14,15 @@ CREATE TABLE "Article" (
 
 -- CreateTable
 CREATE TABLE "ArticleSection" (
-    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "sectionId" UUID NOT NULL DEFAULT gen_random_uuid(),
     "position" INTEGER NOT NULL,
-    "title" TEXT NOT NULL,
-    "body" TEXT NOT NULL,
+    "title" TEXT,
+    "body" TEXT,
     "image" TEXT,
     "youTubeUrl" TEXT,
     "articleId" UUID NOT NULL,
 
-    CONSTRAINT "ArticleSection_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "ArticleSection_pkey" PRIMARY KEY ("sectionId")
 );
 
 -- CreateTable
@@ -40,12 +40,6 @@ CREATE TABLE "ArticleComment" (
 
 -- CreateIndex
 CREATE UNIQUE INDEX "article_slug_idx" ON "Article"("slug");
-
--- CreateIndex
-CREATE UNIQUE INDEX "ArticleSection_articleId_key" ON "ArticleSection"("articleId");
-
--- CreateIndex
-CREATE UNIQUE INDEX "ArticleComment_articleId_key" ON "ArticleComment"("articleId");
 
 -- AddForeignKey
 ALTER TABLE "ArticleSection" ADD CONSTRAINT "ArticleSection_articleId_fkey" FOREIGN KEY ("articleId") REFERENCES "Article"("id") ON DELETE CASCADE ON UPDATE CASCADE;

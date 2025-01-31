@@ -110,19 +110,20 @@ export async function deleteArticle(articleId: string) {
 export async function createArticleSection(
   data: z.infer<typeof insertArticleSectionSchema>
 ) {
-  console.log("Wtf is going on here");
-
   try {
-    console.log("Creating new section... ");
     const newSection = insertArticleSectionSchema.parse(data);
-    console.log("... new section validated");
 
     const res = await prisma.articleSection.create({
       data: newSection,
     });
-    console.log("Response from create request: ", res);
-    revalidatePath(`/admin/articles/editor/${res.articleId}/add-sections`);
-    return { success: true, message: "Section added successfully" };
+
+    revalidatePath(`/admin/articles`);
+
+    return {
+      success: true,
+      message: "Section added successfully",
+      data: convertToPlainObject(res),
+    };
   } catch (error) {
     return { success: false, message: formatError(error) };
   }
@@ -135,12 +136,12 @@ export async function updateArticleSection(
     const section = updateArticleSectionSchema.parse(data);
 
     const sectionExists = await prisma.articleSection.findFirst({
-      where: { id: section.id },
+      where: { sectionId: section.sectionId },
     });
     if (!sectionExists) throw new Error("Section not found");
 
-    await prisma.articleSection.update({
-      where: { id: section.id },
+    const res = await prisma.articleSection.update({
+      where: { sectionId: section.sectionId },
       data: {
         title: section.title,
         position: section.position,
@@ -150,7 +151,13 @@ export async function updateArticleSection(
       },
     });
 
-    return { success: true, message: "Section updated successfully" };
+    revalidatePath(`/admin/articles/editor/${res.articleId}/add-sections`);
+
+    return {
+      success: true,
+      message: "Section updated successfully",
+      data: convertToPlainObject(res),
+    };
   } catch (error) {
     return { success: false, message: formatError(error) };
   }
@@ -159,12 +166,12 @@ export async function updateArticleSection(
 export async function deleteArticleSection(sectionId: string) {
   try {
     const sectionExists = await prisma.articleSection.findFirst({
-      where: { id: sectionId },
+      where: { sectionId },
     });
     if (!sectionExists) throw new Error("Section not found");
 
     await prisma.articleSection.delete({
-      where: { id: sectionId },
+      where: { sectionId },
     });
 
     revalidatePath(

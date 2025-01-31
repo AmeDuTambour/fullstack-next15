@@ -50,7 +50,7 @@ export type Article = z.infer<typeof insertArticleSchema> & {
 };
 
 export type ArticleSection = z.infer<typeof insertArticleSectionSchema> & {
-  id: string;
+  sectionId: string;
 };
 
 export type ArticleComment = z.infer<typeof insertArticleCommentSchema> & {

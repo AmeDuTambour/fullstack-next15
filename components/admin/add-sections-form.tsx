@@ -5,7 +5,7 @@ import {
   insertArticleSectionSchema,
   updateArticleSectionSchema,
 } from "@/lib/validators";
-import { Article } from "@/types";
+import { Article, ArticleSection } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, useFieldArray, SubmitHandler } from "react-hook-form";
 import { z } from "zod";
@@ -15,7 +15,10 @@ import { PlusIcon, TrashIcon } from "lucide-react";
 import { SectionEditor } from "./section-editor";
 import Link from "next/link";
 import { useEffect, useTransition } from "react";
-import { createArticleSection } from "@/lib/actions/article.actions";
+import {
+  createArticleSection,
+  updateArticleSection,
+} from "@/lib/actions/article.actions";
 import { useToast } from "@/hooks/use-toast";
 
 type ArticleFormProps = {
@@ -28,37 +31,39 @@ const AddSectionsForm: React.FC<ArticleFormProps> = ({ article }) => {
   const form = useForm<z.infer<typeof updateArticleSectionSchema>>({
     resolver: zodResolver(updateArticleSectionSchema),
     defaultValues: {
-      sections:
-        article.sections.length > 0
-          ? article.sections
-          : [articleSectionFormDefaultValues],
+      sections: article.sections,
     },
   });
 
-  const { fields, append, remove } = useFieldArray({
+  const { fields, append, remove, replace } = useFieldArray({
     control: form.control,
     name: "sections",
   });
 
-  const addSection = () => {
+  const addSection = async () => {
+    // const res = await createArticleSection();
     append(articleSectionFormDefaultValues);
   };
 
-  const handleOnSave: SubmitHandler<
-    z.infer<typeof insertArticleSectionSchema>
-  > = async (
-    section: Omit<z.infer<typeof insertArticleSectionSchema>, "ArticleId">
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // TODO Move the section update request toward the SectionEditor component ??
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+  const handleOnSave: SubmitHandler<ArticleSection> = async (
+    section: ArticleSection
   ) => {
     startTransition(async () => {
-      if (true) {
-        console.log("debug #1", section);
+      console.log("1");
+
+      if (!section.sectionId) {
+        console.log("2");
         const validationResult = insertArticleSectionSchema.safeParse({
           ...section,
           articleId: article.id,
         });
         if (validationResult.success) {
-          console.log("Debug #2");
-
           const res = await createArticleSection({
             ...section,
             articleId: article.id,
@@ -69,27 +74,31 @@ const AddSectionsForm: React.FC<ArticleFormProps> = ({ article }) => {
               description: res.message,
             });
           }
+          // update(res.data?.position - 1, res.data);
         }
       } else {
-        // UPDATE
+        console.log("3");
+        const res = await updateArticleSection({
+          ...section,
+          articleId: article.id,
+        });
+        if (!res.success) {
+          toast({
+            variant: "destructive",
+            description: res.message,
+          });
+        }
+        // update(res.data?.position - 1, res.data);
       }
     });
   };
 
-  useEffect(() => {
-    console.log("Article: --> ", article);
-  }, [article]);
-
   return (
     <Form {...form}>
-      <form className="space-y-8">
+      <form method="POST" className="space-y-8">
         {fields.map((section, i) => (
           <div key={section.id} className="border p-4 rounded-md">
-            <SectionEditor
-              index={i}
-              onSave={handleOnSave}
-              data={(section as Article) ?? undefined}
-            />
+            <SectionEditor index={i} onSave={handleOnSave} data={section} />
             <div className="flex w-full justify-end">
               <Button
                 type="button"
@@ -104,7 +113,7 @@ const AddSectionsForm: React.FC<ArticleFormProps> = ({ article }) => {
         ))}
         <div className="flex justify-center">
           <Button type="button" variant="outline" onClick={addSection}>
-            <PlusIcon /> Add Paragraph
+            <PlusIcon /> Add Section
           </Button>
         </div>
         <div className="flex justify-between">

@@ -135,9 +135,9 @@ export const insertReviewSchema = z.object({
 
 export const insertArticleSchema = z.object({
   title: z.string().min(1, "Title must be at least 1 character"),
-  slug: z.string().min(3, "Slug must be at least 3 characters"),
+  slug: z.string().min(1, "Slug must be at least 3 characters"),
   isFeatured: z.boolean().nullable().default(false),
-  banner: z.string().nullable().default(""),
+  banner: z.string().nullable(),
 });
 
 export const updateArticleSchema = insertArticleSchema.extend({
@@ -145,16 +145,16 @@ export const updateArticleSchema = insertArticleSchema.extend({
 });
 
 export const insertArticleSectionSchema = z.object({
-  title: z.string().min(1, "Section title must contain at least 1 character"),
+  title: z.string(),
   position: z.coerce.number().int().nonnegative(),
-  body: z.string().min(1, "Section body must contain at least 1 character"),
-  image: z.string().nullable(),
-  youTubeUrl: z.string().nullable(),
+  body: z.string().nullish(),
+  image: z.string().nullish(),
+  youTubeUrl: z.string().nullish(),
   articleId: z.string().nonempty(),
 });
 
 export const updateArticleSectionSchema = insertArticleSectionSchema.extend({
-  id: z.string().min(1, "ID is required"),
+  sectionId: z.string().min(1, "ID is required"),
 });
 
 export const insertArticleCommentSchema = z.object({

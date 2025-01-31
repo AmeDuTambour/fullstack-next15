@@ -7,7 +7,7 @@ import {
 import { getAllArticles } from "@/lib/actions/article.actions";
 import Link from "next/link";
 import Image from "next/image";
-import { EyeClosed, EyeIcon } from "lucide-react";
+import { EyeClosed, EyeIcon, PenIcon } from "lucide-react";
 import { formatDateTime } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
@@ -24,7 +24,8 @@ const AdminArticlesPage = async () => {
         <h1 className="h1-bold">Articles</h1>
         <Button asChild variant="default">
           <Link href="/admin/articles/editor/new/enter-title">
-            Write Article
+            <PenIcon />
+            New Article
           </Link>
         </Button>
       </div>
