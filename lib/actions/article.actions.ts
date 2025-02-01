@@ -11,7 +11,7 @@ import {
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { Prisma } from "@prisma/client";
-import { PAGE_SIZE } from "../constants";
+import { articleSectionFormDefaultValues, PAGE_SIZE } from "../constants";
 
 export async function getAllArticles({
   limit = PAGE_SIZE,
@@ -107,17 +107,25 @@ export async function deleteArticle(articleId: string) {
   }
 }
 
-export async function createArticleSection(
-  data: z.infer<typeof insertArticleSectionSchema>
-) {
+export async function getAllArticleSections(articleId: string) {
   try {
-    const newSection = insertArticleSectionSchema.parse(data);
+    const sections = await prisma.articleSection.findMany({
+      where: { articleId },
+    });
+    if (!sections) throw new Error("Articl sections not found");
+    return { data: convertToPlainObject(sections) };
+  } catch (error) {
+    return { success: false, message: formatError(error) };
+  }
+}
 
+export async function createArticleSection(articleId: string) {
+  try {
     const res = await prisma.articleSection.create({
-      data: newSection,
+      data: { ...articleSectionFormDefaultValues, articleId, position: 0 },
     });
 
-    revalidatePath(`/admin/articles`);
+    revalidatePath(`/admin/articles/editor/${articleId}/add-sections`);
 
     return {
       success: true,

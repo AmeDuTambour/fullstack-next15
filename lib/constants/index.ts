@@ -73,6 +73,6 @@ export const articleFormDefaultValues = {
 export const articleSectionFormDefaultValues = {
   title: "",
   body: "",
-  image: null,
-  youTubeUrl: null,
+  image: "",
+  youTubeUrl: "",
 };

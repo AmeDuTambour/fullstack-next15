@@ -145,11 +145,11 @@ export const updateArticleSchema = insertArticleSchema.extend({
 });
 
 export const insertArticleSectionSchema = z.object({
-  title: z.string(),
+  title: z.string().default(""),
   position: z.coerce.number().int().nonnegative(),
-  body: z.string().nullish(),
-  image: z.string().nullish(),
-  youTubeUrl: z.string().nullish(),
+  body: z.string().default(""),
+  image: z.string().default(""),
+  youTubeUrl: z.string().default(""),
   articleId: z.string().nonempty(),
 });
 
