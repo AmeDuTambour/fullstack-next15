@@ -31,14 +31,14 @@ function sortByCategory(articles: Array<Article>): {
 }
 
 export async function getAllArticles({
-  limit = PAGE_SIZE,
-  page,
+  limit = 1000,
+  page = 1,
   filter,
   categoryId,
   withSorting,
 }: {
   limit?: number;
-  page: number;
+  page?: number;
   filter: "all" | "published" | "draft";
   categoryId?: string;
   withSorting?: boolean;
