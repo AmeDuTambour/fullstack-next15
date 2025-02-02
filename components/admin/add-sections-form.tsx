@@ -7,7 +7,7 @@ import { SectionEditor } from "./section-editor";
 import Link from "next/link";
 import { createArticleSection } from "@/lib/actions/article.actions";
 import { useToast } from "@/hooks/use-toast";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 
 type ArticleSectionsFormProps = {
   sections: ArticleSection[];
@@ -19,14 +19,17 @@ const AddSectionsForm: React.FC<ArticleSectionsFormProps> = ({
   articleId,
 }) => {
   const { toast } = useToast();
+  const [isCreating, startCreating] = useTransition();
   const [isSaving, setIsSaving] = useState<boolean>(false);
 
   const addSection = async () => {
-    const res = await createArticleSection(articleId);
-    if (!res.success) {
-      toast({ variant: "destructive", description: res.message });
-    }
-    toast({ description: res.message });
+    startCreating(async () => {
+      const res = await createArticleSection(articleId);
+      if (!res.success) {
+        toast({ variant: "destructive", description: res.message });
+      }
+      toast({ description: res.message });
+    });
   };
 
   return (
@@ -38,21 +41,16 @@ const AddSectionsForm: React.FC<ArticleSectionsFormProps> = ({
             data={section}
             isSaving={(value) => setIsSaving(value)}
           />
-          <div className="flex w-full justify-end">
-            <Button
-              type="button"
-              variant="destructive"
-              onClick={() => null}
-              className="mt-2"
-            >
-              <TrashIcon className="w-4 h-4" />
-            </Button>
-          </div>
         </div>
       ))}
       <div className="flex justify-center">
         <Button type="button" variant="outline" onClick={addSection}>
-          <PlusIcon /> Add Section
+          {isCreating ? (
+            <Loader className="h-4 w-4 animate-spin" />
+          ) : (
+            <PlusIcon className="h-4 w-4" />
+          )}{" "}
+          Add Section
         </Button>
       </div>
       <div className="flex justify-between">

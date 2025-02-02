@@ -23,8 +23,12 @@ import { z } from "zod";
 import { ArticleSection } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { articleSectionFormDefaultValues } from "@/lib/constants";
-import { updateArticleSection } from "@/lib/actions/article.actions";
-import { Loader } from "lucide-react";
+import {
+  deleteArticleSection,
+  updateArticleSection,
+} from "@/lib/actions/article.actions";
+import { Loader, TrashIcon } from "lucide-react";
+import { Button } from "../ui/button";
 
 type SectionEditorProps = {
   index: number;
@@ -38,6 +42,8 @@ export const SectionEditor = ({
   isSaving,
 }: SectionEditorProps) => {
   const [isPending, startTransition] = useTransition();
+  const [isDeleting, startDeleting] = useTransition();
+
   const { toast } = useToast();
   const form = useForm<z.infer<typeof insertArticleSectionSchema>>({
     resolver: zodResolver(insertArticleSectionSchema),
@@ -84,6 +90,19 @@ export const SectionEditor = ({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedTitle, debouncedBody, debouncedImage, debouncedYouTubeUrl]);
+
+  const handleDeleteSection = async () => {
+    startDeleting(async () => {
+      const res = await deleteArticleSection(data.sectionId);
+      if (!res.success) {
+        toast({
+          variant: "destructive",
+          description: res.message,
+        });
+      }
+      toast({ description: res.message });
+    });
+  };
 
   return (
     <Form {...form}>
@@ -228,6 +247,21 @@ export const SectionEditor = ({
             )}
           />
         )}
+      </div>
+      <div className="flex w-full justify-end">
+        <Button
+          disabled={isDeleting}
+          type="button"
+          variant="destructive"
+          onClick={handleDeleteSection}
+          className="mt-2"
+        >
+          {isDeleting ? (
+            <Loader className="w-4 h-4 animate-spin" />
+          ) : (
+            <TrashIcon className="w-4 h-4" />
+          )}
+        </Button>
       </div>
     </Form>
   );
