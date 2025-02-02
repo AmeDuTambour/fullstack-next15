@@ -62,3 +62,17 @@ export const reviewFormDefaultValues = {
 };
 
 export const SENDER_EMAIL = process.env.SENDER_EMAIL || "onboarding@resend.dev";
+
+export const articleFormDefaultValues = {
+  title: "",
+  slug: "",
+  isFeatured: false,
+  banner: "",
+};
+
+export const articleSectionFormDefaultValues = {
+  title: "",
+  body: "",
+  image: "",
+  youTubeUrl: "",
+};

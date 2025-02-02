@@ -95,8 +95,6 @@ export async function createOrder() {
       redirectTo: `/order/${insertedOrderId}`,
     };
   } catch (error) {
-    console.log(error);
-
     if (isRedirectError(error)) throw error;
     return { success: false, message: formatError(error) };
   }
@@ -165,7 +163,6 @@ export async function approvePayPalOrder(
 
     if (!order) throw new Error("Order not found");
     const captureData = await paypal.capturePayment(data.orderID);
-    console.log("Capture Data: ", captureData);
     if (
       !captureData ||
       captureData.id !== (order.paymentResult as PaymentResult)?.id ||
@@ -189,8 +186,6 @@ export async function approvePayPalOrder(
 
     return { success: true, message: "Your order has been paid" };
   } catch (error) {
-    console.log("Catching the error : ", error);
-
     return { success: false, message: await formatError(error) };
   }
 }

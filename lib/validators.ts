@@ -135,15 +135,32 @@ export const insertReviewSchema = z.object({
 
 export const insertArticleSchema = z.object({
   title: z.string().min(1, "Title must be at least 1 character"),
-  paragraphs: z
-    .array(z.string())
-    .nonempty({ message: "Paragraphs must contain at least 1 block" }),
-  images: z.array(z.string()),
-  youTubeUrl: z.string().nullable(),
-  isFeatured: z.boolean(),
+  slug: z.string().min(1, "Slug must be at least 3 characters"),
+  thumbnail: z.string().nullable().default("").optional(),
+  categoryId: z.string().uuid().optional().nullable(),
+  isPublished: z.boolean().nullable().default(false),
+  isFeatured: z.boolean().nullable().default(false),
   banner: z.string().nullable(),
 });
 
 export const updateArticleSchema = insertArticleSchema.extend({
   id: z.string().min(1, "ID is required"),
+});
+
+export const insertArticleSectionSchema = z.object({
+  title: z.string().nullable().default(""),
+  position: z.coerce.number().int().nonnegative(),
+  body: z.string().nullable().default("").optional(),
+  image: z.string().nullable().default("").optional(),
+  youTubeUrl: z.string().nullable().default("").optional(),
+  articleId: z.string().nonempty().optional(),
+});
+
+export const updateArticleSectionSchema = insertArticleSectionSchema.extend({
+  sectionId: z.string().min(1, "ID is required"),
+});
+
+export const insertArticleCommentSchema = z.object({
+  title: z.string().min(1, "Title must contain at least 1 character"),
+  body: z.string().min(1, "Body must contain at least 1 character"),
 });

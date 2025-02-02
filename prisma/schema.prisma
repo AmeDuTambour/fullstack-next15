@@ -28,22 +28,23 @@ model Product {
 }
 
 model User {
-  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name          String    @default("NO_NAME")
-  email         String    @unique(map: "user_email_idx")
-  emailVerified DateTime? @db.Timestamp(6)
-  image         String?
-  password      String?
-  role          String    @default("user")
-  address       Json?     @db.Json
-  paymentMethod String?
-  createdAt     DateTime  @default(now()) @db.Timestamp(6)
-  updatedAt     DateTime  @updatedAt
-  Account       Account[]
-  Session       Session[]
-  Cart          Cart[]
-  Order         Order[]
-  Review        Review[]
+  id             String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name           String           @default("NO_NAME")
+  email          String           @unique(map: "user_email_idx")
+  emailVerified  DateTime?        @db.Timestamp(6)
+  image          String?
+  password       String?
+  role           String           @default("user")
+  address        Json?            @db.Json
+  paymentMethod  String?
+  createdAt      DateTime         @default(now()) @db.Timestamp(6)
+  updatedAt      DateTime         @updatedAt
+  Account        Account[]
+  Session        Session[]
+  Cart           Cart[]
+  Order          Order[]
+  Review         Review[]
+  ArticleComment ArticleComment[]
 }
 
 model Account {
@@ -145,12 +146,46 @@ model Review {
 }
 
 model Article {
-  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  title      String
-  paragraphs String[] @default([])
-  images     String[] @default([])
+  id          String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title       String
+  slug        String           @unique(map: "article_slug_idx")
+  thumbnail   String?
+  categoryId  String?          @db.Uuid
+  sections    ArticleSection[]
+  comments    ArticleComment[]
+  isFeatured  Boolean?         @default(false)
+  banner      String?
+  isPublished Boolean?         @default(false)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  category    ArticleCategory? @relation(fields: [categoryId], references: [id])
+}
+
+model ArticleSection {
+  sectionId  String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  position   Int
+  title      String?
+  body       String?
+  image      String?
   youTubeUrl String?
-  isFeatured Boolean  @default(false)
-  banner     String?
-  createdAt  DateTime @default(now()) @db.Timestamp(6)
+  articleId  String  @db.Uuid
+  article    Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+}
+
+model ArticleComment {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String   @db.Uuid
+  articleId String   @db.Uuid
+  title     String
+  body      String
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  updatedAt DateTime @default(now()) @db.Timestamp(6)
+  article   Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model ArticleCategory {
+  id      String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name    String
+  Article Article[]
 }
