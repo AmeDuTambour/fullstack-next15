@@ -149,6 +149,8 @@ model Article {
   id          String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   title       String
   slug        String           @unique(map: "article_slug_idx")
+  thumbnail   String?
+  categoryId  String?          @db.Uuid
   sections    ArticleSection[]
   comments    ArticleComment[]
   isFeatured  Boolean?         @default(false)
@@ -156,6 +158,7 @@ model Article {
   isPublished Boolean?         @default(false)
   createdAt   DateTime         @default(now())
   updatedAt   DateTime         @updatedAt
+  category    ArticleCategory? @relation(fields: [categoryId], references: [id])
 }
 
 model ArticleSection {
@@ -179,4 +182,10 @@ model ArticleComment {
   updatedAt DateTime @default(now()) @db.Timestamp(6)
   article   Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model ArticleCategory {
+  id      String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name    String
+  Article Article[]
 }

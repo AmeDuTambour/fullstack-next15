@@ -4,7 +4,6 @@ import { prisma } from "@/db/prisma";
 import { convertToPlainObject, formatError } from "../utils";
 import {
   insertArticleSchema,
-  insertArticleSectionSchema,
   updateArticleSchema,
   updateArticleSectionSchema,
 } from "../validators";
@@ -12,45 +11,86 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { Prisma } from "@prisma/client";
 import { articleSectionFormDefaultValues, PAGE_SIZE } from "../constants";
+import { Article } from "@/types";
+
+function sortByCategory(articles: Array<Article>): {
+  [key: string]: Article[];
+} {
+  return articles.reduce(
+    (acc, article) => {
+      const categoryName =
+        article.category?.name?.toLowerCase() || "uncategorized";
+      if (!acc[categoryName]) {
+        acc[categoryName] = [];
+      }
+      acc[categoryName].push(article);
+      return acc;
+    },
+    {} as { [key: string]: Article[] }
+  );
+}
 
 export async function getAllArticles({
   limit = PAGE_SIZE,
   page,
   filter,
+  categoryId,
+  withSorting,
 }: {
   limit?: number;
   page: number;
   filter: "all" | "published" | "draft";
+  categoryId?: string;
+  withSorting?: boolean;
 }) {
-  const stateFilter: Prisma.ArticleWhereInput =
-    filter && filter === "published"
-      ? {
-          isPublished: true,
-        }
-      : filter && filter === "draft"
-        ? { isPublished: false }
-        : {};
+  try {
+    const stateFilter: Prisma.ArticleWhereInput =
+      filter === "published"
+        ? { isPublished: true }
+        : filter === "draft"
+          ? { isPublished: false }
+          : {};
 
-  const data = await prisma.article.findMany({
-    where: {
+    const whereValues: Prisma.ArticleWhereInput = {
       ...stateFilter,
-    },
-    include: { sections: true, comments: true },
-    skip: (page - 1) * limit,
-    take: limit,
-  });
-  const dataCount = await prisma.article.count();
+      ...(categoryId ? { categoryId } : {}),
+    };
 
-  return {
-    data,
-    totalPages: Math.ceil(dataCount / limit),
-  };
+    const data = await prisma.article.findMany({
+      where: whereValues,
+      include: {
+        sections: true,
+        comments: true,
+        category: true,
+      },
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+
+    const dataCount = await prisma.article.count({
+      where: whereValues,
+    });
+
+    return {
+      success: true,
+      data: withSorting ? sortByCategory(data) : data || [],
+      totalPages: Math.ceil(dataCount / limit),
+    };
+  } catch (error) {
+    console.error("Error fetching articles:", error);
+    return {
+      success: false,
+      data: [],
+      totalPages: 0,
+      message: "Failed to fetch articles.",
+    };
+  }
 }
 
 export async function getArticleById(id: string) {
   const data = await prisma.article.findFirst({
     where: { id },
-    include: { sections: true, comments: true },
+    include: { sections: true, comments: true, category: true },
   });
   return convertToPlainObject(data);
 }
@@ -58,7 +98,13 @@ export async function getArticleById(id: string) {
 export async function createArticle(data: z.infer<typeof insertArticleSchema>) {
   try {
     const newArticle = insertArticleSchema.parse(data);
-    const res = await prisma.article.create({ data: newArticle });
+
+    const res = await prisma.article.create({
+      data: {
+        ...newArticle,
+        categoryId: newArticle.categoryId || null,
+      },
+    });
 
     revalidatePath("/admin/articles");
     return {
@@ -79,10 +125,21 @@ export async function updateArticle(data: z.infer<typeof updateArticleSchema>) {
     });
     if (!articleExists) throw new Error("Article not found");
 
-    await prisma.article.update({ where: { id: article.id }, data: article });
+    const res = await prisma.article.update({
+      where: { id: article.id },
+      data: {
+        ...article,
+        categoryId: article.categoryId || null,
+      },
+    });
+
     revalidatePath("/admin/articles");
 
-    return { success: true, message: "Article updated successfully" };
+    return {
+      success: true,
+      message: "Article updated successfully",
+      data: res,
+    };
   } catch (error) {
     return { success: false, message: formatError(error) };
   }
@@ -156,9 +213,6 @@ export async function updateArticleSection(
 ) {
   try {
     const section = updateArticleSectionSchema.parse(data);
-
-    console.log("Validated data : ", section);
-
     const sectionExists = await prisma.articleSection.findFirst({
       where: { sectionId: section.sectionId },
     });
@@ -204,6 +258,77 @@ export async function deleteArticleSection(sectionId: string) {
     );
 
     return { success: true, message: "Section deleted successfully" };
+  } catch (error) {
+    return { success: false, message: formatError(error) };
+  }
+}
+
+export async function createArticleCategory(name: string, articleId?: string) {
+  try {
+    const res = await prisma.articleCategory.create({
+      data: { name },
+    });
+
+    // ✅ Revalidation conditionnelle
+    revalidatePath(
+      articleId
+        ? `/admin/articles/editor/${articleId}/enter-title`
+        : `/admin/articles/editor/new/enter-title`
+    );
+
+    return {
+      success: true,
+      message: `Category ${name} created successfully`,
+      data: res,
+    };
+  } catch (error) {
+    return { success: false, message: formatError(error) };
+  }
+}
+
+export async function deleteArticleCategory(id: string, articleId?: string) {
+  try {
+    await prisma.articleCategory.delete({ where: { id } });
+
+    revalidatePath(
+      articleId
+        ? `/admin/articles/editor/${articleId}/enter-title`
+        : `/admin/articles/editor/new/enter-title`
+    );
+
+    return { success: true, message: "Category deleted successfully" };
+  } catch (error) {
+    return { success: false, message: formatError(error) };
+  }
+}
+
+export async function updateArticleCategory(
+  id: string,
+  name: string,
+  articleId?: string
+) {
+  try {
+    await prisma.articleCategory.update({
+      where: { id },
+      data: { name },
+    });
+
+    revalidatePath(
+      articleId
+        ? `/admin/articles/editor/${articleId}/enter-title`
+        : `/admin/articles/editor/new/enter-title`
+    );
+
+    return { success: true, message: "Category updated successfully" };
+  } catch (error) {
+    return { success: false, message: formatError(error) };
+  }
+}
+
+export async function getArticleCategories() {
+  try {
+    const data = await prisma.articleCategory.findMany();
+    return { success: true, data };
   } catch (error) {
     return { success: false, message: formatError(error) };
   }

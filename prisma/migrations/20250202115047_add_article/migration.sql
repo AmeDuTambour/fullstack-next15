@@ -3,6 +3,8 @@ CREATE TABLE "Article" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "title" TEXT NOT NULL,
     "slug" TEXT NOT NULL,
+    "thumbnail" TEXT,
+    "categoryId" UUID,
     "isFeatured" BOOLEAN DEFAULT false,
     "banner" TEXT,
     "isPublished" BOOLEAN DEFAULT false,
@@ -38,8 +40,19 @@ CREATE TABLE "ArticleComment" (
     CONSTRAINT "ArticleComment_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "ArticleCategory" (
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "name" TEXT NOT NULL,
+
+    CONSTRAINT "ArticleCategory_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "article_slug_idx" ON "Article"("slug");
+
+-- AddForeignKey
+ALTER TABLE "Article" ADD CONSTRAINT "Article_categoryId_fkey" FOREIGN KEY ("categoryId") REFERENCES "ArticleCategory"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "ArticleSection" ADD CONSTRAINT "ArticleSection_articleId_fkey" FOREIGN KEY ("articleId") REFERENCES "Article"("id") ON DELETE CASCADE ON UPDATE CASCADE;

@@ -2,7 +2,7 @@
 
 import { ArticleSection } from "@/types";
 import { Button } from "../ui/button";
-import { Loader, PlusIcon, TrashIcon } from "lucide-react";
+import { Loader, PlusIcon } from "lucide-react";
 import { SectionEditor } from "./section-editor";
 import Link from "next/link";
 import { createArticleSection } from "@/lib/actions/article.actions";

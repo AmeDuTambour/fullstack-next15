@@ -136,6 +136,9 @@ export const insertReviewSchema = z.object({
 export const insertArticleSchema = z.object({
   title: z.string().min(1, "Title must be at least 1 character"),
   slug: z.string().min(1, "Slug must be at least 3 characters"),
+  thumbnail: z.string().nullable().default("").optional(),
+  categoryId: z.string().uuid().optional().nullable(),
+  isPublished: z.boolean().nullable().default(false),
   isFeatured: z.boolean().nullable().default(false),
   banner: z.string().nullable(),
 });
@@ -145,11 +148,11 @@ export const updateArticleSchema = insertArticleSchema.extend({
 });
 
 export const insertArticleSectionSchema = z.object({
-  title: z.string().default(""),
+  title: z.string().nullable().default(""),
   position: z.coerce.number().int().nonnegative(),
-  body: z.string().default("").optional(),
-  image: z.string().default("").optional(),
-  youTubeUrl: z.string().default("").optional(),
+  body: z.string().nullable().default("").optional(),
+  image: z.string().nullable().default("").optional(),
+  youTubeUrl: z.string().nullable().default("").optional(),
   articleId: z.string().nonempty().optional(),
 });
 

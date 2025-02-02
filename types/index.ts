@@ -43,8 +43,13 @@ export type Review = z.infer<typeof insertReviewSchema> & {
 
 export type Article = z.infer<typeof insertArticleSchema> & {
   id: string;
+  thumbnail?: string | null;
   sections: ArticleSection[];
-  comments: ArticleComment[]; //Should be replace by comment type
+  comments: ArticleComment[];
+  category: {
+    id: string;
+    name: string;
+  } | null;
   createdAt: Date;
   updatedAt: Date;
 };

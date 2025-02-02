@@ -43,6 +43,11 @@ export const SectionEditor = ({
 }: SectionEditorProps) => {
   const [isPending, startTransition] = useTransition();
   const [isDeleting, startDeleting] = useTransition();
+  const [mediaType, setMediaType] = useState<"image" | "video" | "none">(() => {
+    if (data.image) return "image";
+    if (data.youTubeUrl) return "video";
+    return "none";
+  });
 
   const { toast } = useToast();
   const form = useForm<z.infer<typeof insertArticleSectionSchema>>({
@@ -52,10 +57,6 @@ export const SectionEditor = ({
       ...data,
     },
   });
-
-  const [mediaType, setMediaType] = useState<"image" | "video" | "none">(
-    "none"
-  );
 
   const debouncedTitle = useDebounce(form.watch("title"), 500);
   const debouncedBody = useDebounce(form.watch("body"), 500);
@@ -90,6 +91,15 @@ export const SectionEditor = ({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedTitle, debouncedBody, debouncedImage, debouncedYouTubeUrl]);
+
+  useEffect(() => {
+    const initialMediaType = data.image
+      ? "image"
+      : data.youTubeUrl
+        ? "video"
+        : "none";
+    setMediaType(initialMediaType);
+  }, [data.image, data.youTubeUrl]);
 
   const handleDeleteSection = async () => {
     startDeleting(async () => {
@@ -127,7 +137,11 @@ export const SectionEditor = ({
                 ) : null}
               </FormLabel>
               <FormControl>
-                <Input placeholder="Enter title" {...field} />
+                <Input
+                  placeholder="Enter title"
+                  {...field}
+                  value={field.value ?? ""}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -147,36 +161,38 @@ export const SectionEditor = ({
           }) => (
             <FormItem className="w-full">
               <FormControl>
-                <Textarea placeholder="Enter paragraph" {...field} />
+                <Textarea
+                  placeholder="Enter paragraph"
+                  {...field}
+                  value={field.value ?? ""}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
 
-        {/* Sélection du média (optionnel) */}
         <div className="text-lg font-bold">Add media (optional)</div>
         <RadioGroup
-          defaultValue={mediaType}
+          value={mediaType}
           onValueChange={(value: "video" | "image" | "none") =>
             setMediaType(value)
           }
         >
           <div className="flex items-center space-x-2">
             <RadioGroupItem value="none" id="none" />
-            <Label htmlFor={"none"}>None</Label>
+            <Label htmlFor="none">None</Label>
           </div>
           <div className="flex items-center space-x-2">
             <RadioGroupItem value="image" id="image" />
-            <Label htmlFor={"image"}>Image</Label>
+            <Label htmlFor="image">Image</Label>
           </div>
           <div className="flex items-center space-x-2">
             <RadioGroupItem value="video" id="video" />
-            <Label htmlFor={"video"}>YouTube video</Label>
+            <Label htmlFor="video">YouTube video</Label>
           </div>
         </RadioGroup>
 
-        {/* Upload d'images */}
         {mediaType === "image" && (
           <FormField
             control={form.control}
@@ -206,7 +222,9 @@ export const SectionEditor = ({
                     <UploadButton
                       endpoint="imageUploader"
                       onClientUploadComplete={(res: { url: string }[]) => {
-                        form.setValue(`image`, res[0].url);
+                        form.setValue("image", res[0].url, {
+                          shouldDirty: true,
+                        });
                       }}
                       onUploadError={(error: Error) => {
                         toast({
@@ -223,7 +241,6 @@ export const SectionEditor = ({
           />
         )}
 
-        {/* Input pour YouTube */}
         {mediaType === "video" && (
           <FormField
             control={form.control}
@@ -240,7 +257,11 @@ export const SectionEditor = ({
               <FormItem className="w-full">
                 <FormLabel>Video URL</FormLabel>
                 <FormControl>
-                  <Input placeholder="Enter YouTube URL" {...field} />
+                  <Input
+                    placeholder="Enter YouTube URL"
+                    {...field}
+                    value={field.value ?? ""}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
