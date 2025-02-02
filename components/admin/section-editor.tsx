@@ -16,28 +16,74 @@ import { useToast } from "@/hooks/use-toast";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
-import { useState } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { useDebounce } from "@uidotdev/usehooks";
 import { insertArticleSectionSchema } from "@/lib/validators";
 import { z } from "zod";
 import { ArticleSection } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { articleSectionFormDefaultValues } from "@/lib/constants";
+import { updateArticleSection } from "@/lib/actions/article.actions";
+import { Loader } from "lucide-react";
 
 type SectionEditorProps = {
   index: number;
-  data?: ArticleSection;
+  data: ArticleSection;
+  isSaving: (value: boolean) => void;
 };
 
-export const SectionEditor = ({ index, data }: SectionEditorProps) => {
+export const SectionEditor = ({
+  index,
+  data,
+  isSaving,
+}: SectionEditorProps) => {
+  const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
   const form = useForm<z.infer<typeof insertArticleSectionSchema>>({
     resolver: zodResolver(insertArticleSectionSchema),
-    defaultValues: articleSectionFormDefaultValues,
+    defaultValues: {
+      ...articleSectionFormDefaultValues,
+      ...data,
+    },
   });
+
   const [mediaType, setMediaType] = useState<"image" | "video" | "none">(
     "none"
   );
+
+  const debouncedTitle = useDebounce(form.watch("title"), 500);
+  const debouncedBody = useDebounce(form.watch("body"), 500);
+  const debouncedImage = useDebounce(form.watch("image"), 500);
+  const debouncedYouTubeUrl = useDebounce(form.watch("youTubeUrl"), 500);
+
+  useEffect(() => {
+    if (!form.formState.isDirty) return;
+
+    const updateSection = async () => {
+      startTransition(async () => {
+        isSaving(true);
+        const res = await updateArticleSection({
+          sectionId: data.sectionId,
+          title: debouncedTitle,
+          body: debouncedBody,
+          position: Number(form.getValues("position")),
+          image: mediaType === "image" ? debouncedImage : "",
+          youTubeUrl: mediaType === "video" ? debouncedYouTubeUrl : "",
+        });
+        if (!res.success) {
+          toast({
+            variant: "destructive",
+            description: res.message,
+          });
+        }
+        isSaving(false);
+      });
+    };
+    if (data?.sectionId) {
+      updateSection();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedTitle, debouncedBody, debouncedImage, debouncedYouTubeUrl]);
 
   return (
     <Form {...form}>
@@ -55,7 +101,12 @@ export const SectionEditor = ({ index, data }: SectionEditorProps) => {
             >;
           }) => (
             <FormItem className="w-full">
-              <FormLabel className="h2-bold">Section {index + 1}</FormLabel>
+              <FormLabel className="h2-bold flex flex-row items-center gap-4">
+                Section {index + 1}
+                {isPending ? (
+                  <Loader className="w-5 h-5 animate-spin text-green-600" />
+                ) : null}
+              </FormLabel>
               <FormControl>
                 <Input placeholder="Enter title" {...field} />
               </FormControl>
@@ -178,19 +229,6 @@ export const SectionEditor = ({ index, data }: SectionEditorProps) => {
           />
         )}
       </div>
-      <FormField
-        control={form.control}
-        name="position"
-        defaultValue={index + 1}
-        render={({
-          field,
-        }: {
-          field: ControllerRenderProps<
-            z.infer<typeof insertArticleSectionSchema>,
-            "position"
-          >;
-        }) => <input type="hidden" {...field} />}
-      />
     </Form>
   );
 };

@@ -2,11 +2,12 @@
 
 import { ArticleSection } from "@/types";
 import { Button } from "../ui/button";
-import { PlusIcon, TrashIcon } from "lucide-react";
+import { Loader, PlusIcon, TrashIcon } from "lucide-react";
 import { SectionEditor } from "./section-editor";
 import Link from "next/link";
 import { createArticleSection } from "@/lib/actions/article.actions";
 import { useToast } from "@/hooks/use-toast";
+import { useState } from "react";
 
 type ArticleSectionsFormProps = {
   sections: ArticleSection[];
@@ -18,6 +19,7 @@ const AddSectionsForm: React.FC<ArticleSectionsFormProps> = ({
   articleId,
 }) => {
   const { toast } = useToast();
+  const [isSaving, setIsSaving] = useState<boolean>(false);
 
   const addSection = async () => {
     const res = await createArticleSection(articleId);
@@ -31,7 +33,11 @@ const AddSectionsForm: React.FC<ArticleSectionsFormProps> = ({
     <div className="space-y-8">
       {sections.map((section, i) => (
         <div key={section.sectionId} className="border p-4 rounded-md">
-          <SectionEditor index={i} data={section} />
+          <SectionEditor
+            index={i}
+            data={section}
+            isSaving={(value) => setIsSaving(value)}
+          />
           <div className="flex w-full justify-end">
             <Button
               type="button"
@@ -50,13 +56,13 @@ const AddSectionsForm: React.FC<ArticleSectionsFormProps> = ({
         </Button>
       </div>
       <div className="flex justify-between">
-        <Button asChild type="button" variant="outline">
+        <Button disabled={isSaving} asChild type="button" variant="outline">
           <Link href={`/admin/articles/editor/${articleId}/enter-title`}>
             Previous
           </Link>
         </Button>
 
-        <Button asChild type="button" variant="outline">
+        <Button disabled={isSaving} asChild type="button" variant="outline">
           <Link href={`/admin/articles/editor/${articleId}/publish-article`}>
             Next
           </Link>

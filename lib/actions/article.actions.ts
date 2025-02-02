@@ -111,6 +111,9 @@ export async function getAllArticleSections(articleId: string) {
   try {
     const sections = await prisma.articleSection.findMany({
       where: { articleId },
+      orderBy: {
+        position: "asc",
+      },
     });
     if (!sections) throw new Error("Articl sections not found");
     return { data: convertToPlainObject(sections) };
@@ -121,11 +124,22 @@ export async function getAllArticleSections(articleId: string) {
 
 export async function createArticleSection(articleId: string) {
   try {
-    const res = await prisma.articleSection.create({
-      data: { ...articleSectionFormDefaultValues, articleId, position: 0 },
+    const lastSection = await prisma.articleSection.findFirst({
+      where: { articleId },
+      orderBy: { position: "desc" },
     });
 
-    revalidatePath(`/admin/articles/editor/${articleId}/add-sections`);
+    const newPosition = lastSection ? lastSection.position + 1 : 1;
+
+    const res = await prisma.articleSection.create({
+      data: {
+        ...articleSectionFormDefaultValues,
+        articleId,
+        position: newPosition,
+      },
+    });
+
+    revalidatePath(`/admin/articles/editor/${res.articleId}/add-sections`);
 
     return {
       success: true,
@@ -143,9 +157,12 @@ export async function updateArticleSection(
   try {
     const section = updateArticleSectionSchema.parse(data);
 
+    console.log("Validated data : ", section);
+
     const sectionExists = await prisma.articleSection.findFirst({
       where: { sectionId: section.sectionId },
     });
+
     if (!sectionExists) throw new Error("Section not found");
 
     const res = await prisma.articleSection.update({
