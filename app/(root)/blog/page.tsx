@@ -1,6 +1,11 @@
 import ArticleCarousel from "@/components/shared/article-carousel";
 import { getAllArticles } from "@/lib/actions/article.actions";
 import { Article } from "@/types";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Blog",
+};
 
 const BlogPage = async () => {
   const { data } = (await getAllArticles({
