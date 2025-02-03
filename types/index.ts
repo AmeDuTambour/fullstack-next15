@@ -10,6 +10,7 @@ import {
   insertArticleSchema,
   insertArticleSectionSchema,
   insertArticleCommentSchema,
+  contactFormSchema,
 } from "@/lib/validators";
 import { z } from "zod";
 
@@ -65,3 +66,5 @@ export type ArticleComment = z.infer<typeof insertArticleCommentSchema> & {
   createdAt: Date;
   updatedAt: Date;
 };
+
+export type ContactFormData = z.infer<typeof contactFormSchema>;

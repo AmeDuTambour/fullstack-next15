@@ -164,3 +164,10 @@ export const insertArticleCommentSchema = z.object({
   title: z.string().min(1, "Title must contain at least 1 character"),
   body: z.string().min(1, "Body must contain at least 1 character"),
 });
+
+export const contactFormSchema = z.object({
+  name: z.string().min(3, "Name must contain at least 3 characters"),
+  email: z.string().email("Invalid email address"),
+  subject: z.string(),
+  message: z.string().nonempty(),
+});
