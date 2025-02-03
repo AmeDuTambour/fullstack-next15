@@ -9,21 +9,65 @@ const currency = z
     "Price must have exatcly two decimal places"
   );
 
-export const insertProductSchema = z.object({
+export const insertBaseProductSchema = z.object({
   name: z.string().min(3, "Name must be at least 3 characters"),
   slug: z.string().min(3, "Slug must be at least 3 characters"),
+  categoryId: z
+    .string()
+    .uuid({ message: "Invalid UUID format" })
+    .optional()
+    .nullable(),
   category: z.string().min(3, "Category must be at least 3 characters"),
-  brand: z.string().min(3, "Brand must be at least 3 characters"),
-  description: z.string().min(3, "Description must be at least 3 characters"),
-  stock: z.coerce.number(),
-  images: z.array(z.string()).min(1, "Product must have at least 1 image"),
+  stock: z.coerce.number().int().min(0, "Stock cannot be negative"),
+  images: z
+    .array(z.string().url("Invalid image URL"))
+    .min(1, "Product must have at least 1 image"),
   isFeatured: z.boolean(),
-  banner: z.string().nullable(),
+  banner: z.string().url("Invalid banner URL").nullable().optional(),
   price: currency,
 });
 
-export const updateProductSchema = insertProductSchema.extend({
-  id: z.string().min(1, "Id is required"),
+export const updateBaseProductSchema = insertBaseProductSchema.extend({
+  id: z.string().uuid("Invalid UUID format"),
+});
+
+export const insertProductCategory = z.object({
+  name: z.string().min(1, "Category must contain at least 1 character"),
+});
+
+export const updateProductCategory = insertProductCategory.extend({
+  id: z.string().uuid("Invalid UUID format"),
+});
+
+export const insertDrumProduct = z.object({
+  skinTypeId: z.string().uuid("Invalid UUID format").optional().nullable(),
+  diameterId: z.string().uuid("Invalid UUID format").optional().nullable(),
+});
+
+export const updateDrumProduct = insertDrumProduct.extend({
+  productId: z.string().uuid("Invalid UUID format"),
+});
+
+export const insertOtherProduct = z.object({
+  color: z
+    .string()
+    .min(1, "Color must contain at least 1 character")
+    .optional()
+    .nullable(),
+  material: z
+    .string()
+    .min(1, "Material must contain at least 1 character")
+    .optional()
+    .nullable(),
+  size: z
+    .string()
+    .min(1, "Size must contain at least 1 character")
+    .optional()
+    .nullable(),
+});
+
+export const updateOtherProduct = insertOtherProduct.extend({
+  productId: z.string().uuid("Invalid UUID format"),
 });
 
 export const signInFormSchema = z.object({
@@ -119,18 +163,6 @@ export const updateProfileSchema = z.object({
 export const updateUserSchema = updateProfileSchema.extend({
   id: z.string().min(1, "ID is required"),
   role: z.string().min(1, "Role is required"),
-});
-
-export const insertReviewSchema = z.object({
-  title: z.string().min(3, "Title must be at least 3 characters"),
-  description: z.string().min(3, "Description must be at lest 3 characteres"),
-  productId: z.string().min(1, "Product is required"),
-  userId: z.string().min(1, "User is required"),
-  rating: z.coerce
-    .number()
-    .int()
-    .min(1, "Rating must be at least 1")
-    .max(5, "Rating must be at most 5"),
 });
 
 export const insertArticleSchema = z.object({
