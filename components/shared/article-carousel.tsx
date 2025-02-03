@@ -44,6 +44,7 @@ const ArticleCarousel = ({
               <CarouselCard
                 title={slideContent.title}
                 img={slideContent.thumbnail ?? ""}
+                slug={slideContent.slug}
               />
             </div>
           </SwiperSlide>
