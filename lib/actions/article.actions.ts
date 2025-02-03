@@ -87,6 +87,18 @@ export async function getAllArticles({
   }
 }
 
+export async function getFeaturedArticles() {
+  const data = await prisma.article.findMany({
+    where: {
+      isPublished: true,
+      isFeatured: true,
+    },
+    orderBy: { createdAt: "desc" },
+    take: 4,
+  });
+  return convertToPlainObject(data);
+}
+
 export async function getArticleById(id: string) {
   const data = await prisma.article.findFirst({
     where: { id },
