@@ -10,7 +10,7 @@ import {
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { Prisma } from "@prisma/client";
-import { articleSectionFormDefaultValues, PAGE_SIZE } from "../constants";
+import { articleSectionFormDefaultValues } from "../constants";
 import { Article } from "@/types";
 
 function sortByCategory(articles: Array<Article>): {
@@ -31,14 +31,14 @@ function sortByCategory(articles: Array<Article>): {
 }
 
 export async function getAllArticles({
-  limit = PAGE_SIZE,
-  page,
+  limit = 1000,
+  page = 1,
   filter,
   categoryId,
   withSorting,
 }: {
   limit?: number;
-  page: number;
+  page?: number;
   filter: "all" | "published" | "draft";
   categoryId?: string;
   withSorting?: boolean;
@@ -87,9 +87,29 @@ export async function getAllArticles({
   }
 }
 
+export async function getFeaturedArticles() {
+  const data = await prisma.article.findMany({
+    where: {
+      isPublished: true,
+      isFeatured: true,
+    },
+    orderBy: { createdAt: "desc" },
+    take: 4,
+  });
+  return convertToPlainObject(data);
+}
+
 export async function getArticleById(id: string) {
   const data = await prisma.article.findFirst({
     where: { id },
+    include: { sections: true, comments: true, category: true },
+  });
+  return convertToPlainObject(data);
+}
+
+export async function getArticleBySlug(slug: string) {
+  const data = await prisma.article.findFirst({
+    where: { slug },
     include: { sections: true, comments: true, category: true },
   });
   return convertToPlainObject(data);
