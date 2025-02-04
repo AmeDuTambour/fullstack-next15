@@ -20,19 +20,23 @@ const HomePage = async () => {
       banner: article.banner,
       title: article.title,
     })),
-    ...featuredProducts.map((product) => ({
-      id: product.id,
-      slug: product.slug,
-      banner: product.banner,
-      name: product.name,
-    })),
+    ...(Array.isArray(featuredProducts)
+      ? featuredProducts.map((product) => ({
+          id: product.id,
+          slug: product.slug,
+          banner: product.banner,
+          name: product.name,
+        }))
+      : []),
   ];
+
+  console.log(featuredContent);
 
   return (
     <>
-      {featuredContent.length > 0 && (
+      {/* {featuredContent.length > 0 && (
         <FeaturedCarousel data={featuredContent} />
-      )}
+      )} */}
       <ProductList data={latestProducts} title="Nouvel arrivage" limit={4} />
       <ViewAllProductsButton />
       <IconBoxes />

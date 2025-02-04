@@ -1,6 +1,7 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import qs from "query-string";
+import { boolean } from "zod";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -142,3 +143,14 @@ export function formUrlQuery({
     }
   );
 }
+
+export const isValidUrl = (url: string) => {
+  if (!url || url.trim() === "") return false;
+
+  try {
+    new URL(url);
+    return true;
+  } catch {
+    return /^\/(?!\/).*/.test(url);
+  }
+};

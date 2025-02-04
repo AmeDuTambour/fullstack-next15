@@ -414,12 +414,9 @@ export async function getFeaturedProducts() {
       },
       orderBy: { createdAt: "desc" },
       take: 4,
-      include: {
-        category: true,
-      },
     });
 
-    return convertToPlainObject(products);
+    return products;
   } catch (error) {
     return { success: false, message: formatError(error) };
   }
