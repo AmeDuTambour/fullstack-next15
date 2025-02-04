@@ -20,9 +20,6 @@ export type Product = z.infer<typeof insertBaseProductSchema> & {
   id: string;
   createdAt: Date;
   updatedAt: Date;
-  category: ProductCategory;
-  drum?: Drum;
-  other?: Other;
 };
 
 export type ProductCategory = z.infer<typeof insertProductCategory> & {

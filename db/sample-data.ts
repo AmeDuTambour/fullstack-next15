@@ -15,14 +15,7 @@ const sampleData = {
       role: "admin",
     },
   ],
-  categories: [
-    {
-      name: "Tambour",
-    },
-    {
-      name: "Accessoire",
-    },
-  ],
+  categories: [{ name: "Drum" }, { name: "Other" }],
   skinTypes: [
     { material: "Chèvre" },
     { material: "Bouc" },
@@ -31,12 +24,12 @@ const sampleData = {
     { material: "Cheval" },
     { material: "Cerf" },
   ],
-  drumDiameters: [
-    { size: 35 },
-    { size: 40 },
-    { size: 45 },
-    { size: 50 },
-    { size: 55 },
+  drumDimensions: [
+    { size: "35x10" },
+    { size: "40x12" },
+    { size: "45x14" },
+    { size: "50x12" },
+    { size: "55x15" },
   ],
   products: [
     {
@@ -47,14 +40,15 @@ const sampleData = {
         "https://example.com/image1.jpg",
         "https://example.com/image2.jpg",
       ],
-      price: 130,
+      price: 130.0,
       stock: 5,
       isFeatured: false,
       banner: null,
-      categoryName: "Tambour", // Relation avec la catégorie
-      drum: {
-        skinTypeMaterial: "Bison", // Relation avec le type de peau
-        diameterSize: 40, // Relation avec le diamètre
+      codeIdentifier: "TMB001",
+      category: "Drum",
+      specifications: {
+        skinType: "Bison",
+        dimensions: "40x12",
       },
     },
     {
@@ -65,14 +59,15 @@ const sampleData = {
         "https://example.com/image3.jpg",
         "https://example.com/image4.jpg",
       ],
-      price: 150,
+      price: 150.0,
       stock: 3,
       isFeatured: true,
       banner: null,
-      categoryName: "Tambour",
-      drum: {
-        skinTypeMaterial: "Cerf",
-        diameterSize: 45,
+      codeIdentifier: "TMB002",
+      category: "Drum",
+      specifications: {
+        skinType: "Cerf",
+        dimensions: "45x14",
       },
     },
     {
@@ -80,12 +75,13 @@ const sampleData = {
       slug: "housse-de-tambour-en-cuir",
       description: "Protection durable pour tambour",
       images: ["https://example.com/image5.jpg"],
-      price: 50,
+      price: 50.0,
       stock: 10,
       isFeatured: false,
       banner: null,
-      categoryName: "Accessoire",
-      other: {
+      codeIdentifier: "ACC001",
+      category: "Other",
+      specifications: {
         color: "Noir",
         material: "Cuir",
         size: "M",

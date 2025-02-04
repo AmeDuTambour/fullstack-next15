@@ -9,28 +9,61 @@ const currency = z
     "Price must have exatcly two decimal places"
   );
 
-export const insertBaseProductSchema = z.object({
-  name: z.string().min(3, "Name must be at least 3 characters"),
-  slug: z.string().min(3, "Slug must be at least 3 characters"),
-  categoryId: z
-    .string()
-    .uuid({ message: "Invalid UUID format" })
-    .optional()
-    .nullable(),
-  category: z.string().min(3, "Category must be at least 3 characters"),
-  stock: z.coerce.number().int().min(0, "Stock cannot be negative"),
-  images: z
-    .array(z.string().url("Invalid image URL"))
-    .min(1, "Product must have at least 1 image"),
-  isFeatured: z.boolean(),
-  banner: z.string().url("Invalid banner URL").nullable().optional(),
+const baseProductSchema = z.object({
+  name: z.string().min(1),
+  slug: z.string().min(1),
+  categoryId: z.string().uuid(),
+  stock: z.number().int().min(0),
+  images: z.array(z.string().url()),
+  isFeatured: z.boolean().optional(),
+  banner: z.string().url().optional(),
   price: currency,
-  codeIdentifier: z.string().nullable().optional(),
+  codeIdentifier: z.string().optional(),
 });
 
-export const updateBaseProductSchema = insertBaseProductSchema.extend({
-  id: z.string().uuid("Invalid UUID format"),
+const drumSpecificationsSchema = z.object({
+  skinTypeId: z.string().uuid(),
+  dimensionsId: z.string().uuid(),
 });
+
+const otherSpecificationsSchema = z.object({
+  color: z.string().optional(),
+  material: z.string().optional(),
+  size: z.string().optional(),
+});
+
+export const UpdateProductSpecificationsSchema = z.object({
+  productId: z.string().uuid("Invalid UUID format for productId"),
+  productType: z.enum(["drum", "other"]),
+  specifications: z.union([
+    drumSpecificationsSchema,
+    otherSpecificationsSchema,
+  ]),
+});
+
+export const ProductSchema = z.discriminatedUnion("productType", [
+  baseProductSchema.extend({
+    productType: z.literal("drum"),
+    specifications: drumSpecificationsSchema,
+  }),
+  baseProductSchema.extend({
+    productType: z.literal("other"),
+    specifications: otherSpecificationsSchema,
+  }),
+]);
+
+export const UpdateProductSchema = z.discriminatedUnion("productType", [
+  baseProductSchema.extend({
+    id: z.string().uuid("Invalid UUID format"),
+    productType: z.literal("drum"),
+    specifications: drumSpecificationsSchema,
+  }),
+  baseProductSchema.extend({
+    id: z.string().uuid("Invalid UUID format"),
+    productType: z.literal("other"),
+    specifications: otherSpecificationsSchema,
+  }),
+]);
 
 export const insertProductCategory = z.object({
   name: z.string().min(1, "Category must contain at least 1 character"),
@@ -38,37 +71,6 @@ export const insertProductCategory = z.object({
 
 export const updateProductCategory = insertProductCategory.extend({
   id: z.string().uuid("Invalid UUID format"),
-});
-
-export const insertDrumProduct = z.object({
-  skinTypeId: z.string().uuid("Invalid UUID format").optional().nullable(),
-  diameterId: z.string().uuid("Invalid UUID format").optional().nullable(),
-});
-
-export const updateDrumProduct = insertDrumProduct.extend({
-  productId: z.string().uuid("Invalid UUID format"),
-});
-
-export const insertOtherProduct = z.object({
-  color: z
-    .string()
-    .min(1, "Color must contain at least 1 character")
-    .optional()
-    .nullable(),
-  material: z
-    .string()
-    .min(1, "Material must contain at least 1 character")
-    .optional()
-    .nullable(),
-  size: z
-    .string()
-    .min(1, "Size must contain at least 1 character")
-    .optional()
-    .nullable(),
-});
-
-export const updateOtherProduct = insertOtherProduct.extend({
-  productId: z.string().uuid("Invalid UUID format"),
 });
 
 export const signInFormSchema = z.object({

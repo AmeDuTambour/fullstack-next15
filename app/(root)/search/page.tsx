@@ -115,8 +115,6 @@ const SearchPage = async (props: {
   const products = await getAllProducts({
     query: q,
     category,
-    price,
-    rating,
     sort,
     page: Number(page),
   });

@@ -1,26 +1,62 @@
 "use server";
 
-import { prisma } from "@/db/prisma";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { LATEST_PRODUCTS_LIMIT } from "../constants";
 import { PAGE_SIZE } from "../constants/index";
 import { convertToPlainObject, formatError } from "../utils";
 import {
-  insertBaseProductSchema,
-  insertDrumProduct,
-  insertOtherProduct,
-  updateBaseProductSchema,
+  ProductSchema,
+  UpdateProductSchema,
+  UpdateProductSpecificationsSchema,
 } from "../validators";
 import { Prisma } from "@prisma/client";
 
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
+
+async function getProductSpecifications(product: {
+  id: string;
+  category: { name: string };
+}) {
+  switch (product.category.name) {
+    case "Drum":
+      return await prisma.drum.findUnique({
+        where: { productId: product.id },
+        include: {
+          skinType: true,
+          dimensions: true,
+        },
+      });
+
+    case "Other":
+      return await prisma.other.findUnique({
+        where: { productId: product.id },
+      });
+
+    default:
+      return null;
+  }
+}
+
 export async function getLatestProducts() {
-  const data = await prisma.product.findMany({
+  const products = await prisma.product.findMany({
     take: LATEST_PRODUCTS_LIMIT,
     orderBy: { createdAt: "desc" },
+    include: {
+      category: true,
+    },
   });
 
-  return convertToPlainObject(data);
+  const productsWithSpecs = await Promise.all(
+    products.map(async (product) => ({
+      ...product,
+      specifications: await getProductSpecifications(product),
+    }))
+  );
+
+  return convertToPlainObject(productsWithSpecs);
 }
 
 export async function getProductBySlug(slug: string) {
@@ -29,13 +65,6 @@ export async function getProductBySlug(slug: string) {
       where: { slug },
       include: {
         category: true,
-        drum: {
-          include: {
-            diameter: true,
-            skinType: true,
-          },
-        },
-        other: true,
       },
     });
 
@@ -43,9 +72,11 @@ export async function getProductBySlug(slug: string) {
       throw new Error(`Product with slug "${slug}" not found.`);
     }
 
-    return convertToPlainObject(product);
+    const specifications = await getProductSpecifications(product);
+
+    return { ...product, specifications };
   } catch (error) {
-    return { sucess: true, message: formatError(error) };
+    return { success: false, message: formatError(error) };
   }
 }
 
@@ -55,13 +86,6 @@ export async function getProductById(productId: string) {
       where: { id: productId },
       include: {
         category: true,
-        drum: {
-          include: {
-            diameter: true,
-            skinType: true,
-          },
-        },
-        other: true,
       },
     });
 
@@ -69,7 +93,9 @@ export async function getProductById(productId: string) {
       throw new Error(`Product with ID "${productId}" not found.`);
     }
 
-    return convertToPlainObject(product);
+    const specifications = await getProductSpecifications(product);
+
+    return convertToPlainObject({ ...product, specifications });
   } catch (error) {
     return { success: false, message: formatError(error) };
   }
@@ -81,7 +107,7 @@ export async function getAllProducts({
   page,
   category,
   skinType,
-  diameter,
+  dimensions,
   sort,
   productType,
 }: {
@@ -90,11 +116,10 @@ export async function getAllProducts({
   page: number;
   category?: string;
   skinType?: string;
-  diameter?: string;
+  dimensions?: string;
   sort?: string;
   productType?: "drum" | "other";
 }) {
-  // Filtre de recherche par nom
   const queryFilter: Prisma.ProductWhereInput =
     query && query !== "all"
       ? {
@@ -105,7 +130,6 @@ export async function getAllProducts({
         }
       : {};
 
-  // Filtre par catégorie
   const categoryFilter: Prisma.ProductWhereInput =
     category && category !== "all"
       ? {
@@ -115,7 +139,6 @@ export async function getAllProducts({
         }
       : {};
 
-  // Filtre par type de produit (drum ou other)
   const productTypeFilter: Prisma.ProductWhereInput =
     productType === "drum"
       ? { drum: { isNot: null } }
@@ -123,7 +146,6 @@ export async function getAllProducts({
         ? { other: { isNot: null } }
         : {};
 
-  // Filtre par type de peau (skinType)
   const skinTypeFilter: Prisma.ProductWhereInput =
     skinType && skinType !== "all"
       ? {
@@ -138,35 +160,27 @@ export async function getAllProducts({
         }
       : {};
 
-  const diameterFilter: Prisma.ProductWhereInput =
-    diameter && diameter !== "all"
+  const dimensionsFilter: Prisma.ProductWhereInput =
+    dimensions && dimensions !== "all"
       ? {
           drum: {
-            diameter: {
-              size: Number(diameter),
+            dimensions: {
+              size: dimensions,
             },
           },
         }
       : {};
 
-  // Requête principale
-  const data = await prisma.product.findMany({
+  const products = await prisma.product.findMany({
     where: {
       ...queryFilter,
       ...categoryFilter,
       ...productTypeFilter,
       ...skinTypeFilter,
-      ...diameterFilter,
+      ...dimensionsFilter,
     },
     include: {
       category: true,
-      drum: {
-        include: {
-          diameter: true,
-          skinType: true,
-        },
-      },
-      other: true,
     },
     orderBy:
       sort === "lowest"
@@ -178,62 +192,84 @@ export async function getAllProducts({
     take: limit,
   });
 
-  // Compter le nombre total de produits correspondant aux filtres
+  const productsWithSpecs = await Promise.all(
+    products.map(async (product) => ({
+      ...product,
+      specifications: await getProductSpecifications(product),
+    }))
+  );
+
   const dataCount = await prisma.product.count({
     where: {
       ...queryFilter,
       ...categoryFilter,
       ...productTypeFilter,
       ...skinTypeFilter,
-      ...diameterFilter,
+      ...dimensionsFilter,
     },
   });
 
   return {
-    data: convertToPlainObject(data),
+    data: convertToPlainObject(productsWithSpecs),
     totalPages: Math.ceil(dataCount / limit),
   };
 }
 
 export async function deleteProduct(id: string) {
   try {
-    const productExists = await prisma.product.findFirst({
-      where: {
-        id,
-      },
+    const product = await prisma.product.findUnique({
+      where: { id },
     });
 
-    if (!productExists) throw new Error("Product not found");
+    if (!product) throw new Error("Product not found");
 
     await prisma.product.delete({
       where: { id },
     });
+
     revalidatePath("/admin/products");
     return { success: true, message: "Product deleted successfully" };
   } catch (error) {
-    return { success: true, message: formatError(error) };
+    return { success: false, message: formatError(error) };
   }
 }
 
-export async function createProduct(
-  data: z.infer<typeof insertBaseProductSchema>
-) {
+export async function createProduct(data: z.infer<typeof ProductSchema>) {
   try {
-    const baseProduct = insertBaseProductSchema.parse(data);
+    const baseProduct = ProductSchema.parse(data);
 
     const createdProduct = await prisma.product.create({
       data: {
         name: baseProduct.name,
         slug: baseProduct.slug,
-        categoryId: baseProduct.categoryId ?? "",
+        categoryId: baseProduct.categoryId,
         stock: baseProduct.stock,
         images: baseProduct.images,
-        isFeatured: baseProduct.isFeatured,
+        isFeatured: baseProduct.isFeatured ?? false,
         banner: baseProduct.banner,
         price: Number(baseProduct.price),
         codeIdentifier: baseProduct.codeIdentifier,
       },
     });
+
+    if (baseProduct.productType === "drum") {
+      await prisma.drum.create({
+        data: {
+          productId: createdProduct.id,
+          skinTypeId: baseProduct.specifications.skinTypeId,
+          dimensionsId: baseProduct.specifications.dimensionsId,
+        },
+      });
+    } else if (baseProduct.productType === "other") {
+      await prisma.other.create({
+        data: {
+          productId: createdProduct.id,
+          color: baseProduct.specifications.color,
+          material: baseProduct.specifications.material,
+          size: baseProduct.specifications.size,
+        },
+      });
+    }
 
     revalidatePath("/admin/products");
 
@@ -248,16 +284,16 @@ export async function createProduct(
 }
 
 export async function updateBaseProduct(
-  data: z.infer<typeof updateBaseProductSchema>
+  data: z.infer<typeof UpdateProductSchema>
 ) {
   try {
-    const product = updateBaseProductSchema.parse(data);
+    const product = UpdateProductSchema.parse(data);
 
-    const productExists = await prisma.product.findUnique({
+    const existingProduct = await prisma.product.findUnique({
       where: { id: product.id },
     });
 
-    if (!productExists) {
+    if (!existingProduct) {
       throw new Error("Product not found");
     }
 
@@ -266,12 +302,13 @@ export async function updateBaseProduct(
       data: {
         name: product.name,
         slug: product.slug,
-        categoryId: product.categoryId ?? "",
+        categoryId: product.categoryId,
         stock: product.stock,
         images: product.images,
-        isFeatured: product.isFeatured,
+        isFeatured: product.isFeatured ?? false,
         banner: product.banner,
         price: Number(product.price),
+        codeIdentifier: product.codeIdentifier,
       },
     });
 
@@ -279,7 +316,7 @@ export async function updateBaseProduct(
 
     return {
       success: true,
-      message: "Product updated successfully",
+      message: "Base product updated successfully",
       product: convertToPlainObject(updatedProduct),
     };
   } catch (error) {
@@ -287,85 +324,67 @@ export async function updateBaseProduct(
   }
 }
 
-export async function createDrumProduct(
-  data: z.infer<typeof insertDrumProduct> & { productId: string }
+export async function updateProductSpecifications(
+  data: z.infer<typeof UpdateProductSpecificationsSchema>
 ) {
   try {
-    const drumData = insertDrumProduct.parse(data);
+    const validatedData = UpdateProductSpecificationsSchema.parse(data);
+    const { productId, productType, specifications } = validatedData;
 
-    const productExists = await prisma.product.findUnique({
-      where: { id: data.productId },
-    });
+    if (productType === "drum") {
+      const drumExists = await prisma.drum.findUnique({
+        where: { productId },
+      });
 
-    if (!productExists) {
-      throw new Error("Base product not found");
+      if (!drumExists) {
+        throw new Error("Drum specifications not found for the product.");
+      }
+
+      if ("skinTypeId" in specifications && "dimensionsId" in specifications) {
+        await prisma.drum.update({
+          where: { productId },
+          data: {
+            skinTypeId: specifications.skinTypeId,
+            dimensionsId: specifications.dimensionsId,
+          },
+        });
+      } else {
+        throw new Error("Invalid drum specifications.");
+      }
     }
 
-    const existingDrum = await prisma.drum.findUnique({
-      where: { productId: data.productId },
-    });
+    if (productType === "other") {
+      const otherExists = await prisma.other.findUnique({
+        where: { productId },
+      });
 
-    if (existingDrum) {
-      throw new Error("Drum already exists for this product");
+      if (!otherExists) {
+        throw new Error("Other specifications not found for the product.");
+      }
+
+      if (
+        "color" in specifications ||
+        "material" in specifications ||
+        "size" in specifications
+      ) {
+        await prisma.other.update({
+          where: { productId },
+          data: {
+            color: specifications.color,
+            material: specifications.material,
+            size: specifications.size,
+          },
+        });
+      } else {
+        throw new Error("Invalid other specifications.");
+      }
     }
-
-    const drum = await prisma.drum.create({
-      data: {
-        productId: data.productId,
-        skinTypeId: drumData.skinTypeId || "",
-        diameterId: drumData.diameterId || "",
-      },
-    });
 
     revalidatePath("/admin/products");
 
     return {
       success: true,
-      message: "Drum created successfully",
-      drum: convertToPlainObject(drum),
-    };
-  } catch (error) {
-    return { success: false, message: formatError(error) };
-  }
-}
-
-export async function createOtherProduct(
-  data: z.infer<typeof insertOtherProduct> & { productId: string }
-) {
-  try {
-    const otherData = insertOtherProduct.parse(data);
-
-    const productExists = await prisma.product.findUnique({
-      where: { id: data.productId },
-    });
-
-    if (!productExists) {
-      throw new Error("Base product not found");
-    }
-
-    const existingOther = await prisma.other.findUnique({
-      where: { productId: data.productId },
-    });
-
-    if (existingOther) {
-      throw new Error("Other already exists for this product");
-    }
-
-    const other = await prisma.other.create({
-      data: {
-        productId: data.productId,
-        color: otherData.color || null,
-        material: otherData.material || null,
-        size: otherData.size || null,
-      },
-    });
-
-    revalidatePath("/admin/products");
-
-    return {
-      success: true,
-      message: "Other created successfully",
-      other: convertToPlainObject(other),
+      message: "Product specifications updated successfully",
     };
   } catch (error) {
     return { success: false, message: formatError(error) };
@@ -373,38 +392,44 @@ export async function createOtherProduct(
 }
 
 export async function getAllProductCategories() {
-  const categories = await prisma.productCategory.findMany({
-    include: {
-      _count: {
-        select: { products: true },
-      },
-    },
-  });
+  try {
+    const categories = await prisma.productCategory.findMany({
+      orderBy: { name: "asc" },
+    });
 
-  return convertToPlainObject(categories);
+    return {
+      success: true,
+      categories: convertToPlainObject(categories),
+    };
+  } catch (error) {
+    return { success: false, message: formatError(error) };
+  }
 }
 
 export async function getFeaturedProducts() {
-  const data = await prisma.product.findMany({
-    where: {
-      isFeatured: true,
-    },
-    orderBy: { createdAt: "desc" },
-    take: 4,
-  });
-
-  return convertToPlainObject(data);
-}
-
-export async function createSkinType(data: { material: string }) {
   try {
-    const skinType = await prisma.skinType.create({
-      data: {
-        material: data.material,
+    const products = await prisma.product.findMany({
+      where: {
+        isFeatured: true,
+      },
+      orderBy: { createdAt: "desc" },
+      take: 4,
+      include: {
+        category: true,
       },
     });
 
-    revalidatePath("/admin/skin-types");
+    return convertToPlainObject(products);
+  } catch (error) {
+    return { success: false, message: formatError(error) };
+  }
+}
+
+export async function createSkinType(material: string) {
+  try {
+    const skinType = await prisma.skinType.create({
+      data: { material },
+    });
 
     return {
       success: true,
@@ -418,28 +443,38 @@ export async function createSkinType(data: { material: string }) {
 
 export async function getAllSkinTypes() {
   try {
-    const skinTypes = await prisma.skinType.findMany();
-    return convertToPlainObject(skinTypes);
+    const skinTypes = await prisma.skinType.findMany({
+      orderBy: { material: "asc" },
+    });
+
+    return {
+      success: true,
+      skinTypes: convertToPlainObject(skinTypes),
+    };
   } catch (error) {
     return { success: false, message: formatError(error) };
   }
 }
 
-export async function updateSkinType(id: string, data: { material: string }) {
+export async function updateSkinType(id: string, material: string) {
   try {
-    const skinType = await prisma.skinType.update({
+    const skinTypeExists = await prisma.skinType.findUnique({
       where: { id },
-      data: {
-        material: data.material,
-      },
     });
 
-    revalidatePath("/admin/skin-types");
+    if (!skinTypeExists) {
+      throw new Error("SkinType not found");
+    }
+
+    const updatedSkinType = await prisma.skinType.update({
+      where: { id },
+      data: { material },
+    });
 
     return {
       success: true,
       message: "SkinType updated successfully",
-      skinType: convertToPlainObject(skinType),
+      skinType: convertToPlainObject(updatedSkinType),
     };
   } catch (error) {
     return { success: false, message: formatError(error) };
@@ -448,11 +483,17 @@ export async function updateSkinType(id: string, data: { material: string }) {
 
 export async function deleteSkinType(id: string) {
   try {
-    await prisma.skinType.delete({
+    const skinTypeExists = await prisma.skinType.findUnique({
       where: { id },
     });
 
-    revalidatePath("/admin/skin-types");
+    if (!skinTypeExists) {
+      throw new Error("SkinType not found");
+    }
+
+    await prisma.skinType.delete({
+      where: { id },
+    });
 
     return { success: true, message: "SkinType deleted successfully" };
   } catch (error) {
@@ -460,65 +501,77 @@ export async function deleteSkinType(id: string) {
   }
 }
 
-export async function createDrumDiameter(data: { size: number }) {
+export async function createDrumDimensions(size: string) {
   try {
-    const diameter = await prisma.drumDiameter.create({
-      data: {
-        size: data.size,
-      },
+    const drumDimensions = await prisma.drumDimensions.create({
+      data: { size },
     });
-
-    revalidatePath("/admin/diameters");
 
     return {
       success: true,
-      message: "DrumDiameter created successfully",
-      diameter: convertToPlainObject(diameter),
+      message: "DrumDimensions created successfully",
+      drumDimensions: convertToPlainObject(drumDimensions),
     };
   } catch (error) {
     return { success: false, message: formatError(error) };
   }
 }
 
-export async function getAllDrumDiameters() {
+export async function getAllDrumDimensionss() {
   try {
-    const diameters = await prisma.drumDiameter.findMany();
-    return convertToPlainObject(diameters);
-  } catch (error) {
-    return { success: false, message: formatError(error) };
-  }
-}
-
-export async function updateDrumDiameter(id: string, data: { size: number }) {
-  try {
-    const diameter = await prisma.drumDiameter.update({
-      where: { id },
-      data: {
-        size: data.size,
-      },
+    const drumDimensionss = await prisma.drumDimensions.findMany({
+      orderBy: { size: "asc" },
     });
-
-    revalidatePath("/admin/diameters");
 
     return {
       success: true,
-      message: "DrumDiameter updated successfully",
-      diameter: convertToPlainObject(diameter),
+      drumDimensions: convertToPlainObject(drumDimensionss),
     };
   } catch (error) {
     return { success: false, message: formatError(error) };
   }
 }
 
-export async function deleteDrumDiameter(id: string) {
+export async function updateDrumDimensions(id: string, size: string) {
   try {
-    await prisma.drumDiameter.delete({
+    const drumDimensionsExists = await prisma.drumDimensions.findUnique({
       where: { id },
     });
 
-    revalidatePath("/admin/diameters");
+    if (!drumDimensionsExists) {
+      throw new Error("DrumDimensions not found");
+    }
 
-    return { success: true, message: "DrumDiameter deleted successfully" };
+    const updatedDrumDimensions = await prisma.drumDimensions.update({
+      where: { id },
+      data: { size },
+    });
+
+    return {
+      success: true,
+      message: "DrumDimensions updated successfully",
+      drumDimensions: convertToPlainObject(updatedDrumDimensions),
+    };
+  } catch (error) {
+    return { success: false, message: formatError(error) };
+  }
+}
+
+export async function deleteDrumDimensions(id: string) {
+  try {
+    const drumDimensionsExists = await prisma.drumDimensions.findUnique({
+      where: { id },
+    });
+
+    if (!drumDimensionsExists) {
+      throw new Error("DrumDimensions not found");
+    }
+
+    await prisma.drumDimensions.delete({
+      where: { id },
+    });
+
+    return { success: true, message: "DrumDimensions deleted successfully" };
   } catch (error) {
     return { success: false, message: formatError(error) };
   }
