@@ -28,16 +28,18 @@ datasource db {
 // }
 
 model Product {
-  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name        String
-  description String?
-  images      String[]
-  stock       Int
-  price       Float
-  isFeatured  Boolean  @default(false)
-  banner      String?
-  createdAt   DateTime @default(now()) @db.Timestamp(6)
-  updatedAt   DateTime @updatedAt
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name           String
+  slug           String   @unique
+  description    String?
+  images         String[]
+  stock          Int
+  price          Float
+  isFeatured     Boolean  @default(false)
+  banner         String?
+  codeIdentifier String?
+  createdAt      DateTime @default(now()) @db.Timestamp(6)
+  updatedAt      DateTime @updatedAt
 
   categoryId String          @db.Uuid
   category   ProductCategory @relation(fields: [categoryId], references: [id])
@@ -54,20 +56,19 @@ model ProductCategory {
 }
 
 model Drum {
-  productId  String       @id @db.Uuid
-  skinType   String
-  diameterId String       @db.Uuid
-  diameter   DrumDiameter @relation(fields: [diameterId], references: [id])
+  productId  String  @id @db.Uuid
+  skinTypeId String? @db.Uuid
+  diameterId String  @db.Uuid
 
-  product    Product   @relation(fields: [productId], references: [id])
-  SkinType   SkinType? @relation(fields: [skinTypeId], references: [id])
-  skinTypeId String?   @db.Uuid
+  product  Product      @relation(fields: [productId], references: [id])
+  skinType SkinType?    @relation(fields: [skinTypeId], references: [id])
+  diameter DrumDiameter @relation(fields: [diameterId], references: [id])
 }
 
 model SkinType {
   id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   material String @unique
-  drum     Drum[]
+  drums    Drum[]
 }
 
 model DrumDiameter {

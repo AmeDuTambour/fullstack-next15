@@ -25,6 +25,7 @@ export const insertBaseProductSchema = z.object({
   isFeatured: z.boolean(),
   banner: z.string().url("Invalid banner URL").nullable().optional(),
   price: currency,
+  codeIdentifier: z.string().nullable().optional(),
 });
 
 export const updateBaseProductSchema = insertBaseProductSchema.extend({

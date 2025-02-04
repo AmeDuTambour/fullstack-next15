@@ -3,19 +3,61 @@ CREATE TABLE "Product" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "name" TEXT NOT NULL,
     "slug" TEXT NOT NULL,
-    "category" TEXT NOT NULL,
+    "description" TEXT,
     "images" TEXT[],
-    "brand" TEXT NOT NULL,
-    "description" TEXT NOT NULL,
     "stock" INTEGER NOT NULL,
-    "price" DECIMAL(12,2) NOT NULL DEFAULT 0,
-    "rating" DECIMAL(3,2) NOT NULL DEFAULT 0,
-    "numReviews" INTEGER NOT NULL DEFAULT 0,
-    "isFeatured" BOOLEAN NOT NULL,
+    "price" DOUBLE PRECISION NOT NULL,
+    "isFeatured" BOOLEAN NOT NULL DEFAULT false,
     "banner" TEXT,
+    "codeIdentifier" TEXT,
     "createdAt" TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "categoryId" UUID NOT NULL,
 
     CONSTRAINT "Product_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "ProductCategory" (
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "name" TEXT NOT NULL,
+
+    CONSTRAINT "ProductCategory_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Drum" (
+    "productId" UUID NOT NULL,
+    "skinTypeId" UUID,
+    "diameterId" UUID NOT NULL,
+
+    CONSTRAINT "Drum_pkey" PRIMARY KEY ("productId")
+);
+
+-- CreateTable
+CREATE TABLE "SkinType" (
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "material" TEXT NOT NULL,
+
+    CONSTRAINT "SkinType_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "DrumDiameter" (
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "size" DOUBLE PRECISION NOT NULL,
+
+    CONSTRAINT "DrumDiameter_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Other" (
+    "productId" UUID NOT NULL,
+    "color" TEXT,
+    "material" TEXT,
+    "size" TEXT,
+
+    CONSTRAINT "Other_pkey" PRIMARY KEY ("productId")
 );
 
 -- CreateTable
@@ -123,24 +165,87 @@ CREATE TABLE "OrderItem" (
 );
 
 -- CreateTable
-CREATE TABLE "Review" (
+CREATE TABLE "Article" (
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "title" TEXT NOT NULL,
+    "slug" TEXT NOT NULL,
+    "thumbnail" TEXT,
+    "categoryId" UUID,
+    "isFeatured" BOOLEAN DEFAULT false,
+    "banner" TEXT,
+    "isPublished" BOOLEAN DEFAULT false,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Article_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "ArticleSection" (
+    "sectionId" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "position" INTEGER NOT NULL,
+    "title" TEXT,
+    "body" TEXT,
+    "image" TEXT,
+    "youTubeUrl" TEXT,
+    "articleId" UUID NOT NULL,
+
+    CONSTRAINT "ArticleSection_pkey" PRIMARY KEY ("sectionId")
+);
+
+-- CreateTable
+CREATE TABLE "ArticleComment" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "userId" UUID NOT NULL,
-    "productId" UUID NOT NULL,
-    "rating" INTEGER NOT NULL,
+    "articleId" UUID NOT NULL,
     "title" TEXT NOT NULL,
-    "description" TEXT NOT NULL,
-    "isVerifiedPurchase" BOOLEAN NOT NULL DEFAULT true,
+    "body" TEXT NOT NULL,
     "createdAt" TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-    CONSTRAINT "Review_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "ArticleComment_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "ArticleCategory" (
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "name" TEXT NOT NULL,
+
+    CONSTRAINT "ArticleCategory_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "product_slug_idx" ON "Product"("slug");
+CREATE UNIQUE INDEX "Product_slug_key" ON "Product"("slug");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "ProductCategory_name_key" ON "ProductCategory"("name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "SkinType_material_key" ON "SkinType"("material");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "DrumDiameter_size_key" ON "DrumDiameter"("size");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "user_email_idx" ON "User"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "article_slug_idx" ON "Article"("slug");
+
+-- AddForeignKey
+ALTER TABLE "Product" ADD CONSTRAINT "Product_categoryId_fkey" FOREIGN KEY ("categoryId") REFERENCES "ProductCategory"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Drum" ADD CONSTRAINT "Drum_productId_fkey" FOREIGN KEY ("productId") REFERENCES "Product"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Drum" ADD CONSTRAINT "Drum_skinTypeId_fkey" FOREIGN KEY ("skinTypeId") REFERENCES "SkinType"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Drum" ADD CONSTRAINT "Drum_diameterId_fkey" FOREIGN KEY ("diameterId") REFERENCES "DrumDiameter"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Other" ADD CONSTRAINT "Other_productId_fkey" FOREIGN KEY ("productId") REFERENCES "Product"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Account" ADD CONSTRAINT "Account_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -161,7 +266,13 @@ ALTER TABLE "OrderItem" ADD CONSTRAINT "OrderItem_orderId_fkey" FOREIGN KEY ("or
 ALTER TABLE "OrderItem" ADD CONSTRAINT "OrderItem_productId_fkey" FOREIGN KEY ("productId") REFERENCES "Product"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Review" ADD CONSTRAINT "Review_productId_fkey" FOREIGN KEY ("productId") REFERENCES "Product"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "Article" ADD CONSTRAINT "Article_categoryId_fkey" FOREIGN KEY ("categoryId") REFERENCES "ArticleCategory"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Review" ADD CONSTRAINT "Review_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "ArticleSection" ADD CONSTRAINT "ArticleSection_articleId_fkey" FOREIGN KEY ("articleId") REFERENCES "Article"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "ArticleComment" ADD CONSTRAINT "ArticleComment_articleId_fkey" FOREIGN KEY ("articleId") REFERENCES "Article"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "ArticleComment" ADD CONSTRAINT "ArticleComment_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
