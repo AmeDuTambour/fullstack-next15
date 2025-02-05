@@ -4,7 +4,8 @@ import ProductPrice from "@/components/shared/product/product-price";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { getUserCart } from "@/lib/actions/cart.actions";
-import { getCompleteProduct } from "@/lib/actions/product.actions";
+import { getProductBySlug } from "@/lib/actions/product.actions";
+
 import { notFound } from "next/navigation";
 
 const ProductDetailPage = async (props: {
@@ -12,7 +13,7 @@ const ProductDetailPage = async (props: {
 }) => {
   const { slug } = await props.params;
 
-  const product = await getCompleteProduct(slug);
+  const product = await getProductBySlug(slug);
   if (!product) notFound();
 
   const cart = await getUserCart();

@@ -16,18 +16,13 @@ const adapter = new PrismaNeon(pool);
 // Extends the PrismaClient with a custom result transformer to convert the price and rating fields to strings.
 export const prisma = new PrismaClient({
   adapter,
-  // log: ["query", "info", "warn", "error"],
+  log: ["query"],
 }).$extends({
   result: {
     product: {
       price: {
         compute(product) {
           return product.price.toString();
-        },
-      },
-      rating: {
-        compute(product) {
-          return product.rating.toString();
         },
       },
     },

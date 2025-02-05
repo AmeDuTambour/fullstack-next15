@@ -1,6 +1,32 @@
 import { hashSync } from "bcrypt-ts-edge";
 
-const sampleData = {
+type ProductType = {
+  name: string;
+  slug: string;
+  description: string;
+  images: string[];
+  price: number;
+  stock: number;
+  isFeatured: boolean;
+  banner: string | null;
+  codeIdentifier: string;
+  category: string;
+  specifications?: {
+    skinType?: string;
+    dimensions?: string;
+    color?: string;
+    material?: string;
+    size?: string;
+  };
+};
+
+const sampleData: {
+  users: { name: string; email: string; password: string; role: string }[];
+  categories: { name: string }[];
+  skinTypes: { material: string }[];
+  drumDimensions: { size: string }[];
+  products: ProductType[];
+} = {
   users: [
     {
       name: "Julien Ribeiro",
@@ -31,63 +57,53 @@ const sampleData = {
     { size: "50x12" },
     { size: "55x15" },
   ],
-  products: [
-    {
-      name: "Tambour en peau de bison",
-      slug: "tambour-en-peau-de-bison",
-      description: "Deep vibration",
-      images: [
-        "https://example.com/image1.jpg",
-        "https://example.com/image2.jpg",
-      ],
-      price: 130.0,
-      stock: 5,
-      isFeatured: false,
-      banner: null,
-      codeIdentifier: "TMB001",
-      category: "Drum",
-      specifications: {
-        skinType: "Bison",
-        dimensions: "40x12",
-      },
-    },
-    {
-      name: "Tambour en peau de cerf",
-      slug: "tambour-en-peau-de-cerf",
-      description: "Son clair et vibrant",
-      images: [
-        "https://example.com/image3.jpg",
-        "https://example.com/image4.jpg",
-      ],
-      price: 150.0,
-      stock: 3,
-      isFeatured: true,
-      banner: null,
-      codeIdentifier: "TMB002",
-      category: "Drum",
-      specifications: {
-        skinType: "Cerf",
-        dimensions: "45x14",
-      },
-    },
-    {
-      name: "Housse de tambour en cuir",
-      slug: "housse-de-tambour-en-cuir",
-      description: "Protection durable pour tambour",
-      images: ["https://example.com/image5.jpg"],
-      price: 50.0,
-      stock: 10,
-      isFeatured: false,
-      banner: null,
-      codeIdentifier: "ACC001",
-      category: "Other",
-      specifications: {
-        color: "Noir",
-        material: "Cuir",
-        size: "M",
-      },
-    },
-  ],
+  products: [],
 };
+
+// 🎯 Génération de 100 produits "Drum"
+for (let i = 1; i <= 100; i++) {
+  const skinType =
+    sampleData.skinTypes[i % sampleData.skinTypes.length].material;
+  const dimension =
+    sampleData.drumDimensions[i % sampleData.drumDimensions.length].size;
+
+  sampleData.products.push({
+    name: `Tambour ${i} en peau de ${skinType}`,
+    slug: `tambour-${i}-peau-${skinType.toLowerCase()}`,
+    description: `Un tambour unique avec une peau de ${skinType}`,
+    images: [], // Aucune image
+    price: 100 + i,
+    stock: 5 + (i % 10),
+    isFeatured: i % 2 === 0,
+    banner: null,
+    codeIdentifier: `TMB${i.toString().padStart(3, "0")}`,
+    category: "Drum",
+    specifications: {
+      skinType,
+      dimensions: dimension,
+    },
+  });
+}
+
+// 🎯 Génération de 100 produits "Other"
+for (let i = 1; i <= 100; i++) {
+  sampleData.products.push({
+    name: `Accessoire ${i}`,
+    slug: `accessoire-${i}`,
+    description: `Un accessoire pratique pour votre tambour`,
+    images: [], // Aucune image
+    price: 20 + i,
+    stock: 10 + (i % 5),
+    isFeatured: i % 3 === 0,
+    banner: null,
+    codeIdentifier: `ACC${i.toString().padStart(3, "0")}`,
+    category: "Other",
+    specifications: {
+      color: i % 2 === 0 ? "Noir" : "Marron",
+      material: i % 2 === 0 ? "Cuir" : "Tissu",
+      size: i % 3 === 0 ? "M" : "L",
+    },
+  });
+}
 
 export default sampleData;
