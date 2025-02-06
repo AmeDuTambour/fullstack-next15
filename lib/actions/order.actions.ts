@@ -17,9 +17,12 @@ import { sendPurchaseReceipt } from "@/email";
 export async function createOrder() {
   try {
     const session = await auth();
+    console.log("Session récupérée:", session);
     if (!session) throw new Error("User is not authenticated");
 
     const cart = await getUserCart();
+    console.log("Panier récupéré:", cart);
+
     const userId = session?.user?.id;
     if (!userId) throw new Error("User not found");
 
@@ -66,11 +69,13 @@ export async function createOrder() {
         await tx.orderItem.create({
           data: {
             ...item,
+            image: item.image || "",
             price: item.price,
             orderId: insertedOrder.id,
           },
         });
       }
+
       await tx.cart.update({
         where: {
           id: cart.id,

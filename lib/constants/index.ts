@@ -29,37 +29,27 @@ export const shippingAddressDefaultValues = {
 
 export const PAYMENT_METHODS = process.env.PAYMENT_METHODS
   ? process.env.PAYMENT_METHODS.split(", ")
-  : ["PayPal", "Stripe"];
+  : ["Stripe", "Transfer"];
 
 export const DEFAULT_PAYMENT_METHOD =
-  process.env.DEFAULT_PAYMENT_METHOD || "PayPal";
+  process.env.DEFAULT_PAYMENT_METHOD || "Stripe";
 
 export const PAGE_SIZE = Number(process.env.PAGE_SIZE) || 2;
 
-export const productDefaultValue = {
+export const productBaseDefaultValue = {
   name: "",
   slug: "",
-  category: "",
-  images: [],
-  brand: "",
-  description: "",
-  price: "0",
+  categoryId: "",
   stock: 0,
-  rating: "0",
-  numReviews: "0",
-  isFeatured: false,
-  banner: null,
+  images: [],
+  price: "0",
+  description: "",
+  codeIdentifier: "",
 };
 
 export const USER_ROLES = process.env.USER_ROLES
   ? process.env.USER_ROLES.split(", ")
   : ["admin", "user"];
-
-export const reviewFormDefaultValues = {
-  title: "",
-  comment: "",
-  rating: 0,
-};
 
 export const SENDER_EMAIL = process.env.SENDER_EMAIL || "onboarding@resend.dev";
 

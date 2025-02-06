@@ -4,6 +4,11 @@ import {
   getArticleById,
   getArticleCategories,
 } from "@/lib/actions/article.actions";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Create an article",
+};
 
 const EnterTitlePage = async (props: {
   params: Promise<{

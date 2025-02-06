@@ -12,7 +12,6 @@ type ProductCardProps = {
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const imageUrl = product.images[0];
-  console.log(isValidUrl(imageUrl));
 
   return (
     <Card>

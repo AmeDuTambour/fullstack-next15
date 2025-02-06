@@ -9,24 +9,30 @@ const currency = z
     "Price must have exatcly two decimal places"
   );
 
-const baseProductSchema = z.object({
+export const baseProductSchema = z.object({
   name: z.string().min(1),
   slug: z.string().min(1),
   categoryId: z.string().uuid(),
-  stock: z.number().int().min(0),
+  stock: z.coerce.number(),
   images: z.array(z.string().url()),
-  isFeatured: z.boolean().optional(),
-  banner: z.string().url().optional(),
+  isFeatured: z.boolean().optional().nullable(),
+  banner: z.string().url().optional().nullable(),
   price: currency,
-  codeIdentifier: z.string().optional(),
+  description: z.string(),
+  codeIdentifier: z.string().optional().nullable(),
+  isPublished: z.boolean().optional().default(false),
 });
 
-const drumSpecificationsSchema = z.object({
+export const updateBaseProductSchema = baseProductSchema.extend({
+  id: z.string().min(1, "ID is required"),
+});
+
+export const drumSpecificationsSchema = z.object({
   skinTypeId: z.string().uuid(),
   dimensionsId: z.string().uuid(),
 });
 
-const otherSpecificationsSchema = z.object({
+export const otherSpecificationsSchema = z.object({
   color: z.string().optional(),
   material: z.string().optional(),
   size: z.string().optional(),
@@ -97,7 +103,7 @@ export const cartItemSchema = z.object({
   name: z.string().min(1, "Name is required"),
   slug: z.string().min(1, "slug is required"),
   qty: z.number().int().nonnegative("Quantity is required"),
-  image: z.string().min(1, "Image is required"),
+  image: z.string().optional(),
   price: currency,
 });
 

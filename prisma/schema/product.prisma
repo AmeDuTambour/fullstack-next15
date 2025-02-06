@@ -5,10 +5,11 @@ model Product {
   description    String?
   images         String[]
   stock          Int
-  price          Float
+  price          Decimal  @default(0) @db.Decimal(12, 2)
   isFeatured     Boolean  @default(false)
   banner         String?
   codeIdentifier String?
+  isPublished    Boolean  @default(false)
   createdAt      DateTime @default(now()) @db.Timestamp(6)
   updatedAt      DateTime @updatedAt
 

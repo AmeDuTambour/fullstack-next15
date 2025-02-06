@@ -24,7 +24,7 @@ const IconBoxes = () => {
             <WalletCards />
             <div className="text-sm font-bold">Paiement Flexible</div>
             <div className="text-sm text-muted-foreground">
-              Payez par carte bancaire ou PayPal
+              Payez par carte bancaire ou Virement
             </div>
           </div>
           <div className="space-y-2">

@@ -14,43 +14,45 @@ import { formatId } from "@/lib/utils";
 import Link from "next/link";
 
 type AdminProductsPageProps = {
-  searchParams: Promise<{
-    page: string;
-    query: string;
-    category: string;
-  }>;
+  page?: string;
+  query?: string;
+  category?: string;
 };
 
-const AdminProductsPage = async (props: AdminProductsPageProps) => {
-  const searchParams = await props.searchParams;
-  const page = Number(searchParams.page) || 1;
-  const searchText = searchParams.query || "";
-  const category = searchParams.category || "";
+const AdminProductsPage = async (props: {
+  searchParams: Promise<AdminProductsPageProps>;
+}) => {
+  const { page = "1", query = "", category = "" } = await props.searchParams;
 
-  const products = await getAllProducts({ query: searchText, page, category });
+  const products = await getAllProducts({
+    query,
+    page: Number(page),
+    category,
+  });
 
   return (
     <div className="space-y-2">
       <div className="flex-between">
         <div className="flex items-center gap-3">
           <h1 className="h2-bold">Products</h1>
-          {searchText ? (
+          {query && (
             <div>
-              Filtered by <i>&quot;{searchText}&quot;</i>{" "}
-              <Link href={"/admin/products"}>
+              Filtered by <i>&quot;{query}&quot;</i>{" "}
+              <Link href="/admin/products">
                 <Button variant="outline" size="sm">
                   Remove filter
                 </Button>
               </Link>
             </div>
-          ) : (
-            <></>
           )}
         </div>
         <Button asChild variant="default">
-          <Link href="/admin/products/create">Create Product</Link>
+          <Link href="/admin/products/editor/new/base-product">
+            Create Product
+          </Link>
         </Button>
       </div>
+
       <Table>
         <TableHeader>
           <TableRow>
@@ -59,7 +61,6 @@ const AdminProductsPage = async (props: AdminProductsPageProps) => {
             <TableHead className="text-right">PRICE</TableHead>
             <TableHead>CATEGORY</TableHead>
             <TableHead>STOCK</TableHead>
-            <TableHead>RATING</TableHead>
             <TableHead>ACTIONS</TableHead>
           </TableRow>
         </TableHeader>
@@ -68,13 +69,18 @@ const AdminProductsPage = async (props: AdminProductsPageProps) => {
             <TableRow key={product.id}>
               <TableCell>{formatId(product.id)}</TableCell>
               <TableCell>{product.name}</TableCell>
-              <TableCell>{product.price}</TableCell>
-              <TableCell>{product.category}</TableCell>
+              <TableCell className="text-right">
+                {product.price.toFixed(2)} €
+              </TableCell>
+              <TableCell>{product.category?.name || "N/A"}</TableCell>
               <TableCell>{product.stock}</TableCell>
-              <TableCell>{product.rating}</TableCell>
               <TableCell className="flex gap-1">
                 <Button asChild size="sm" variant="outline">
-                  <Link href={`/admin/products/${product.id}`}>Edit</Link>
+                  <Link
+                    href={`/admin/products/editor/${product.id}/base-product`}
+                  >
+                    Edit
+                  </Link>
                 </Button>
                 <DeleteDialog id={product.id} action={deleteProduct} />
               </TableCell>
@@ -82,9 +88,10 @@ const AdminProductsPage = async (props: AdminProductsPageProps) => {
           ))}
         </TableBody>
       </Table>
-      {products.totalPages && products.totalPages > 1 ? (
-        <Pagination page={page} totalPages={products.totalPages} />
-      ) : null}
+
+      {products.totalPages > 1 && (
+        <Pagination page={Number(page)} totalPages={products.totalPages} />
+      )}
     </div>
   );
 };

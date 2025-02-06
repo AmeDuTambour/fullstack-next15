@@ -27,53 +27,80 @@ const calcPrice = (items: CartItem[]) => {
 
 export async function addItemToCart(data: CartItem) {
   try {
+    console.log("Step 1: Starting addItemToCart", data);
+
     const sessionCartId = (await cookies()).get("sessionCartId")?.value;
+    console.log("Step 2: Retrieved sessionCartId", sessionCartId);
+
     if (!sessionCartId) throw new Error("Cart session not found");
 
     const session = await auth();
+    console.log("Step 3: Retrieved session", session);
+
     const userId = session?.user?.id ? (session.user.id as string) : undefined;
+    console.log("Step 4: Extracted userId", userId);
+
     const cart = await getUserCart();
+    console.log("Step 5: Retrieved cart", cart);
+
     const item = cartItemSchema.parse(data);
+    console.log("Step 6: Parsed item", item);
+
     const product = await prisma.product.findFirst({
       where: { id: item.productId },
     });
+    console.log("Step 7: Retrieved product", product);
+
     if (!product) throw new Error("Product not found");
 
     if (!cart) {
+      console.log("Step 8: No cart found, creating new cart");
+
       const newCart = insertCartSchema.parse({
         userId: userId,
         items: [item],
         sessionCartId: sessionCartId,
         ...calcPrice([item]),
       });
+      console.log("Step 9: Parsed new cart data", newCart);
+
       await prisma.cart.create({
         data: newCart,
       });
+      console.log("Step 10: New cart created successfully");
 
       revalidatePath(`/product/${product.slug}`);
+      console.log("Step 11: Revalidated path for new cart");
+
       return {
         success: true,
         message: `${product.name} added to cart`,
       };
     } else {
+      console.log("Step 12: Cart exists, checking for existing item");
+
       const existItem = (cart.items as CartItem[]).find(
         (el) => el.productId === item.productId
       );
+      console.log("Step 13: Existing item", existItem);
+
       if (existItem) {
         if (product.stock < existItem.qty + item.qty) {
           throw new Error("Not enough stock");
         }
 
-        // Increase the quantity
         (cart.items as CartItem[]).find(
           (el) => el.productId === item.productId
         )!.qty = existItem.qty + 1;
+        console.log("Step 14: Increased quantity", cart.items);
       } else {
         if (product.stock < 1) {
           throw new Error("Not enough stock");
         }
         cart.items.push(item);
+        console.log("Step 15: Added new item to cart", cart.items);
       }
+
       await prisma.cart.update({
         where: { id: cart.id },
         data: {
@@ -81,15 +108,21 @@ export async function addItemToCart(data: CartItem) {
           ...calcPrice(cart.items as CartItem[]),
         },
       });
+      console.log("Step 16: Cart updated successfully");
+
       revalidatePath(`/product/${product.slug}`);
+      console.log("Step 17: Revalidated path after update");
+
       return {
         success: true,
         message: `${product.name} ${
-          existItem ? "updated in" : " added to"
+          existItem ? "updated in" : "added to"
         } cart`,
       };
     }
   } catch (error) {
+    console.log("Catch error:", error);
+
     return {
       success: false,
       message: formatError(error),
