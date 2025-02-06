@@ -8,6 +8,7 @@ type ProductType = {
   price: number;
   stock: number;
   isFeatured: boolean;
+  isPublished: boolean;
   banner: string | null;
   codeIdentifier: string;
   category: string;
@@ -61,7 +62,7 @@ const sampleData: {
 };
 
 // 🎯 Génération de 100 produits "Drum"
-for (let i = 1; i <= 100; i++) {
+for (let i = 1; i <= 30; i++) {
   const skinType =
     sampleData.skinTypes[i % sampleData.skinTypes.length].material;
   const dimension =
@@ -74,7 +75,8 @@ for (let i = 1; i <= 100; i++) {
     images: [], // Aucune image
     price: 100 + i,
     stock: 5 + (i % 10),
-    isFeatured: i % 2 === 0,
+    isFeatured: false,
+    isPublished: i % 2 === 0,
     banner: null,
     codeIdentifier: `TMB${i.toString().padStart(3, "0")}`,
     category: "Drum",
@@ -86,7 +88,7 @@ for (let i = 1; i <= 100; i++) {
 }
 
 // 🎯 Génération de 100 produits "Other"
-for (let i = 1; i <= 100; i++) {
+for (let i = 1; i <= 10; i++) {
   sampleData.products.push({
     name: `Accessoire ${i}`,
     slug: `accessoire-${i}`,
@@ -94,7 +96,8 @@ for (let i = 1; i <= 100; i++) {
     images: [], // Aucune image
     price: 20 + i,
     stock: 10 + (i % 5),
-    isFeatured: i % 3 === 0,
+    isFeatured: false,
+    isPublished: i % 3 === 0,
     banner: null,
     codeIdentifier: `ACC${i.toString().padStart(3, "0")}`,
     category: "Other",
