@@ -40,7 +40,7 @@ export const productBaseDefaultValue = {
   name: "",
   slug: "",
   categoryId: "",
-  stock: 0,
+  stock: 1,
   images: [],
   price: "0",
   description: "",

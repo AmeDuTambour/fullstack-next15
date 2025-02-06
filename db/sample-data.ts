@@ -87,7 +87,6 @@ for (let i = 1; i <= 30; i++) {
   });
 }
 
-// 🎯 Génération de 100 produits "Other"
 for (let i = 1; i <= 10; i++) {
   sampleData.products.push({
     name: `Accessoire ${i}`,

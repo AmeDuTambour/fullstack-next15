@@ -40,36 +40,42 @@ export const otherSpecificationsSchema = z.object({
 
 export const UpdateProductSpecificationsSchema = z.object({
   productId: z.string().uuid("Invalid UUID format for productId"),
-  productType: z.enum(["drum", "other"]),
   specifications: z.union([
     drumSpecificationsSchema,
     otherSpecificationsSchema,
   ]),
 });
 
-export const ProductSchema = z.discriminatedUnion("productType", [
-  baseProductSchema.extend({
-    productType: z.literal("drum"),
-    specifications: drumSpecificationsSchema,
-  }),
-  baseProductSchema.extend({
-    productType: z.literal("other"),
-    specifications: otherSpecificationsSchema,
-  }),
-]);
+export const ProductSchema = baseProductSchema
+  .extend({
+    drum: drumSpecificationsSchema.optional(),
+    other: otherSpecificationsSchema.optional(),
+  })
+  .refine(
+    (data) => {
+      if (data.drum && data.other) {
+        return false;
+      }
+      return true;
+    },
+    { message: "A product cannot have both drum and other specifications." }
+  );
 
-export const UpdateProductSchema = z.discriminatedUnion("productType", [
-  baseProductSchema.extend({
+export const UpdateProductSchema = baseProductSchema
+  .extend({
     id: z.string().uuid("Invalid UUID format"),
-    productType: z.literal("drum"),
-    specifications: drumSpecificationsSchema,
-  }),
-  baseProductSchema.extend({
-    id: z.string().uuid("Invalid UUID format"),
-    productType: z.literal("other"),
-    specifications: otherSpecificationsSchema,
-  }),
-]);
+    drum: drumSpecificationsSchema.optional(),
+    other: otherSpecificationsSchema.optional(),
+  })
+  .refine(
+    (data) => {
+      if (data.drum && data.other) {
+        return false;
+      }
+      return true;
+    },
+    { message: "A product cannot have both drum and other specifications." }
+  );
 
 export const insertProductCategory = z.object({
   name: z.string().min(1, "Category must contain at least 1 character"),

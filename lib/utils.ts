@@ -154,3 +154,10 @@ export const isValidUrl = (url: string) => {
     return /^\/(?!\/).*/.test(url);
   }
 };
+
+export const getProductCategory = (
+  productId: string,
+  categories: Record<string, string>[]
+) => {
+  return categories.filter((c) => c.id === productId)[0];
+};

@@ -1,5 +1,4 @@
 import {
-  insertBaseProductSchema,
   insertCartSchema,
   cartItemSchema,
   shippingAddressSchema,
@@ -11,12 +10,11 @@ import {
   insertArticleCommentSchema,
   contactFormSchema,
   insertProductCategory,
-  insertDrumProduct,
-  insertOtherProduct,
+  ProductSchema,
 } from "@/lib/validators";
 import { z } from "zod";
 
-export type Product = z.infer<typeof insertBaseProductSchema> & {
+export type Product = z.infer<typeof ProductSchema> & {
   id: string;
   createdAt: Date;
   updatedAt: Date;

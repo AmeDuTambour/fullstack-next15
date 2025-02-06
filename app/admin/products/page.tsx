@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/table";
 import { deleteProduct, getAllProducts } from "@/lib/actions/product.actions";
 import { formatId } from "@/lib/utils";
+import { Eye, EyeClosed } from "lucide-react";
 import Link from "next/link";
 
 type AdminProductsPageProps = {
@@ -61,6 +62,7 @@ const AdminProductsPage = async (props: {
             <TableHead className="text-right">PRICE</TableHead>
             <TableHead>CATEGORY</TableHead>
             <TableHead>STOCK</TableHead>
+            <TableHead>PUBLISHED</TableHead>
             <TableHead>ACTIONS</TableHead>
           </TableRow>
         </TableHeader>
@@ -74,6 +76,13 @@ const AdminProductsPage = async (props: {
               </TableCell>
               <TableCell>{product.category?.name || "N/A"}</TableCell>
               <TableCell>{product.stock}</TableCell>
+              <TableCell>
+                {product.isPublished ? (
+                  <Eye className="text-blue-500" />
+                ) : (
+                  <EyeClosed className="text-orange-500" />
+                )}
+              </TableCell>
               <TableCell className="flex gap-1">
                 <Button asChild size="sm" variant="outline">
                   <Link

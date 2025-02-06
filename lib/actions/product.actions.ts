@@ -4,7 +4,11 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { LATEST_PRODUCTS_LIMIT } from "../constants";
 import { PAGE_SIZE } from "../constants/index";
-import { convertToPlainObject, formatError } from "../utils";
+import {
+  convertToPlainObject,
+  formatError,
+  getProductCategory,
+} from "../utils";
 import {
   baseProductSchema,
   updateBaseProductSchema,
@@ -13,27 +17,26 @@ import {
 } from "../validators";
 
 import { PrismaClient } from "@prisma/client";
-import { Product } from "@/types";
 
 const prisma = new PrismaClient();
 
-async function getProductSpecifications(product: Product) {
-  if (!product) {
+async function getProductSpecifications(productId: string, category: string) {
+  if (!productId) {
     return null;
   }
 
-  if (product.drum) {
+  if (category === "Drum") {
     const drumSpecs = await prisma.drum.findUnique({
-      where: { productId: product.id },
+      where: { productId: productId },
       include: { skinType: true, dimensions: true },
     });
 
     return drumSpecs;
   }
 
-  if (product.other) {
+  if (category === "Other") {
     return await prisma.other.findUnique({
-      where: { productId: product.id },
+      where: { productId: productId },
     });
   }
 
@@ -42,19 +45,26 @@ async function getProductSpecifications(product: Product) {
 
 export async function getLatestProducts() {
   const products = await prisma.product.findMany({
+    where: {
+      isPublished: true,
+    },
     take: LATEST_PRODUCTS_LIMIT,
-    where: { isPublished },
     orderBy: { createdAt: "desc" },
     include: {
       category: true,
     },
   });
 
+  const categories = await getAllProductCategories();
+
   const productsWithSpecs = await Promise.all(
-    products.map(async (product) => ({
-      ...product,
-      specifications: await getProductSpecifications(product),
-    }))
+    products.map(async (product) => {
+      const { name } = getProductCategory(product.categoryId, categories);
+      return {
+        ...product,
+        specifications: await getProductSpecifications(product.id, name),
+      };
+    })
   );
 
   return convertToPlainObject(productsWithSpecs);
@@ -94,7 +104,9 @@ export async function getProductById(
     }
 
     if (withSpecs) {
-      const specifications = await getProductSpecifications(product);
+      const categories = await getAllProductCategories();
+      const { name } = getProductCategory(product.categoryId, categories);
+      const specifications = await getProductSpecifications(product.id, name);
 
       return convertToPlainObject({ ...product, specifications });
     }
@@ -126,9 +138,6 @@ export async function deleteProduct(id: string) {
 
 export async function createProduct(data: z.infer<typeof baseProductSchema>) {
   try {
-    console.log("====================================");
-    console.log(data);
-    console.log("====================================");
     const baseProduct = baseProductSchema.parse(data);
 
     const createdProduct = await prisma.product.create({
@@ -138,31 +147,13 @@ export async function createProduct(data: z.infer<typeof baseProductSchema>) {
         categoryId: baseProduct.categoryId,
         stock: baseProduct.stock,
         images: baseProduct.images,
+        description: baseProduct.description,
         isFeatured: baseProduct.isFeatured ?? false,
         banner: baseProduct.banner,
         price: Number(baseProduct.price),
         codeIdentifier: baseProduct.codeIdentifier,
       },
     });
-
-    // if (baseProduct.productType === "drum") {
-    //   await prisma.drum.create({
-    //     data: {
-    //       productId: createdProduct.id,
-    //       skinTypeId: baseProduct.specifications.skinTypeId,
-    //       dimensionsId: baseProduct.specifications.dimensionsId,
-    //     },
-    //   });
-    // } else if (baseProduct.productType === "other") {
-    //   await prisma.other.create({
-    //     data: {
-    //       productId: createdProduct.id,
-    //       color: baseProduct.specifications.color,
-    //       material: baseProduct.specifications.material,
-    //       size: baseProduct.specifications.size,
-    //     },
-    //   });
-    // }
 
     revalidatePath("/admin/products");
 
@@ -181,6 +172,7 @@ export async function updateBaseProduct(
 ) {
   try {
     const product = UpdateProductSchema.parse(data);
+    console.log("Validating product: ", product);
 
     const existingProduct = await prisma.product.findUnique({
       where: { id: product.id },
@@ -198,6 +190,7 @@ export async function updateBaseProduct(
         categoryId: product.categoryId,
         stock: product.stock,
         images: product.images,
+        description: product.description,
         isFeatured: product.isFeatured ?? false,
         banner: product.banner,
         price: Number(product.price),
