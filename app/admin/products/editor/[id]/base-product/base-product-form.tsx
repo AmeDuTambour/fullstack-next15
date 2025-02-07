@@ -51,10 +51,10 @@ const BaseProductForm = ({ product, categories }: BaseProductFormProps) => {
   const form = useForm<z.infer<typeof baseProductSchema>>({
     resolver: zodResolver(baseProductSchema),
     defaultValues: product
-      ? { ...product, categoryId: product.categoryId } // Stocke directement `categoryId`
+      ? { ...product, categoryId: product.categoryId }
       : {
           ...productBaseDefaultValue,
-          categoryId: categories[0]?.id || "", // Sélectionne un `categoryId` par défaut
+          categoryId: categories[0]?.id || "",
         },
   });
 

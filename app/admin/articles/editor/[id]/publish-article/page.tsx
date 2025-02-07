@@ -25,13 +25,13 @@ const PublishArticlePage = async (props: {
 
         <div className="flex justify-between">
           <Button asChild type="button" variant="outline">
-            <Link href={`/admin/articles/editor/${id}/enter-title`}>
+            <Link href={`/admin/articles/editor/${id}/add-sections`}>
               Previous
             </Link>
           </Button>
 
           <Button asChild type="button" variant="outline">
-            <Link href={`/admin/articles`}>Finish</Link>
+            <Link href={`/admin/articles`}>Return To Articles</Link>
           </Button>
         </div>
       </div>

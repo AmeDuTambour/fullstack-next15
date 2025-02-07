@@ -44,8 +44,6 @@ const ProductSpecificationsForm = ({
   if (!category || !formOptions) notFound();
   const { toast } = useToast();
 
-  console.log("CLEINT PRODUCT : ", product);
-
   const schema =
     category === "Drum" ? drumSpecificationsSchema : otherSpecificationsSchema;
 

@@ -81,7 +81,9 @@ export async function getProductBySlug(slug: string) {
     throw new Error(`Product with slug "${slug}" not found.`);
   }
 
-  const specifications = await getProductSpecifications(product);
+  const categories = await getAllProductCategories();
+  const { name } = getProductCategory(product.categoryId, categories);
+  const specifications = await getProductSpecifications(product.id, name);
 
   return convertToPlainObject({ ...product, specifications });
 }
@@ -190,6 +192,7 @@ export async function updateBaseProduct(
         stock: product.stock,
         images: product.images,
         description: product.description,
+        isPublished: product.isPublished ?? false,
         isFeatured: product.isFeatured ?? false,
         banner: product.banner,
         price: Number(product.price),

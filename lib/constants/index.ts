@@ -45,6 +45,9 @@ export const productBaseDefaultValue = {
   price: "0",
   description: "",
   codeIdentifier: "",
+  isFeatured: false,
+  banner: "",
+  isPublished: false,
 };
 
 export const USER_ROLES = process.env.USER_ROLES
