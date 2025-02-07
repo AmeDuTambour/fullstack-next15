@@ -1,18 +1,16 @@
 "use client";
 
 import { Card, CardContent } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Switch } from "@/components/ui/switch";
 import { productBaseDefaultValue } from "@/lib/constants";
-import { baseProductSchema, insertArticleSchema } from "@/lib/validators";
+import { baseProductSchema } from "@/lib/validators";
 import { ControllerRenderProps, SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import Image from "next/image";
@@ -20,11 +18,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { UploadButton } from "@/lib/uploadthing";
 import { useToast } from "@/hooks/use-toast";
 import { Product } from "@/types";
-import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowBigLeft, Home } from "lucide-react";
+import { ArrowBigLeft } from "lucide-react";
 import { updateBaseProduct } from "@/lib/actions/product.actions";
 
 type PublishProductFormProps = {
@@ -38,13 +35,16 @@ const PublishProductForm: React.FC<PublishProductFormProps> = ({ product }) => {
   const form = useForm<z.infer<typeof baseProductSchema>>({
     resolver: zodResolver(baseProductSchema),
     defaultValues: product
-      ? { ...product }
+      ? {
+          ...product,
+          isPublished: product.isPublished ?? false,
+          isFeatured: product.isFeatured ?? false,
+        }
       : {
           ...productBaseDefaultValue,
         },
   });
 
-  // const isPublished = form.watch("isPublished");
   const isFeatured = form.watch("isFeatured");
   const banner = form.watch("banner");
 
@@ -78,7 +78,7 @@ const PublishProductForm: React.FC<PublishProductFormProps> = ({ product }) => {
                   field,
                 }: {
                   field: ControllerRenderProps<
-                    z.infer<typeof insertArticleSchema>,
+                    z.infer<typeof baseProductSchema>,
                     "isFeatured"
                   >;
                 }) => (
@@ -135,7 +135,7 @@ const PublishProductForm: React.FC<PublishProductFormProps> = ({ product }) => {
                 field,
               }: {
                 field: ControllerRenderProps<
-                  z.infer<typeof insertArticleSchema>,
+                  z.infer<typeof baseProductSchema>,
                   "isPublished"
                 >;
               }) => (

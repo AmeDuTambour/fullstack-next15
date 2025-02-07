@@ -4,7 +4,11 @@ import ProductPrice from "@/components/shared/product/product-price";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { getUserCart } from "@/lib/actions/cart.actions";
-import { getProductBySlug } from "@/lib/actions/product.actions";
+import {
+  getProductBySlug,
+  getAllProductCategories,
+} from "@/lib/actions/product.actions";
+import { getProductCategory } from "@/lib/utils";
 
 import { notFound } from "next/navigation";
 
@@ -14,6 +18,8 @@ const ProductDetailPage = async (props: {
   const { slug } = await props.params;
 
   const product = await getProductBySlug(slug);
+  const categories = await getAllProductCategories();
+  const category = getProductCategory(product.categoryId, categories);
   if (!product) notFound();
 
   const cart = await getUserCart();
@@ -35,6 +41,18 @@ const ProductDetailPage = async (props: {
                 />
               </div>
             </div>
+            {category.name === "Drum" ? (
+              <div className="flex flex-row gap-8">
+                <div className="mt-10">
+                  <p className="font-semibold">Type de peau</p>
+                  <p>{product?.specifications?.skinType?.material}</p>
+                </div>
+                <div className="mt-10">
+                  <p className="font-semibold">Dimensions</p>
+                  <p>{product?.specifications?.dimensions?.size}</p>
+                </div>
+              </div>
+            ) : null}
             <div className="mt-10">
               <p className="font-semibold">Description</p>
               <p>{product.description}</p>

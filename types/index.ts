@@ -13,8 +13,27 @@ import {
 } from "@/lib/validators";
 import { z } from "zod";
 
-export type Product = z.infer<typeof ProductSchema> & {
+export type DrumSpecs = {
+  skinType: {
+    id: string;
+    material: string;
+  };
+  dimensions: {
+    id: string;
+    size: string;
+  };
+};
+
+export type OtherSpecs = {
+  size: string;
+  color: string;
+  material: string;
+};
+
+export type Product = Omit<z.infer<typeof ProductSchema>, "price"> & {
   id: string;
+  price: string;
+  specifications?: DrumSpecs | null;
   createdAt: Date;
   updatedAt: Date;
 };

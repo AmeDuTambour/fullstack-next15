@@ -16,6 +16,7 @@ import {
 } from "../validators";
 
 import { PrismaClient } from "@prisma/client";
+import { DrumSpecs, OtherSpecs, Product } from "@/types";
 
 const prisma = new PrismaClient();
 
@@ -42,7 +43,7 @@ async function getProductSpecifications(productId: string, category: string) {
   return {};
 }
 
-export async function getLatestProducts() {
+export async function getLatestProducts(): Promise<Product[]> {
   const products = await prisma.product.findMany({
     where: {
       isPublished: true,
@@ -59,17 +60,23 @@ export async function getLatestProducts() {
   const productsWithSpecs = await Promise.all(
     products.map(async (product) => {
       const { name } = getProductCategory(product.categoryId, categories);
+      const specifications = await getProductSpecifications(product.id, name);
+
       return {
         ...product,
-        specifications: await getProductSpecifications(product.id, name),
+        price: product.price.toString(),
+        specifications:
+          specifications && Object.keys(specifications).length > 0
+            ? (specifications as DrumSpecs)
+            : null,
       };
     })
   );
 
-  return convertToPlainObject(productsWithSpecs);
+  return convertToPlainObject(productsWithSpecs) as Product[];
 }
 
-export async function getProductBySlug(slug: string) {
+export async function getProductBySlug(slug: string): Promise<Product> {
   const product = await prisma.product.findUnique({
     where: { slug },
     include: {
@@ -83,38 +90,70 @@ export async function getProductBySlug(slug: string) {
 
   const categories = await getAllProductCategories();
   const { name } = getProductCategory(product.categoryId, categories);
-  const specifications = await getProductSpecifications(product.id, name);
+  const specifications = (await getProductSpecifications(
+    product.id,
+    name
+  )) as DrumSpecs;
 
-  return convertToPlainObject({ ...product, specifications });
+  return convertToPlainObject({
+    ...product,
+    price: product.price.toString(),
+    specifications,
+  }) satisfies Product;
 }
 
 export async function getProductById(
   productId: string,
   withSpecs: boolean = false
-) {
+): Promise<Product | undefined> {
+  // ✅ Assurer que le type de retour est correct
   try {
     const product = await prisma.product.findUnique({
       where: { id: productId },
       include: {
         category: true,
+        drum: {
+          include: {
+            skinType: true,
+            dimensions: true,
+          },
+        },
+        other: true,
       },
     });
 
     if (!product) {
-      throw new Error(`Product with ID "${productId}" not found.`);
+      return undefined;
     }
+
+    let specifications: DrumSpecs | OtherSpecs | null = null;
 
     if (withSpecs) {
       const categories = await getAllProductCategories();
       const { name } = getProductCategory(product.categoryId, categories);
-      const specifications = await getProductSpecifications(product.id, name);
+      const fetchedSpecifications = await getProductSpecifications(
+        product.id,
+        name
+      );
 
-      return convertToPlainObject({ ...product, specifications });
+      specifications =
+        fetchedSpecifications && Object.keys(fetchedSpecifications).length > 0
+          ? (fetchedSpecifications as DrumSpecs)
+          : product.drum && Object.keys(product.drum).length > 0
+            ? (product.drum as DrumSpecs)
+            : product.other && Object.keys(product.other).length > 0
+              ? (product.other as OtherSpecs)
+              : null;
     }
 
-    return convertToPlainObject(product);
+    return convertToPlainObject({
+      ...product,
+      price: product.price.toString(),
+      specifications,
+    }) as Product;
   } catch (error) {
-    return { success: false, message: formatError(error) };
+    console.error("Error fetching product:", error);
+    return undefined;
   }
 }
 
@@ -237,6 +276,7 @@ export async function updateProductSpecifications(
             dimensionsId: data.dimensionsId,
           },
         });
+        revalidatePath(`/admin/products/editor/${id}/product-specifications`);
         return {
           success: true,
           message: "Specifications updated successfully",
@@ -250,7 +290,7 @@ export async function updateProductSpecifications(
           dimensionsId: data.dimensionsId,
         },
       });
-      revalidatePath(`/admin/products/editor/${id}/ product-specifications`);
+      revalidatePath(`/admin/products/editor/${id}/product-specifications`);
       return { success: true, message: "Specifications created successfully" };
     } else {
       const specs = await prisma.other.findFirst({
@@ -265,6 +305,7 @@ export async function updateProductSpecifications(
             size: data.size,
           },
         });
+        revalidatePath(`/admin/products/editor/${id}/product-specifications`);
         return {
           success: true,
           message: "Specifications updated successfully",
@@ -279,6 +320,7 @@ export async function updateProductSpecifications(
           size: data.size,
         },
       });
+      revalidatePath(`/admin/products/editor/${id}/product-specifications`);
       return { success: true, message: "Specifications created successfully" };
     }
   } catch (error) {
@@ -301,6 +343,7 @@ export async function getFeaturedProducts() {
     const products = await prisma.product.findMany({
       where: {
         isFeatured: true,
+        isPublished: true,
       },
       orderBy: { createdAt: "desc" },
       take: 4,
@@ -341,7 +384,7 @@ export async function getAllProducts({
   skinType?: string;
   dimensions?: string;
   category?: string;
-  sort?: "newest" | "highest" | "lowest";
+  sort?: string;
   page?: number;
   limit?: number;
 }) {
@@ -409,8 +452,23 @@ export async function getAllProducts({
 
   const totalCount = await prisma.product.count({ where: filters });
 
+  const formattedProducts = products.map((product) => {
+    const specifications =
+      product.drum && Object.keys(product.drum).length > 0
+        ? (product.drum as DrumSpecs)
+        : product.other && Object.keys(product.other).length > 0
+          ? product.other
+          : null;
+
+    return {
+      ...product,
+      price: product.price.toString(),
+      specifications,
+    };
+  });
+
   return {
-    data: products,
+    data: convertToPlainObject(formattedProducts) as Product[],
     currentPage: page,
     totalPages: Math.ceil(totalCount / limit),
     totalCount,

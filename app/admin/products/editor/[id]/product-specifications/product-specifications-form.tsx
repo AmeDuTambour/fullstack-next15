@@ -77,7 +77,7 @@ const ProductSpecificationsForm = ({
     } catch (error) {
       toast({
         variant: "destructive",
-        description: "An unexpected error occurred.",
+        description: `Error: ${error}`,
       });
 
       form.setError("root", { message: "An unexpected error occurred." });

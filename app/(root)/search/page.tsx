@@ -56,7 +56,7 @@ const SearchPage = async (props: {
     category?: string;
     skin?: string;
     dimension?: string;
-    sort?: "newest" | "highest" | "lowest";
+    sort?: string;
     page?: string;
   }>;
 }) => {
@@ -86,11 +86,13 @@ const SearchPage = async (props: {
     if (c) {
       params.category = c;
       params.page = "1";
-      if (c === "all") {
+
+      if (c === "all" || c !== "Drum") {
         params.skin = "all";
         params.dimension = "all";
       }
     }
+
     if (sk) {
       params.skin = sk;
       params.page = "1";
@@ -109,7 +111,6 @@ const SearchPage = async (props: {
 
     return `/search?${new URLSearchParams(params).toString()}`;
   };
-
   const products = await getAllProducts({
     category,
     skinType: skin,
@@ -123,7 +124,7 @@ const SearchPage = async (props: {
 
   return (
     <div className="grid md:grid-cols-5 md:gap-5">
-      <div className="filter-links">
+      <div className="filter-links hidden md:block">
         <div className="text-xl mb-4 mt-3">Catégories</div>
         <ul className="space-y-1">
           <li>
@@ -178,6 +179,80 @@ const SearchPage = async (props: {
 
             <div className="text-xl mb-2 mt-8">Dimensions</div>
             <ul className="space-y-1">
+              <li>
+                <Link
+                  className={`${dimension === "all" && "font-bold"}`}
+                  href={getFilterUrl({ d: "all" })}
+                >
+                  Tous
+                </Link>
+              </li>
+              {dimensions.map((dim) => (
+                <li key={dim.id}>
+                  <Link
+                    href={getFilterUrl({ d: dim.size })}
+                    className={`${dimension === dim.size && "font-bold"}`}
+                  >
+                    {dim.size}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
+      </div>
+
+      <div className="md:hidden mb-8">
+        <ul className="space-x-4 flex flex-row mb-2">
+          <li>
+            <Link
+              className={`${category === "all" && "font-bold"}`}
+              href={getFilterUrl({ c: "all" })}
+            >
+              Tous
+            </Link>
+          </li>
+          <li>
+            <Link
+              className={`${category === "Drum" && "font-bold"}`}
+              href={getFilterUrl({ c: "Drum" })}
+            >
+              Tambours
+            </Link>
+          </li>
+          <li>
+            <Link
+              className={`${category === "Other" && "font-bold"}`}
+              href={getFilterUrl({ c: "Other" })}
+            >
+              Autre
+            </Link>
+          </li>
+        </ul>
+        {category === "Drum" && (
+          <>
+            <ul className="space-x-4 flex flex-row mb-2">
+              <li>
+                <Link
+                  className={`${skin === "all" && "font-bold"}`}
+                  href={getFilterUrl({ sk: "all" })}
+                >
+                  Tous
+                </Link>
+              </li>
+              {skinTypes.map((sk) => (
+                <li key={sk.id}>
+                  <Link
+                    href={getFilterUrl({ sk: sk.material })}
+                    className={`${skin === sk.material && "font-bold"}`}
+                  >
+                    {sk.material}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+
+            <ul className="space-x-4 flex flex-row">
               <li>
                 <Link
                   className={`${dimension === "all" && "font-bold"}`}

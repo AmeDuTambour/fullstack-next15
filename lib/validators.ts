@@ -15,12 +15,12 @@ export const baseProductSchema = z.object({
   categoryId: z.string().uuid(),
   stock: z.coerce.number(),
   images: z.array(z.string().url()),
-  isFeatured: z.boolean().optional().nullable(),
-  banner: z.string().url().optional().nullable(),
+  isFeatured: z.boolean(),
+  banner: z.string().optional().nullable(),
   price: currency,
-  description: z.string(),
+  description: z.string().nullable(),
   codeIdentifier: z.string().optional().nullable(),
-  isPublished: z.boolean().optional().default(false),
+  isPublished: z.boolean(),
 });
 
 export const updateBaseProductSchema = baseProductSchema.extend({
@@ -38,18 +38,21 @@ export const otherSpecificationsSchema = z.object({
   size: z.string().optional(),
 });
 
+export const specificationsSchema = z.union([
+  drumSpecificationsSchema,
+  otherSpecificationsSchema,
+]);
+
 export const UpdateProductSpecificationsSchema = z.object({
   productId: z.string().uuid("Invalid UUID format for productId"),
-  specifications: z.union([
-    drumSpecificationsSchema,
-    otherSpecificationsSchema,
-  ]),
+  specifications: specificationsSchema,
 });
 
 export const ProductSchema = baseProductSchema
   .extend({
     specifications: z
       .union([drumSpecificationsSchema, otherSpecificationsSchema])
+      .nullable()
       .optional(),
   })
   .refine(

@@ -18,10 +18,7 @@ const BaseProductPage = async (props: {
   const { id } = await props.params;
   const categories = await getAllProductCategories();
 
-  let product = null;
-  if (id && id !== "new") {
-    product = await getProductById(id);
-  }
+  const product = id && id !== "new" ? await getProductById(id) : undefined;
 
   return (
     <>
@@ -29,7 +26,7 @@ const BaseProductPage = async (props: {
       <div className="flex flex-col p-4 gap-4">
         <h1 className="h2-bold mt-4">Create a product</h1>
       </div>
-      <BaseProductForm product={product ?? undefined} categories={categories} />
+      <BaseProductForm product={product} categories={categories} />
     </>
   );
 };

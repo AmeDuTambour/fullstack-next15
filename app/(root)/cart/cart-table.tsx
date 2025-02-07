@@ -14,7 +14,7 @@ import { useToast } from "@/hooks/use-toast";
 import { addItemToCart, removeItemFromCart } from "@/lib/actions/cart.actions";
 import { formatCurrency } from "@/lib/utils";
 import { Cart, CartItem } from "@/types";
-import { ArrowRight, Loader, Minus, Plus } from "lucide-react";
+import { ArrowRight, CameraOff, Loader, Minus, Plus } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -88,12 +88,16 @@ const CartTable: React.FC<CartTableProps> = ({ cart }) => {
                         href={`/product/${item.slug}`}
                         className="flex items-center"
                       >
-                        <Image
-                          src={item.image}
-                          alt={item.name}
-                          width={50}
-                          height={50}
-                        />
+                        {item.image ? (
+                          <Image
+                            src={item.image}
+                            alt={item.name}
+                            width={50}
+                            height={50}
+                          />
+                        ) : (
+                          <CameraOff />
+                        )}
                         <span className="px-2">{item.name}</span>
                       </Link>
                     </TableCell>
@@ -126,7 +130,9 @@ const CartTable: React.FC<CartTableProps> = ({ cart }) => {
                         )}
                       </Button>
                     </TableCell>
-                    <TableCell className="text-right">€{item.price}</TableCell>
+                    <TableCell className="text-right">
+                      €{item.price.toString()}
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -139,7 +145,7 @@ const CartTable: React.FC<CartTableProps> = ({ cart }) => {
                 {cart.items.reduce((acc, curr) => acc + curr.qty, 0)}
                 ):
                 <span className="font-bold">
-                  {formatCurrency(cart.itemsPrice)}
+                  {formatCurrency(cart.itemsPrice.toString())}
                 </span>
               </div>
               <Button

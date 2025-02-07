@@ -11,7 +11,6 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { Product } from "@/types";
 import { SubmitHandler, useForm } from "react-hook-form";
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { baseProductSchema } from "@/lib/validators";
@@ -28,9 +27,7 @@ import {
 } from "@/components/ui/select";
 import { UploadButton } from "@/lib/uploadthing";
 import { Card, CardContent } from "@/components/ui/card";
-import Image from "next/image";
 import { Textarea } from "@/components/ui/textarea";
-
 import {
   createProduct,
   updateBaseProduct,
@@ -39,6 +36,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowBigRight } from "lucide-react";
 import QRCode from "react-qr-code";
+import UploadThingImage from "@/components/shared/uploadthing-image";
 
 type BaseProductFormProps = {
   product?: Product;
@@ -82,7 +80,7 @@ const BaseProductForm = ({ product, categories }: BaseProductFormProps) => {
     if (!res.success) {
       toast({ variant: "destructive", description: res.message });
     } else {
-      toast({ description: res.message });
+      toast({ color: "green", description: res.message });
       if (!product) {
         router.replace(`/admin/products/editor/${res.data?.id}/base-product`);
       }
@@ -123,6 +121,11 @@ const BaseProductForm = ({ product, categories }: BaseProductFormProps) => {
 
   return (
     <>
+      {Object.keys(form.formState.errors).length > 0 && (
+        <pre className="text-red-500">
+          {JSON.stringify(form.formState.errors, null, 2)}
+        </pre>
+      )}
       <Form {...form}>
         <form
           method="POST"
@@ -209,18 +212,18 @@ const BaseProductForm = ({ product, categories }: BaseProductFormProps) => {
                 <Card>
                   <CardContent className="space-y-2 mt-2 min-h-48">
                     <div className="flex-start space-x-2">
-                      {form
-                        .watch("images")
-                        ?.map((image: string) => (
-                          <Image
-                            key={image}
-                            src={image}
-                            alt="product image"
-                            className="w-20 h-20 object-cover object-center rounded-sm"
-                            width={100}
-                            height={100}
-                          />
-                        ))}
+                      {form.watch("images")?.map((image: string, index) => (
+                        <UploadThingImage
+                          key={image}
+                          src={image}
+                          onDelete={() => {
+                            const updatedImages = form
+                              .watch("images")
+                              .filter((_, i) => i !== index);
+                            form.setValue("images", updatedImages);
+                          }}
+                        />
+                      ))}
                       <FormControl>
                         <UploadButton
                           endpoint="imageUploader"
@@ -284,6 +287,7 @@ const BaseProductForm = ({ product, categories }: BaseProductFormProps) => {
                     placeholder="Enter product description"
                     className="resize-none"
                     {...field}
+                    value={field.value ?? ""}
                   />
                 </FormControl>
                 <FormMessage />
@@ -291,35 +295,6 @@ const BaseProductForm = ({ product, categories }: BaseProductFormProps) => {
             )}
           />
 
-          <FormField
-            control={form.control}
-            name="slug"
-            render={({ field }) => (
-              <FormItem className="w-full">
-                <FormLabel>Slug</FormLabel>
-                <FormControl>
-                  <div className="relative flex gap-2">
-                    <Input placeholder="Enter slug" {...field} />
-                    <Button
-                      type="button"
-                      className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-1"
-                      onClick={() => {
-                        form.setValue(
-                          "slug",
-                          slugify(form.getValues("name"), { lower: true })
-                        );
-                      }}
-                    >
-                      Generate
-                    </Button>
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          {/* QR Code Input & Display */}
           <FormField
             control={form.control}
             name="codeIdentifier"
@@ -332,12 +307,12 @@ const BaseProductForm = ({ product, categories }: BaseProductFormProps) => {
                       className="w-80"
                       placeholder="Enter QR Code value"
                       {...field}
+                      value={field.value ?? ""}
                     />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
 
-                {/* QR Code Display */}
                 {field.value && (
                   <div className="p-4 bg-white rounded-lg shadow-md flex flex-col items-center">
                     <QRCode

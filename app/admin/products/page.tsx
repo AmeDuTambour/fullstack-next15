@@ -9,8 +9,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { deleteProduct, getAllProducts } from "@/lib/actions/product.actions";
-import { formatId } from "@/lib/utils";
+import {
+  deleteProduct,
+  getAllProductCategories,
+  getAllProducts,
+} from "@/lib/actions/product.actions";
+import { formatId, getProductCategory } from "@/lib/utils";
 import { Eye, EyeClosed } from "lucide-react";
 import Link from "next/link";
 
@@ -24,6 +28,8 @@ const AdminProductsPage = async (props: {
   searchParams: Promise<AdminProductsPageProps>;
 }) => {
   const { page = "1", query = "", category = "" } = await props.searchParams;
+
+  const categories = await getAllProductCategories();
 
   const products = await getAllProducts({
     query,
@@ -67,34 +73,37 @@ const AdminProductsPage = async (props: {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {products.data.map((product) => (
-            <TableRow key={product.id}>
-              <TableCell>{formatId(product.id)}</TableCell>
-              <TableCell>{product.name}</TableCell>
-              <TableCell className="text-right">
-                {product.price.toFixed(2)} €
-              </TableCell>
-              <TableCell>{product.category?.name || "N/A"}</TableCell>
-              <TableCell>{product.stock}</TableCell>
-              <TableCell>
-                {product.isPublished ? (
-                  <Eye className="text-blue-500" />
-                ) : (
-                  <EyeClosed className="text-orange-500" />
-                )}
-              </TableCell>
-              <TableCell className="flex gap-1">
-                <Button asChild size="sm" variant="outline">
-                  <Link
-                    href={`/admin/products/editor/${product.id}/base-product`}
-                  >
-                    Edit
-                  </Link>
-                </Button>
-                <DeleteDialog id={product.id} action={deleteProduct} />
-              </TableCell>
-            </TableRow>
-          ))}
+          {products.data.map((product) => {
+            const category = getProductCategory(product.categoryId, categories);
+            return (
+              <TableRow key={product.id}>
+                <TableCell>{formatId(product.id)}</TableCell>
+                <TableCell>{product.name}</TableCell>
+                <TableCell className="text-right">
+                  {Number(product.price).toFixed(2)} €
+                </TableCell>
+                <TableCell>{category.name || "N/A"}</TableCell>
+                <TableCell>{product.stock}</TableCell>
+                <TableCell>
+                  {product.isPublished ? (
+                    <Eye className="text-blue-500" />
+                  ) : (
+                    <EyeClosed className="text-orange-500" />
+                  )}
+                </TableCell>
+                <TableCell className="flex gap-1">
+                  <Button asChild size="sm" variant="outline">
+                    <Link
+                      href={`/admin/products/editor/${product.id}/base-product`}
+                    >
+                      Edit
+                    </Link>
+                  </Button>
+                  <DeleteDialog id={product.id} action={deleteProduct} />
+                </TableCell>
+              </TableRow>
+            );
+          })}
         </TableBody>
       </Table>
 
