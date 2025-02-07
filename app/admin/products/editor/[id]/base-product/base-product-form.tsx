@@ -141,14 +141,11 @@ const BaseProductForm = ({ product, categories }: BaseProductFormProps) => {
 
           <FormField
             control={form.control}
-            name="categoryId" // 👈 On travaille avec `categoryId`
+            name="categoryId"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Category</FormLabel>
-                <Select
-                  onValueChange={field.onChange} // Directement avec `categoryId`
-                  value={field.value} // Stocke `categoryId`, plus `{ id, name }`
-                >
+                <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Select a category">
@@ -265,7 +262,7 @@ const BaseProductForm = ({ product, categories }: BaseProductFormProps) => {
             type="submit"
             size="lg"
             disabled={form.formState.isSubmitting}
-            className="button w-full"
+            className="button w-fit"
           >
             {form.formState.isSubmitting
               ? "Submitting"

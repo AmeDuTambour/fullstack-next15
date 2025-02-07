@@ -48,17 +48,23 @@ export const UpdateProductSpecificationsSchema = z.object({
 
 export const ProductSchema = baseProductSchema
   .extend({
-    drum: drumSpecificationsSchema.optional(),
-    other: otherSpecificationsSchema.optional(),
+    specifications: z
+      .union([drumSpecificationsSchema, otherSpecificationsSchema])
+      .optional(),
   })
   .refine(
     (data) => {
-      if (data.drum && data.other) {
-        return false;
-      }
-      return true;
+      if (!data.specifications) return true;
+      const isDrumSpec = drumSpecificationsSchema.safeParse(
+        data.specifications
+      ).success;
+      const isOtherSpec = otherSpecificationsSchema.safeParse(
+        data.specifications
+      ).success;
+
+      return isDrumSpec !== isOtherSpec;
     },
-    { message: "A product cannot have both drum and other specifications." }
+    { message: "Specifications must be either drum or other, but not both." }
   );
 
 export const UpdateProductSchema = baseProductSchema

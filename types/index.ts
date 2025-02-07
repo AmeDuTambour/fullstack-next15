@@ -9,7 +9,6 @@ import {
   insertArticleSectionSchema,
   insertArticleCommentSchema,
   contactFormSchema,
-  insertProductCategory,
   ProductSchema,
 } from "@/lib/validators";
 import { z } from "zod";
@@ -18,35 +17,6 @@ export type Product = z.infer<typeof ProductSchema> & {
   id: string;
   createdAt: Date;
   updatedAt: Date;
-};
-
-export type ProductCategory = z.infer<typeof insertProductCategory> & {
-  id: string;
-  products: Product[];
-};
-
-export type Drum = z.infer<typeof insertDrumProduct> & {
-  productId: string;
-  product: Product;
-  diameter?: DrumDiameter;
-  skinType?: SkinType;
-};
-
-export type DrumDiameter = {
-  id: string;
-  size: number;
-  drums: Drum[];
-};
-
-export type SkinType = {
-  id: string;
-  material: string;
-  drum: Drum[];
-};
-
-export type Other = z.infer<typeof insertOtherProduct> & {
-  productId: string;
-  product: Product;
 };
 
 export type Cart = z.infer<typeof insertCartSchema>;
