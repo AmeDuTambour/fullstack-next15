@@ -38,6 +38,7 @@ import {
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowBigRight } from "lucide-react";
+import QRCode from "react-qr-code";
 
 type BaseProductFormProps = {
   product?: Product;
@@ -86,6 +87,38 @@ const BaseProductForm = ({ product, categories }: BaseProductFormProps) => {
         router.replace(`/admin/products/editor/${res.data?.id}/base-product`);
       }
     }
+  };
+
+  const downloadQRCode = () => {
+    const svg = document.getElementById("GeneratedQRCode");
+    if (!svg) return;
+
+    const serializer = new XMLSerializer();
+    const svgData = serializer.serializeToString(svg);
+
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+
+    if (!ctx) {
+      console.error("Impossible d'obtenir le contexte 2D du canvas.");
+      return;
+    }
+
+    const img = new window.Image();
+    img.onload = () => {
+      canvas.width = img.width;
+      canvas.height = img.height;
+      ctx.drawImage(img, 0, 0);
+
+      const pngFile = canvas.toDataURL("image/png");
+
+      const downloadLink = document.createElement("a");
+      downloadLink.download = "QRCode.png";
+      downloadLink.href = pngFile;
+      downloadLink.click();
+    };
+
+    img.src = `data:image/svg+xml;base64,${window.btoa(unescape(encodeURIComponent(svgData)))}`;
   };
 
   return (
@@ -255,6 +288,74 @@ const BaseProductForm = ({ product, categories }: BaseProductFormProps) => {
                 </FormControl>
                 <FormMessage />
               </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="slug"
+            render={({ field }) => (
+              <FormItem className="w-full">
+                <FormLabel>Slug</FormLabel>
+                <FormControl>
+                  <div className="relative flex gap-2">
+                    <Input placeholder="Enter slug" {...field} />
+                    <Button
+                      type="button"
+                      className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-1"
+                      onClick={() => {
+                        form.setValue(
+                          "slug",
+                          slugify(form.getValues("name"), { lower: true })
+                        );
+                      }}
+                    >
+                      Generate
+                    </Button>
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* QR Code Input & Display */}
+          <FormField
+            control={form.control}
+            name="codeIdentifier"
+            render={({ field }) => (
+              <div className="flex flex-col gap-4 items-center">
+                <FormItem className="w-full">
+                  <FormLabel>QR Code Value</FormLabel>
+                  <FormControl>
+                    <Input
+                      className="w-80"
+                      placeholder="Enter QR Code value"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+
+                {/* QR Code Display */}
+                {field.value && (
+                  <div className="p-4 bg-white rounded-lg shadow-md flex flex-col items-center">
+                    <QRCode
+                      id="GeneratedQRCode"
+                      size={128}
+                      className="w-32 h-32"
+                      value={field.value}
+                    />
+                    <Button
+                      type="button"
+                      className="mt-4"
+                      onClick={downloadQRCode}
+                    >
+                      Download QR
+                    </Button>
+                  </div>
+                )}
+              </div>
             )}
           />
 
