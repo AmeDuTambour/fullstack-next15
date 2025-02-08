@@ -1,4 +1,3 @@
-import IconBoxes from "@/components/icon-boxes";
 import FeaturedCarousel from "@/components/shared/product/featured-carousel";
 import ProductList from "@/components/shared/product/product-list";
 import ViewAllProductsButton from "@/components/view-all-products";
@@ -20,12 +19,14 @@ const HomePage = async () => {
       banner: article.banner,
       title: article.title,
     })),
-    ...featuredProducts.map((product) => ({
-      id: product.id,
-      slug: product.slug,
-      banner: product.banner,
-      name: product.name,
-    })),
+    ...(Array.isArray(featuredProducts)
+      ? featuredProducts.map((product) => ({
+          id: product.id,
+          slug: product.slug,
+          banner: product.banner,
+          name: product.name,
+        }))
+      : []),
   ];
 
   return (
@@ -35,7 +36,6 @@ const HomePage = async () => {
       )}
       <ProductList data={latestProducts} title="Nouvel arrivage" limit={4} />
       <ViewAllProductsButton />
-      <IconBoxes />
     </>
   );
 };

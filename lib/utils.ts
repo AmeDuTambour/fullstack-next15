@@ -6,12 +6,10 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-// Convert a prisma object into a regular JS object
 export function convertToPlainObject<T>(value: T): T {
   return JSON.parse(JSON.stringify(value));
 }
 
-// Format number with decimal places
 export function formatNumberWithDecimal(num: number): string {
   const [int, decimal] = num.toString().split(".");
 
@@ -142,3 +140,21 @@ export function formUrlQuery({
     }
   );
 }
+
+export const isValidUrl = (url: string) => {
+  if (!url || url.trim() === "") return false;
+
+  try {
+    new URL(url);
+    return true;
+  } catch {
+    return /^\/(?!\/).*/.test(url);
+  }
+};
+
+export const getProductCategory = (
+  productId: string,
+  categories: Record<string, string>[]
+) => {
+  return categories.filter((c) => c.id === productId)[0];
+};

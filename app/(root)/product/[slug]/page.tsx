@@ -1,24 +1,26 @@
-import { auth } from "@/auth";
 import AddToCart from "@/components/shared/product/add-to-cart";
 import ProductImages from "@/components/shared/product/product-images";
 import ProductPrice from "@/components/shared/product/product-price";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { getUserCart } from "@/lib/actions/cart.actions";
-import { getProductBySlug } from "@/lib/actions/product.actions";
+import {
+  getProductBySlug,
+  getAllProductCategories,
+} from "@/lib/actions/product.actions";
+import { getProductCategory } from "@/lib/utils";
+
 import { notFound } from "next/navigation";
-import ReviewList from "./review-list";
-import Rating from "@/components/shared/product/rating";
 
 const ProductDetailPage = async (props: {
   params: Promise<{ slug: string }>;
 }) => {
   const { slug } = await props.params;
-  const product = await getProductBySlug(slug);
-  if (!product) notFound();
 
-  const session = await auth();
-  const userId = session?.user?.id;
+  const product = await getProductBySlug(slug);
+  const categories = await getAllProductCategories();
+  const category = getProductCategory(product.categoryId, categories);
+  if (!product) notFound();
 
   const cart = await getUserCart();
 
@@ -32,10 +34,6 @@ const ProductDetailPage = async (props: {
           <div className="col-span-2 p-5">
             <div className="flex flex-col gap-6">
               <h1 className="h3-bold">{product.name}</h1>
-              <div>
-                <Rating value={Number(product.rating)} />
-                <p>{product.numReviews} avis</p>
-              </div>
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
                 <ProductPrice
                   value={Number(product.price)}
@@ -43,6 +41,18 @@ const ProductDetailPage = async (props: {
                 />
               </div>
             </div>
+            {category.name === "Drum" ? (
+              <div className="flex flex-row gap-8">
+                <div className="mt-10">
+                  <p className="font-semibold">Type de peau</p>
+                  <p>{product?.specifications?.skinType?.material}</p>
+                </div>
+                <div className="mt-10">
+                  <p className="font-semibold">Dimensions</p>
+                  <p>{product?.specifications?.dimensions?.size}</p>
+                </div>
+              </div>
+            ) : null}
             <div className="mt-10">
               <p className="font-semibold">Description</p>
               <p>{product.description}</p>
@@ -73,7 +83,7 @@ const ProductDetailPage = async (props: {
                         productId: product.id,
                         name: product.name,
                         slug: product.slug,
-                        price: product.price,
+                        price: product.price.toString(),
                         qty: 1,
                         image: product.images[0],
                       }}
@@ -84,14 +94,6 @@ const ProductDetailPage = async (props: {
             </Card>
           </div>
         </div>
-      </section>
-      <section className="mt-10">
-        <h2 className="h2-bold">Avis clients</h2>
-        <ReviewList
-          userId={userId || ""}
-          productId={product.id}
-          productSlug={product.slug}
-        />
       </section>
     </>
   );

@@ -255,11 +255,27 @@ const OrderDetailsTable: React.FC<OrderDetailsTableProps> = ({
                 />
               ) : null}
 
-              {isAdmin && !isPaid ? <MarkAsPaidButton /> : null}
-
-              {isAdmin && isPaid && !isDelivered ? (
-                <MarkAsDeliveredButton />
+              {!isPaid && paymentMethod === "Transfer" ? (
+                <div className="bg-blue-300 p-3 rounded-md text-black">
+                  <p>
+                    Merci pour votre commande. Notre équipe vous contactera très
+                    prochainement pour finaliser le paiement par virement
+                    bancaire.
+                  </p>
+                  <p className="text-sm mt-2">
+                    Vous recevrez un email avec les détails du compte de
+                    virement sous peu.
+                  </p>
+                </div>
               ) : null}
+
+              <div className="bg-red-800 p-3 rounded-md text-blue-800">
+                {isAdmin && !isPaid ? <MarkAsPaidButton /> : null}
+
+                {isAdmin && isPaid && !isDelivered ? (
+                  <MarkAsDeliveredButton />
+                ) : null}
+              </div>
             </CardContent>
           </Card>
         </div>

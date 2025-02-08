@@ -7,9 +7,9 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 import {
-  ContactIcon,
+  BookOpenText,
   HomeIcon,
-  IdCardIcon,
+  Mail,
   MenuIcon,
   NewspaperIcon,
   ShoppingBag,
@@ -36,12 +36,12 @@ const NavigationDrawer = () => {
     {
       title: "À propos",
       path: "/about",
-      icon: IdCardIcon,
+      icon: BookOpenText,
     },
     {
       title: "Contact",
       path: "/contact",
-      icon: ContactIcon,
+      icon: Mail,
     },
   ];
 

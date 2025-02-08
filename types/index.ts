@@ -1,23 +1,41 @@
 import {
-  insertProductSchema,
   insertCartSchema,
   cartItemSchema,
   shippingAddressSchema,
   insertOrderItemSchema,
   insertOrderSchema,
   paymentResultSchema,
-  insertReviewSchema,
   insertArticleSchema,
   insertArticleSectionSchema,
   insertArticleCommentSchema,
   contactFormSchema,
+  ProductSchema,
 } from "@/lib/validators";
 import { z } from "zod";
 
-export type Product = z.infer<typeof insertProductSchema> & {
+export type DrumSpecs = {
+  skinType: {
+    id: string;
+    material: string;
+  };
+  dimensions: {
+    id: string;
+    size: string;
+  };
+};
+
+export type OtherSpecs = {
+  size: string;
+  color: string;
+  material: string;
+};
+
+export type Product = Omit<z.infer<typeof ProductSchema>, "price"> & {
   id: string;
-  rating: string;
+  price: string;
+  specifications?: DrumSpecs | null;
   createdAt: Date;
+  updatedAt: Date;
 };
 
 export type Cart = z.infer<typeof insertCartSchema>;
@@ -36,11 +54,6 @@ export type Order = z.infer<typeof insertOrderSchema> & {
   paymentResult: PaymentResult;
 };
 export type PaymentResult = z.infer<typeof paymentResultSchema>;
-export type Review = z.infer<typeof insertReviewSchema> & {
-  id: string;
-  createdAt: Date;
-  user?: { name: string };
-};
 
 export type Article = z.infer<typeof insertArticleSchema> & {
   id: string;

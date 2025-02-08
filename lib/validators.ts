@@ -9,21 +9,89 @@ const currency = z
     "Price must have exatcly two decimal places"
   );
 
-export const insertProductSchema = z.object({
-  name: z.string().min(3, "Name must be at least 3 characters"),
-  slug: z.string().min(3, "Slug must be at least 3 characters"),
-  category: z.string().min(3, "Category must be at least 3 characters"),
-  brand: z.string().min(3, "Brand must be at least 3 characters"),
-  description: z.string().min(3, "Description must be at least 3 characters"),
+export const baseProductSchema = z.object({
+  name: z.string().min(1),
+  slug: z.string().min(1),
+  categoryId: z.string().uuid(),
   stock: z.coerce.number(),
-  images: z.array(z.string()).min(1, "Product must have at least 1 image"),
+  images: z.array(z.string().url()),
   isFeatured: z.boolean(),
-  banner: z.string().nullable(),
+  banner: z.string().optional().nullable(),
   price: currency,
+  description: z.string().nullable(),
+  codeIdentifier: z.string().optional().nullable(),
+  isPublished: z.boolean(),
 });
 
-export const updateProductSchema = insertProductSchema.extend({
-  id: z.string().min(1, "Id is required"),
+export const updateBaseProductSchema = baseProductSchema.extend({
+  id: z.string().min(1, "ID is required"),
+});
+
+export const drumSpecificationsSchema = z.object({
+  skinTypeId: z.string().uuid(),
+  dimensionsId: z.string().uuid(),
+});
+
+export const otherSpecificationsSchema = z.object({
+  color: z.string().optional(),
+  material: z.string().optional(),
+  size: z.string().optional(),
+});
+
+export const specificationsSchema = z.union([
+  drumSpecificationsSchema,
+  otherSpecificationsSchema,
+]);
+
+export const UpdateProductSpecificationsSchema = z.object({
+  productId: z.string().uuid("Invalid UUID format for productId"),
+  specifications: specificationsSchema,
+});
+
+export const ProductSchema = baseProductSchema
+  .extend({
+    specifications: z
+      .union([drumSpecificationsSchema, otherSpecificationsSchema])
+      .nullable()
+      .optional(),
+  })
+  .refine(
+    (data) => {
+      if (!data.specifications) return true;
+      const isDrumSpec = drumSpecificationsSchema.safeParse(
+        data.specifications
+      ).success;
+      const isOtherSpec = otherSpecificationsSchema.safeParse(
+        data.specifications
+      ).success;
+
+      return isDrumSpec !== isOtherSpec;
+    },
+    { message: "Specifications must be either drum or other, but not both." }
+  );
+
+export const UpdateProductSchema = baseProductSchema
+  .extend({
+    id: z.string().uuid("Invalid UUID format"),
+    drum: drumSpecificationsSchema.optional(),
+    other: otherSpecificationsSchema.optional(),
+  })
+  .refine(
+    (data) => {
+      if (data.drum && data.other) {
+        return false;
+      }
+      return true;
+    },
+    { message: "A product cannot have both drum and other specifications." }
+  );
+
+export const insertProductCategory = z.object({
+  name: z.string().min(1, "Category must contain at least 1 character"),
+});
+
+export const updateProductCategory = insertProductCategory.extend({
+  id: z.string().uuid("Invalid UUID format"),
 });
 
 export const signInFormSchema = z.object({
@@ -50,7 +118,7 @@ export const cartItemSchema = z.object({
   name: z.string().min(1, "Name is required"),
   slug: z.string().min(1, "slug is required"),
   qty: z.number().int().nonnegative("Quantity is required"),
-  image: z.string().min(1, "Image is required"),
+  image: z.string().optional(),
   price: currency,
 });
 
@@ -119,18 +187,6 @@ export const updateProfileSchema = z.object({
 export const updateUserSchema = updateProfileSchema.extend({
   id: z.string().min(1, "ID is required"),
   role: z.string().min(1, "Role is required"),
-});
-
-export const insertReviewSchema = z.object({
-  title: z.string().min(3, "Title must be at least 3 characters"),
-  description: z.string().min(3, "Description must be at lest 3 characteres"),
-  productId: z.string().min(1, "Product is required"),
-  userId: z.string().min(1, "User is required"),
-  rating: z.coerce
-    .number()
-    .int()
-    .min(1, "Rating must be at least 1")
-    .max(5, "Rating must be at most 5"),
 });
 
 export const insertArticleSchema = z.object({

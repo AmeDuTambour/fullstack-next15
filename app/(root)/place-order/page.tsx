@@ -12,13 +12,14 @@ import {
 } from "@/components/ui/table";
 import { getUserCart } from "@/lib/actions/cart.actions";
 import { getUserById } from "@/lib/actions/user.actions";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, isValidUrl } from "@/lib/utils";
 import { ShippingAddress } from "@/types";
 import { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import PlaceOrderForm from "./place-order-form";
+import { CameraIcon } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Récapitulatif de la commande",
@@ -90,12 +91,18 @@ const PlaceOrderPage = async () => {
                           href={`/product/${item.slug}`}
                           className="flex items-center"
                         >
-                          <Image
-                            src={item.image}
-                            alt={item.name}
-                            height={50}
-                            width={50}
-                          />
+                          {item.image && isValidUrl(item.image) ? (
+                            <Image
+                              src={item.image}
+                              alt={item.name}
+                              height={50}
+                              width={50}
+                            />
+                          ) : (
+                            <div className="flex justify-center items-centerw-[50px] h-[50px]">
+                              <CameraIcon />
+                            </div>
+                          )}
                           <span className="px-2">{item.name}</span>
                         </Link>
                       </TableCell>

@@ -1,0 +1,62 @@
+model Product {
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name           String
+  slug           String   @unique
+  description    String?
+  images         String[]
+  stock          Int
+  price          Decimal  @default(0) @db.Decimal(12, 2)
+  isFeatured     Boolean  @default(false)
+  banner         String?
+  codeIdentifier String?
+  isPublished    Boolean  @default(false)
+  createdAt      DateTime @default(now()) @db.Timestamp(6)
+  updatedAt      DateTime @updatedAt
+
+  categoryId String          @db.Uuid
+  category   ProductCategory @relation(fields: [categoryId], references: [id])
+
+  drum  Drum?  @relation(name: "ProductToDrum")
+  other Other? @relation(name: "ProductToOther")
+
+  orderItems OrderItem[]
+}
+
+model ProductCategory {
+  id   String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name String @unique
+
+  products Product[]
+}
+
+model Drum {
+  productId    String @id @db.Uuid
+  skinTypeId   String @db.Uuid
+  dimensionsId String @db.Uuid
+
+  product    Product        @relation(name: "ProductToDrum", fields: [productId], references: [id], onDelete: Cascade)
+  skinType   SkinType       @relation(fields: [skinTypeId], references: [id])
+  dimensions DrumDimensions @relation(fields: [dimensionsId], references: [id])
+}
+
+model SkinType {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  material String @unique
+  drums    Drum[]
+}
+
+model DrumDimensions {
+  id    String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  size  String @unique
+  drums Drum[]
+}
+
+model Other {
+  productId String @id @db.Uuid
+
+  product Product @relation(name: "ProductToOther", fields: [productId], references: [id], onDelete: Cascade)
+
+  color    String?
+  material String?
+  size     String?
+}

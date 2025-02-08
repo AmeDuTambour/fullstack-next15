@@ -89,10 +89,9 @@ const PaymentMethodForm: React.FC<PaymentMethodFormProps> = ({
                               />
                             </FormControl>
                             <FormLabel className="font-normal">
-                              {paymentMethod}{" "}
                               {paymentMethod === "Stripe"
-                                ? "( Carte Bancaire )"
-                                : null}
+                                ? "Carte Bancaire"
+                                : "Virement"}
                             </FormLabel>
                           </FormItem>
                         ))}
