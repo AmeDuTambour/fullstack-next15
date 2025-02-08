@@ -16,6 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { updateProductSpecifications } from "@/lib/actions/product.actions";
 import {
@@ -147,9 +148,53 @@ const ProductSpecificationsForm = ({
         </div>
       );
     }
+
     if (category === "Other") {
-      return <></>; // ✅ Ajoute ici les champs spécifiques aux autres types
+      return (
+        <div className="flex flex-col md:flex-row gap-5">
+          <FormField
+            control={form.control}
+            name="size"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Size</FormLabel>
+                <FormControl>
+                  <Input placeholder="Enter size" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="color"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Color</FormLabel>
+                <FormControl>
+                  <Input placeholder="Enter color" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="material"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Material</FormLabel>
+                <FormControl>
+                  <Input placeholder="Enter material" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+      );
     }
+
     return null;
   };
 
