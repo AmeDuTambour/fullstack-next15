@@ -474,3 +474,62 @@ export async function getAllProducts({
     totalCount,
   };
 }
+
+export async function getProductByCodeIdentifier(codeIdentifier: string) {
+  const product = await prisma.product.findFirst({
+    where: { codeIdentifier },
+  });
+
+  return convertToPlainObject(product);
+}
+
+export async function blockProductUnit(id: string, quantity: number) {
+  console.log("===============Product id=====================");
+  console.log(id);
+  console.log("====================================");
+  const product = await prisma.product.findUnique({
+    where: { id },
+  });
+
+  if (!product) {
+    throw new Error("Product not found");
+  }
+
+  if (product.stock === 0) {
+    throw new Error("Cannot block units. Stock quantity is zero.");
+  }
+
+  const updatedProduct = await prisma.product.update({
+    where: { id: product.id },
+    data: {
+      stock: product.stock - quantity,
+      blockedQuantity: product.blockedQuantity + quantity,
+    },
+  });
+
+  return convertToPlainObject(updatedProduct);
+}
+
+export async function releaseProductUnit(id: string, quantity: number) {
+  const product = await prisma.product.findFirst({
+    where: { id },
+  });
+
+  if (!product) {
+    throw new Error("Product not found");
+  }
+
+  if (product.blockedQuantity === 0) {
+    throw new Error("Cannot release units. Blocked quantity is zero.");
+  }
+
+  const updatedProduct = await prisma.product.update({
+    where: { id: product.id },
+    data: {
+      stock: product.stock + quantity,
+      blockedQuantity: product.blockedQuantity - quantity,
+    },
+  });
+
+  return convertToPlainObject(updatedProduct);
+}

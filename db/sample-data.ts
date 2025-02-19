@@ -52,11 +52,11 @@ const sampleData: {
     { material: "Cerf" },
   ],
   drumDimensions: [
-    { size: "35x10" },
-    { size: "40x12" },
-    { size: "45x14" },
-    { size: "50x12" },
-    { size: "55x15" },
+    { size: "35x7" },
+    { size: "40x8" },
+    { size: "45x8" },
+    { size: "50x7" },
+    { size: "55x8" },
   ],
   products: [],
 };
@@ -69,10 +69,10 @@ for (let i = 1; i <= 30; i++) {
     sampleData.drumDimensions[i % sampleData.drumDimensions.length].size;
 
   sampleData.products.push({
-    name: `Tambour ${i} en peau de ${skinType}`,
-    slug: `tambour-${i}-peau-${skinType.toLowerCase()}`,
+    name: `Tambour TMB${i.toString().padStart(3, "0")} en peau de ${skinType}`,
+    slug: `tambour-TMB${i.toString().padStart(3, "0")}-peau-${skinType.toLowerCase()}`,
     description: `Un tambour unique avec une peau de ${skinType}`,
-    images: [], // Aucune image
+    images: [],
     price: 100 + i,
     stock: 5 + (i % 10),
     isFeatured: false,
@@ -89,10 +89,10 @@ for (let i = 1; i <= 30; i++) {
 
 for (let i = 1; i <= 10; i++) {
   sampleData.products.push({
-    name: `Accessoire ${i}`,
-    slug: `accessoire-${i}`,
+    name: `Accessoire ACC${i.toString().padStart(3, "0")}`,
+    slug: `accessoire-${i.toString().padStart(3, "0")}`,
     description: `Un accessoire pratique pour votre tambour`,
-    images: [], // Aucune image
+    images: [],
     price: 20 + i,
     stock: 10 + (i % 5),
     isFeatured: false,
