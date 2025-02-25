@@ -12,14 +12,14 @@ const isUuid = (identifier: string) =>
 
 export async function GET(
   request: Request,
-  { params }: { params: { identifier: string } }
+  { params }: { params: Promise<{ identifier: string }> }
 ) {
   const res = await apiAuthMiddleware(request);
   if (res.status === 401 || res.status === 500) {
     return res;
   }
 
-  const { identifier } = params;
+  const { identifier } = await params;
   const product = isUuid(identifier)
     ? await getProductById(identifier)
     : await getProductByCodeIdentifier(identifier);
