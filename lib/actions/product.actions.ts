@@ -376,6 +376,8 @@ export async function getAllProducts({
   skinType,
   dimensions,
   category,
+  publishedOnly,
+  blockedOnly,
   sort = "newest",
   page = 1,
   limit = PAGE_SIZE,
@@ -384,6 +386,8 @@ export async function getAllProducts({
   skinType?: string;
   dimensions?: string;
   category?: string;
+  publishedOnly?: boolean;
+  blockedOnly?: boolean;
   sort?: string;
   page?: number;
   limit?: number;
@@ -420,6 +424,16 @@ export async function getAllProducts({
     }
     filters.drum.is.dimensions = {
       size: dimensions,
+    };
+  }
+
+  if (publishedOnly) {
+    filters.isPublished = true;
+  }
+
+  if (blockedOnly) {
+    filters.blockedQuantity = {
+      gt: 0,
     };
   }
 
@@ -473,4 +487,102 @@ export async function getAllProducts({
     totalPages: Math.ceil(totalCount / limit),
     totalCount,
   };
+}
+
+export async function getProductByCodeIdentifier(codeIdentifier: string) {
+  const product = await prisma.product.findFirst({
+    where: { codeIdentifier },
+  });
+
+  return convertToPlainObject(product);
+}
+
+export async function blockProductUnit(id: string, quantity: number) {
+  const product = await prisma.product.findUnique({
+    where: { id },
+  });
+
+  if (!product) {
+    throw new Error("Product not found");
+  }
+
+  if (product.stock === 0) {
+    throw new Error("Cannot block units. Stock quantity is zero.");
+  }
+
+  const updatedProduct = await prisma.product.update({
+    where: { id: product.id },
+    data: {
+      stock: product.stock - quantity,
+      blockedQuantity: product.blockedQuantity + quantity,
+    },
+  });
+
+  return convertToPlainObject(updatedProduct);
+}
+
+export async function releaseProductUnit(id: string, quantity: number) {
+  const product = await prisma.product.findFirst({
+    where: { id },
+  });
+
+  if (!product) {
+    throw new Error("Product not found");
+  }
+
+  if (product.blockedQuantity === 0) {
+    throw new Error("Cannot release units. Blocked quantity is zero.");
+  }
+
+  const updatedProduct = await prisma.product.update({
+    where: { id: product.id },
+    data: {
+      stock: product.stock + quantity,
+      blockedQuantity: product.blockedQuantity - quantity,
+    },
+  });
+
+  return convertToPlainObject(updatedProduct);
+}
+
+export async function declareSale(
+  identifier: string,
+  quantity: number,
+  useReservation: boolean
+) {
+  return await prisma.$transaction(async (tx) => {
+    const product = await tx.product.findUnique({
+      where: { id: identifier },
+      select: { stock: true, blockedQuantity: true },
+    });
+
+    if (!product) {
+      throw new Error("Product not found");
+    }
+
+    const { stock: available, blockedQuantity } = product;
+
+    if (useReservation) {
+      if (blockedQuantity < quantity) {
+        throw new Error("Not enough reserved units available");
+      }
+
+      return await tx.product.update({
+        where: { id: identifier },
+        data: {
+          blockedQuantity: { decrement: quantity },
+          // stock: { decrement: quantity },
+        },
+      });
+    }
+
+    if (available < quantity) {
+      throw new Error("Not enough stock available");
+    }
+
+    return await tx.product.update({
+      where: { id: identifier },
+      data: { stock: { decrement: quantity } },
+    });
+  });
 }

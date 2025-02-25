@@ -1,17 +1,18 @@
 model Product {
-  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name           String
-  slug           String   @unique
-  description    String?
-  images         String[]
-  stock          Int
-  price          Decimal  @default(0) @db.Decimal(12, 2)
-  isFeatured     Boolean  @default(false)
-  banner         String?
-  codeIdentifier String?
-  isPublished    Boolean  @default(false)
-  createdAt      DateTime @default(now()) @db.Timestamp(6)
-  updatedAt      DateTime @updatedAt
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name            String
+  slug            String   @unique
+  description     String?
+  images          String[]
+  stock           Int
+  price           Decimal  @default(0) @db.Decimal(12, 2)
+  isFeatured      Boolean  @default(false)
+  banner          String?
+  codeIdentifier  String?
+  blockedQuantity Int      @default(0)
+  isPublished     Boolean  @default(false)
+  createdAt       DateTime @default(now()) @db.Timestamp(6)
+  updatedAt       DateTime @updatedAt
 
   categoryId String          @db.Uuid
   category   ProductCategory @relation(fields: [categoryId], references: [id])

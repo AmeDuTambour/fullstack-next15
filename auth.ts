@@ -100,6 +100,7 @@ export const config = {
 
       return token;
     },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     authorized({ request, auth }): any {
       // Array of regex patterns of the paths we want to protect
       const protectedPaths = [
@@ -139,4 +140,5 @@ export const config = {
   },
 } satisfies NextAuthConfig;
 
+export const authOptions = config;
 export const { handlers, auth, signIn, signOut } = NextAuth(config);
