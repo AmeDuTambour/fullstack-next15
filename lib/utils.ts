@@ -1,6 +1,7 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import qs from "query-string";
+import DOMPurify from "dompurify";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -157,4 +158,18 @@ export const getProductCategory = (
   categories: Record<string, string>[]
 ) => {
   return categories.filter((c) => c.id === productId)[0];
+};
+
+export const formatText = (text: string) => {
+  // Échapper les caractères dangereux
+  const safeText = DOMPurify.sanitize(text);
+
+  // Transformer les URLs en liens cliquables
+  const linkedText = safeText.replace(
+    /(https?:\/\/[^\s]+)/g,
+    '<a href="$1" target="_blank" rel="noopener noreferrer" class="text-blue-500 underline">$1</a>'
+  );
+
+  // Remplacer les sauts de ligne par des <br />
+  return linkedText.replace(/\n/g, "<br />");
 };

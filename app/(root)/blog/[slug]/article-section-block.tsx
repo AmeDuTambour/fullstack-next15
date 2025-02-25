@@ -1,5 +1,6 @@
 "use client";
 
+import { formatText } from "@/lib/utils";
 import { ArticleSection } from "@/types";
 import Image from "next/image";
 import YouTube from "react-youtube";
@@ -29,8 +30,7 @@ const ArticleSectionBlock = ({ section }: { section: ArticleSection }) => {
   return (
     <div className="col-span-2 space-y-10">
       <h3 className="h3-bold text-2xl">{section.title}</h3>{" "}
-      {/* Titre section plus visible */}
-      <div className="flex flex-col md:flex-row gap-4 items-start">
+      <div className="flex flex-col md:flex-row gap-4 items-start ">
         {hasImage && (
           <div className="w-full md:w-1/3">
             <Image
@@ -43,13 +43,15 @@ const ArticleSectionBlock = ({ section }: { section: ArticleSection }) => {
           </div>
         )}
 
-        <div className="flex-1 italic text-xl text-justify">{section.body}</div>
+        <div
+          className="flex-1 italic text-xl text-justify"
+          dangerouslySetInnerHTML={{ __html: formatText(section.body ?? "") }}
+        />
       </div>
       {hasYouTube && videoId && (
         <div className="flex justify-center w-full">
           <div className="w-full md:w-4/5 lg:w-3/4 aspect-video">
             {" "}
-            {/* Centrage + largeur optimisée */}
             <YouTube
               videoId={videoId}
               opts={options}
