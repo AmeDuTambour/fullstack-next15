@@ -102,7 +102,13 @@ export async function getFeaturedArticles() {
 export async function getArticleById(id: string) {
   const data = await prisma.article.findFirst({
     where: { id },
-    include: { sections: true, comments: true, category: true },
+    include: {
+      sections: {
+        orderBy: { position: "asc" },
+      },
+      comments: true,
+      category: true,
+    },
   });
   return convertToPlainObject(data);
 }
@@ -110,7 +116,13 @@ export async function getArticleById(id: string) {
 export async function getArticleBySlug(slug: string) {
   const data = await prisma.article.findFirst({
     where: { slug },
-    include: { sections: true, comments: true, category: true },
+    include: {
+      sections: {
+        orderBy: { position: "asc" },
+      },
+      comments: true,
+      category: true,
+    },
   });
   return convertToPlainObject(data);
 }
