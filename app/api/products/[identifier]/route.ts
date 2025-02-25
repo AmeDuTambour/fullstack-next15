@@ -3,21 +3,26 @@ import {
   getProductByCodeIdentifier,
   blockProductUnit,
   releaseProductUnit,
+  getProductById,
 } from "@/lib/actions/product.actions";
 import { NextResponse } from "next/server";
 
-// In this scenario, identifier param should be the qrCode value
+const isUuid = (identifier: string) =>
+  /^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$/.test(identifier);
+
 export async function GET(
   request: Request,
-  { params }: { params: Promise<{ identifier: string }> }
+  { params }: { params: { identifier: string } }
 ) {
   const res = await apiAuthMiddleware(request);
   if (res.status === 401 || res.status === 500) {
     return res;
   }
 
-  const { identifier } = await params;
-  const product = await getProductByCodeIdentifier(identifier);
+  const { identifier } = params;
+  const product = isUuid(identifier)
+    ? await getProductById(identifier)
+    : await getProductByCodeIdentifier(identifier);
 
   if (!product) {
     return NextResponse.json({ error: "Product not found" }, { status: 404 });

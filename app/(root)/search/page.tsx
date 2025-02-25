@@ -115,6 +115,7 @@ const SearchPage = async (props: {
     category,
     skinType: skin,
     dimensions: dimension,
+    publishedOnly: true,
     sort,
     page: Number(page),
   });
