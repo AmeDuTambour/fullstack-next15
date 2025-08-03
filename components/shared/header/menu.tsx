@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import ModeToggle from "./mode-toggle";
-import { EllipsisVertical, ShoppingCart, UserIcon } from "lucide-react";
+import { EllipsisVertical, ShoppingCart } from "lucide-react";
 import Link from "next/link";
 import {
   Sheet,
@@ -10,6 +10,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import UserButton from "./user-button";
+import { UserButtonMobile } from "./user-button-mobile";
 
 const Menu = () => {
   return (
@@ -29,18 +30,10 @@ const Menu = () => {
             <EllipsisVertical />
           </SheetTrigger>
           <SheetContent className="flex flex-col items-start">
-            <SheetTitle>Menu</SheetTitle>
-            <ModeToggle />
-            <Button asChild variant="ghost">
-              <Link href="/cart">
-                <ShoppingCart /> Panier
-              </Link>
-            </Button>
-            <Button asChild>
-              <Link href="/sign-in">
-                <UserIcon /> Se connecter
-              </Link>
-            </Button>
+            <div className="flex flex-row items-start">
+              <SheetTitle>Menu</SheetTitle>
+            </div>
+            <UserButtonMobile />
             <SheetDescription></SheetDescription>
           </SheetContent>
         </Sheet>
