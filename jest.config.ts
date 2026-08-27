@@ -104,37 +104,21 @@ const config: Config = {
   // A preset that is used as a base for Jest's configuration
   preset: "ts-jest",
 
-  // Run tests from one or more projects
-  // projects: undefined,
+  // Les tests de contrat interrogent un vrai serveur Next par HTTP, comme le
+  // fait l'application mobile. globalSetup le démarre, globalTeardown l'arrête.
+  globalSetup: "<rootDir>/tests/helpers/global-setup.ts",
+  globalTeardown: "<rootDir>/tests/helpers/global-teardown.ts",
 
-  // Use this configuration option to add custom reporters to Jest
-  // reporters: undefined,
-
-  // Automatically reset mock state before every test
-  // resetMocks: false,
-
-  // Reset the module registry before running each individual test
-  // resetModules: false,
-
-  // A path to a custom resolver
-  // resolver: undefined,
-
-  // Automatically restore mock state and implementation before every test
-  // restoreMocks: false,
-
-  // The root directory that Jest should scan for tests and modules within
-  // rootDir: undefined,
-
-  // A list of paths to directories that Jest should use to search for files in
-  // roots: [
-  //   "<rootDir>"
-  // ],
-
-  // Allows you to use a custom runner instead of Jest's default test runner
-  // runner: "jest-runner",
-
-  // The paths to modules that run some code to configure or set up the testing environment before each test
   setupFiles: ["<rootDir>/jest.setup.ts"],
+
+  testEnvironment: "node",
+
+  moduleNameMapper: {
+    "^@/(.*)$": "<rootDir>/$1",
+  },
+
+  // Les tests de contrat parlent à Neon : la latence réseau dépasse le défaut de 5 s.
+  testTimeout: 30000,
 
   // A list of paths to modules that run some code to configure or set up the testing framework before each test
   // setupFilesAfterEnv: [],
