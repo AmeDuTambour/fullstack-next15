@@ -7,6 +7,15 @@ export const metadata: Metadata = {
   title: "Blog",
 };
 
+/**
+ * Rendu à la demande, jamais au build.
+ *
+ * Cette page lit le catalogue : la prérendre obligerait `next build` à joindre
+ * la base, et un déploiement échouerait dès que Neon dort. Le contenu reste
+ * servi en SSR complet, donc indexable.
+ */
+export const dynamic = "force-dynamic";
+
 const BlogPage = async () => {
   const { data } = (await getAllArticles({
     filter: "published",

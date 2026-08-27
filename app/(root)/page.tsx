@@ -7,6 +7,15 @@ import {
   getLatestProducts,
 } from "@/lib/actions/product.actions";
 
+/**
+ * Rendu à la demande, jamais au build.
+ *
+ * Cette page lit le catalogue : la prérendre obligerait `next build` à joindre
+ * la base, et un déploiement échouerait dès que Neon dort. Le contenu reste
+ * servi en SSR complet, donc indexable.
+ */
+export const dynamic = "force-dynamic";
+
 const HomePage = async () => {
   const latestProducts = await getLatestProducts();
   const featuredProducts = await getFeaturedProducts();

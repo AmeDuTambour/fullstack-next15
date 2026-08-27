@@ -6,10 +6,26 @@ import { ContactRequest } from "./contact-message";
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 require("dotenv").config();
 
-const resend = new Resend(process.env.RESEND_API_KEY as string);
+/**
+ * Instancié à la demande, et non au chargement du module : `new Resend()` lève
+ * si la clé est absente, ce qui faisait échouer `next build` sur la collecte de
+ * /api/webhooks/stripe avant même que le code ne s'exécute.
+ */
+let client: Resend | null = null;
+
+function getResend() {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) {
+    throw new Error(
+      "RESEND_API_KEY est absent : impossible d'envoyer l'e-mail."
+    );
+  }
+  if (!client) client = new Resend(apiKey);
+  return client;
+}
 
 export const sendPurchaseReceipt = async ({ order }: { order: Order }) => {
-  await resend.emails.send({
+  await getResend().emails.send({
     from: `${APP_NAME} <${SENDER_EMAIL}>`,
     to: order.user.email,
     subject: `Order Confirmation ${order.id}`,
@@ -18,7 +34,7 @@ export const sendPurchaseReceipt = async ({ order }: { order: Order }) => {
 };
 
 export const sendContactRequest = async (data: ContactFormData) => {
-  await resend.emails.send({
+  await getResend().emails.send({
     from: `${APP_NAME} <${SENDER_EMAIL}>`,
     to: `${SENDER_EMAIL}`,
     subject: data.subject || "New Contact Form Submission",
