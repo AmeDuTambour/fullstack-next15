@@ -1,3 +1,4 @@
+import { apiAuthMiddleware } from "@/app/middlewares/apiAuthMiddleware";
 import { declareSale } from "@/lib/actions/product.actions";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -5,6 +6,14 @@ export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ identifier: string }> }
 ) {
+  // Cette route mutait le stock sans aucune authentification, alors que
+  // GET /api/products et PATCH /api/products/[identifier] en exigent une.
+  // Même schéma que les autres routes mobiles : jeton porteur, JWT_SECRET.
+  const authResult = await apiAuthMiddleware(request);
+  if (authResult.status === 401 || authResult.status === 500) {
+    return authResult;
+  }
+
   const { identifier } = await params;
   try {
     const { quantity, useReservation } = await request.json();

@@ -13,6 +13,7 @@ import { revalidatePath } from "next/cache";
 import { PAGE_SIZE } from "../constants";
 import { Prisma } from "@prisma/client";
 import { sendPurchaseReceipt } from "@/email";
+import { requireAdmin, requireOwnerOrAdmin } from "../auth-guards";
 
 export async function createOrder() {
   try {
@@ -115,6 +116,12 @@ export async function getOrderById(orderId: string) {
       user: { select: { name: true, email: true } },
     },
   });
+
+  if (!data) return null;
+
+  // Sans ce contrôle, n'importe qui pouvait lire la commande de n'importe qui
+  // via /order/<id> — adresse de livraison comprise.
+  await requireOwnerOrAdmin(data.userId);
 
   return convertToPlainObject(data);
 }
@@ -291,6 +298,8 @@ type SalesDataType = {
 }[];
 
 export async function getOrderSummary() {
+  await requireAdmin();
+
   const ordersCount = await prisma.order.count();
   const productsCount = await prisma.product.count();
   const usersCount = await prisma.user.count();
@@ -339,6 +348,8 @@ export async function getAllOrders({
   page: number;
   query: string;
 }) {
+  await requireAdmin();
+
   const queryFilter =
     query && query !== "all"
       ? {
@@ -371,6 +382,7 @@ export async function getAllOrders({
 
 export async function deleteOrder(id: string) {
   try {
+    await requireAdmin();
     await prisma.order.delete({
       where: { id },
     });
@@ -384,6 +396,7 @@ export async function deleteOrder(id: string) {
 
 export async function markOrderAsPaid(orderId: string) {
   try {
+    await requireAdmin();
     await updateOrderToPaid({ orderId });
     revalidatePath(`/order/${orderId}`);
 
@@ -395,6 +408,7 @@ export async function markOrderAsPaid(orderId: string) {
 
 export async function markOrderAsDelivered(orderId: string) {
   try {
+    await requireAdmin();
     const order = await prisma.order.findFirst({
       where: {
         id: orderId,

@@ -17,6 +17,7 @@ import { z } from "zod";
 import { PAGE_SIZE } from "../constants/index";
 import { revalidatePath } from "next/cache";
 import { Prisma } from "@prisma/client";
+import { requireAdmin } from "../auth-guards";
 
 export async function signInWithCredentials(
   prevState: unknown,
@@ -183,6 +184,8 @@ export async function getAllUsers({
   page: number;
   query: string;
 }) {
+  await requireAdmin();
+
   const queryFilter: Prisma.UserWhereInput =
     query && query !== "all"
       ? {
@@ -210,6 +213,7 @@ export async function getAllUsers({
 
 export async function deleteUser(id: string) {
   try {
+    await requireAdmin();
     await prisma.user.delete({ where: { id } });
     revalidatePath("/admdin/users");
     return { success: true, message: "User deleted successfully" };
@@ -223,6 +227,7 @@ export async function deleteUser(id: string) {
 
 export async function updateUser(user: z.infer<typeof updateUserSchema>) {
   try {
+    await requireAdmin();
     await prisma.user.update({
       where: {
         id: user.id,

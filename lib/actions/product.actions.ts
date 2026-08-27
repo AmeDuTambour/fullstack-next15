@@ -15,10 +15,9 @@ import {
   UpdateProductSchema,
 } from "../validators";
 
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "@/db/prisma";
 import { DrumSpecs, OtherSpecs, Product } from "@/types";
-
-const prisma = new PrismaClient();
+import { isAdmin, requireAdmin } from "../auth-guards";
 
 async function getProductSpecifications(productId: string, category: string) {
   if (!productId) {
@@ -85,6 +84,12 @@ export async function getProductBySlug(slug: string): Promise<Product> {
   });
 
   if (!product) {
+    throw new Error(`Product with slug "${slug}" not found.`);
+  }
+
+  // Un brouillon reste visible pour un administrateur qui prévisualise, mais
+  // pas pour un visiteur qui devinerait l'URL.
+  if (!product.isPublished && !(await isAdmin())) {
     throw new Error(`Product with slug "${slug}" not found.`);
   }
 
@@ -159,6 +164,7 @@ export async function getProductById(
 
 export async function deleteProduct(id: string) {
   try {
+    await requireAdmin();
     const product = await prisma.product.findUnique({
       where: { id },
     });
@@ -178,6 +184,7 @@ export async function deleteProduct(id: string) {
 
 export async function createProduct(data: z.infer<typeof baseProductSchema>) {
   try {
+    await requireAdmin();
     const baseProduct = baseProductSchema.parse(data);
 
     const createdProduct = await prisma.product.create({
@@ -211,6 +218,7 @@ export async function updateBaseProduct(
   data: z.infer<typeof updateBaseProductSchema>
 ) {
   try {
+    await requireAdmin();
     const product = UpdateProductSchema.parse(data);
     console.log("Validating product: ", product);
 
@@ -256,6 +264,7 @@ export async function updateProductSpecifications(
   data: Record<string, string>
 ) {
   try {
+    await requireAdmin();
     const product = await prisma.product.findFirst({
       where: { id },
     });

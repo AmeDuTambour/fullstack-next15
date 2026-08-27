@@ -52,9 +52,9 @@ Authorization: Bearer <token>
 | Jeton signé avec un autre secret | `401` |
 | Jeton valide | la route s'exécute |
 
-Sont protégées : `GET /api/products` et `GET`/`PATCH /api/products/[identifier]`.
-**Ne le sont pas** : `block`, `release`, `declare-sale` — voir les écarts connus
-en fin de document.
+**Toutes** les routes produits sont protégées : `GET /api/products`,
+`GET`/`PATCH /api/products/[identifier]`, ainsi que `block`, `release` et
+`declare-sale`, qui ne l'étaient pas jusqu'à la phase 02.
 
 ## Produits
 
@@ -126,7 +126,8 @@ Ici `identifier` doit être l'`id`. Corps `{ action, quantity }`.
 
 ### `POST /api/products/[identifier]/block` · `/release`
 
-Mêmes effets que le `PATCH` correspondant, corps `{ quantity }`.
+Mêmes effets que le `PATCH` correspondant, corps `{ quantity }`. Authentifiées
+depuis la phase 02, par le même jeton porteur que les autres routes.
 
 | Cas | Réponse |
 | --- | --- |
@@ -138,6 +139,7 @@ Mêmes effets que le `PATCH` correspondant, corps `{ quantity }`.
 ### `POST /api/products/[identifier]/declare-sale`
 
 Corps `{ quantity, useReservation }`. Exécuté dans une transaction Prisma.
+Authentifiée depuis la phase 02.
 
 | Cas | Effet | Réponse |
 | --- | --- | --- |
@@ -151,21 +153,29 @@ Corps `{ quantity, useReservation }`. Exécuté dans une transaction Prisma.
 Que `stock` reste inchangé quand on vend une unité réservée est **correct** :
 l'unité avait déjà quitté `stock` au moment de la réservation.
 
-## Écarts de sécurité connus
+## Sécurité
 
-Figés par des tests pour être corrigés sciemment, en phase 02, avec le client
-mobile — et non découverts par accident au milieu d'un refactor.
+### Corrigé en phase 02
 
-1. **`block`, `release` et `declare-sale` n'exigent aucune authentification.**
-   Trois routes de mutation de stock sont ouvertes, alors que `GET /api/products`
-   et `PATCH /api/products/[identifier]` sont protégées. La correction doit
-   réutiliser `apiAuthMiddleware` — pas introduire un nouveau schéma.
+`block`, `release` et `declare-sale` exigent désormais un jeton, via le même
+`apiAuthMiddleware` que les autres routes. Aucun nouveau schéma n'a été
+introduit : **le client mobile n'a rien à changer**, dès lors qu'il envoyait
+déjà son en-tête `Authorization` sur ces appels. S'il ne le faisait pas — ces
+routes l'acceptaient — il recevra maintenant des `401` et devra être mis à jour.
 
-2. **Le middleware ne vérifie jamais le rôle.** Il valide la signature du jeton
-   et s'arrête là. N'importe quel client inscrit sur la boutique peut obtenir un
-   jeton via `/api/auth/login` et muter le stock. Un contrôle `role === "admin"`
-   est nécessaire — mais il faut d'abord s'assurer que le compte utilisé par
-   l'application mobile est bien administrateur, sous peine de la déconnecter.
+### Écart restant, en attente d'arbitrage
+
+**Le middleware ne vérifie jamais le rôle.** Il valide la signature du jeton et
+s'arrête là. N'importe quel client inscrit sur la boutique peut obtenir un jeton
+via `/api/auth/login` et muter le stock.
+
+Le correctif est un contrôle `role === "admin"` dans `apiAuthMiddleware`. Il
+n'est pas appliqué parce qu'il **déconnecterait l'application mobile** si le
+compte qu'elle utilise n'est pas administrateur. Deux comptes administrateurs
+existent ; il faut d'abord confirmer lequel le mobile emploie.
+
+L'écart est figé par un test qui passe en constatant le comportement actuel :
+il basculera le jour où la décision sera prise.
 
 ## Faire tourner les tests
 

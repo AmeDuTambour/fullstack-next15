@@ -12,6 +12,7 @@ import { z } from "zod";
 import { Prisma } from "@prisma/client";
 import { articleSectionFormDefaultValues } from "../constants";
 import { Article } from "@/types";
+import { isAdmin, requireAdmin } from "../auth-guards";
 
 function sortByCategory(articles: Array<Article>): {
   [key: string]: Article[];
@@ -44,6 +45,11 @@ export async function getAllArticles({
   withSorting?: boolean;
 }) {
   try {
+    // Lister les brouillons est une opération d'administration.
+    if (filter !== "published") {
+      await requireAdmin();
+    }
+
     const stateFilter: Prisma.ArticleWhereInput =
       filter === "published"
         ? { isPublished: true }
@@ -100,6 +106,8 @@ export async function getFeaturedArticles() {
 }
 
 export async function getArticleById(id: string) {
+  await requireAdmin();
+
   const data = await prisma.article.findFirst({
     where: { id },
     include: {
@@ -124,11 +132,17 @@ export async function getArticleBySlug(slug: string) {
       category: true,
     },
   });
+
+  // Un brouillon reste visible en prévisualisation pour un administrateur, mais
+  // pas pour un visiteur qui devinerait l'URL.
+  if (data && !data.isPublished && !(await isAdmin())) return null;
+
   return convertToPlainObject(data);
 }
 
 export async function createArticle(data: z.infer<typeof insertArticleSchema>) {
   try {
+    await requireAdmin();
     const newArticle = insertArticleSchema.parse(data);
 
     const res = await prisma.article.create({
@@ -151,6 +165,7 @@ export async function createArticle(data: z.infer<typeof insertArticleSchema>) {
 
 export async function updateArticle(data: z.infer<typeof updateArticleSchema>) {
   try {
+    await requireAdmin();
     const article = updateArticleSchema.parse(data);
     const articleExists = await prisma.article.findFirst({
       where: { id: article.id },
@@ -179,6 +194,7 @@ export async function updateArticle(data: z.infer<typeof updateArticleSchema>) {
 
 export async function deleteArticle(articleId: string) {
   try {
+    await requireAdmin();
     const articleExists = await prisma.article.findFirst({
       where: { id: articleId },
     });
@@ -213,6 +229,7 @@ export async function getAllArticleSections(articleId: string) {
 
 export async function createArticleSection(articleId: string) {
   try {
+    await requireAdmin();
     const lastSection = await prisma.articleSection.findFirst({
       where: { articleId },
       orderBy: { position: "desc" },
@@ -244,6 +261,7 @@ export async function updateArticleSection(
   data: z.infer<typeof updateArticleSectionSchema>
 ) {
   try {
+    await requireAdmin();
     const section = updateArticleSectionSchema.parse(data);
     const sectionExists = await prisma.articleSection.findFirst({
       where: { sectionId: section.sectionId },
@@ -276,6 +294,7 @@ export async function updateArticleSection(
 
 export async function deleteArticleSection(sectionId: string) {
   try {
+    await requireAdmin();
     const sectionExists = await prisma.articleSection.findFirst({
       where: { sectionId },
     });
@@ -297,6 +316,7 @@ export async function deleteArticleSection(sectionId: string) {
 
 export async function createArticleCategory(name: string, articleId?: string) {
   try {
+    await requireAdmin();
     const res = await prisma.articleCategory.create({
       data: { name },
     });
@@ -320,6 +340,7 @@ export async function createArticleCategory(name: string, articleId?: string) {
 
 export async function deleteArticleCategory(id: string, articleId?: string) {
   try {
+    await requireAdmin();
     await prisma.articleCategory.delete({ where: { id } });
 
     revalidatePath(
@@ -340,6 +361,7 @@ export async function updateArticleCategory(
   articleId?: string
 ) {
   try {
+    await requireAdmin();
     await prisma.articleCategory.update({
       where: { id },
       data: { name },

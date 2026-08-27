@@ -27,19 +27,28 @@ Corollaire : `lib/actions/product.actions.ts` est **partagé entre le web et l'A
 Tout refactor de ce fichier doit laisser les réponses des routes ci-dessus strictement
 identiques, et être couvert par les tests de contrat avant d'être entamé.
 
-Sécuriser les routes actuellement ouvertes (`block`, `release`, `declare-sale`) est
-nécessaire, mais doit réutiliser le schéma d'auth existant (`apiAuthMiddleware`, Bearer
-`JWT_SECRET`) — pas en introduire un nouveau — tant qu'une mise à jour côté mobile n'a pas
-été coordonnée avec l'utilisateur.
+Les six routes sont désormais authentifiées par `apiAuthMiddleware` (Bearer, `JWT_SECRET`).
+Le seul écart restant est que ce middleware **ne vérifie pas le rôle** : y ajouter
+`role === "admin"` déconnecterait l'application mobile si son compte n'est pas
+administrateur. Ne pas le faire sans confirmation explicite.
 
-### 2. Toute server action qui touche des données protégées vérifie elle-même les droits
+### 2. Toute server action qui touche des données protégées se garde elle-même
 
 Une server action est un endpoint POST public. Vérifier le rôle dans la page ne protège rien.
-Chaque action admin (`updateUser`, `deleteUser`, `getAllUsers`, `deleteOrder`,
-`markOrderAsPaid`, `deleteProduct`, `createArticle`, …) doit appeler `auth()` et refuser si
-`session?.user?.role !== "admin"`. Chaque action portant sur une ressource utilisateur
-(commande, panier, profil) doit vérifier la **propriété** de la ressource, pas seulement
-l'authentification.
+Utiliser les gardes de `lib/auth-guards.ts` :
+
+- `requireAdmin()` — action d'administration ;
+- `requireUser()` — action réservée aux membres connectés ;
+- `requireOwnerOrAdmin(ownerId)` — accès à une ressource appartenant à quelqu'un ;
+- `isAdmin()` — pour moduler un résultat sans refuser (prévisualisation d'un brouillon).
+
+Elles lèvent une exception, que le `try/catch` des actions convertit en
+`{ success: false, message }`.
+
+⚠️ Ces gardes lisent la session Auth.js et ne conviennent donc pas aux fonctions appelées par
+l'API mobile, qui s'authentifie par JWT : `blockProductUnit`, `releaseProductUnit` et
+`declareSale` doivent rester sans garde de session — leur contrôle d'accès appartient à la
+couche route.
 
 ### 3. Un seul client Prisma, et jamais dans l'Edge runtime
 

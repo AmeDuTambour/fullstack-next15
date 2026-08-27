@@ -14,7 +14,9 @@ import Image from "next/image";
 type FeaturedItem = {
   id: string;
   slug: string;
-  banner?: string | null;
+  /** Obligatoire : le carrousel n'affiche que ce visuel. La home filtre en
+   *  amont les contenus qui n'en ont pas. */
+  banner: string;
   title?: string;
   name?: string;
 };
@@ -40,7 +42,7 @@ const FeaturedCarousel: React.FC<FeaturedCarouselProps> = ({ data }) => {
             <Link href={`/${item.name ? "product" : "blog"}/${item.slug}`}>
               <div className="relative mx-auto">
                 <Image
-                  src={item.banner || "/default-banner.jpg"}
+                  src={item.banner}
                   alt={item.name || item.title || "Image"}
                   width={800}
                   height={400}

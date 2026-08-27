@@ -34,7 +34,8 @@ export const PAYMENT_METHODS = process.env.PAYMENT_METHODS
 export const DEFAULT_PAYMENT_METHOD =
   process.env.DEFAULT_PAYMENT_METHOD || "Stripe";
 
-export const PAGE_SIZE = Number(process.env.PAGE_SIZE) || 2;
+// 2 par défaut paginait la boutique deux produits par page.
+export const PAGE_SIZE = Number(process.env.PAGE_SIZE) || 12;
 
 export const productBaseDefaultValue = {
   name: "",

@@ -209,6 +209,7 @@ describe("POST /api/products/[identifier]/block · /release", () => {
 
     const blocked = await callApi(`/api/products/${fx.product.id}/block`, {
       method: "POST",
+      token,
       body: { quantity: 2 },
     });
     expect(blocked.status).toBe(200);
@@ -219,6 +220,7 @@ describe("POST /api/products/[identifier]/block · /release", () => {
 
     const released = await callApi(`/api/products/${fx.product.id}/release`, {
       method: "POST",
+      token,
       body: { quantity: 2 },
     });
     expect(released.status).toBe(200);
@@ -228,6 +230,7 @@ describe("POST /api/products/[identifier]/block · /release", () => {
   it("refuse une quantité non strictement positive", async () => {
     const res = await callApi(`/api/products/${fx.product.id}/block`, {
       method: "POST",
+      token,
       body: { quantity: 0 },
     });
 
@@ -242,6 +245,7 @@ describe("POST /api/products/[identifier]/declare-sale", () => {
 
     const res = await callApi(`/api/products/${fx.product.id}/declare-sale`, {
       method: "POST",
+      token,
       body: { quantity: 1, useReservation: false },
     });
 
@@ -255,12 +259,14 @@ describe("POST /api/products/[identifier]/declare-sale", () => {
   it("consomme une unité réservée sans retoucher au stock", async () => {
     await callApi(`/api/products/${fx.product.id}/block`, {
       method: "POST",
+      token,
       body: { quantity: 1 },
     });
     const afterBlock = await readProduct(fx.product.id);
 
     const res = await callApi(`/api/products/${fx.product.id}/declare-sale`, {
       method: "POST",
+      token,
       body: { quantity: 1, useReservation: true },
     });
 
@@ -274,6 +280,7 @@ describe("POST /api/products/[identifier]/declare-sale", () => {
   it("refuse de vendre plus d'unités réservées qu'il n'en existe", async () => {
     const res = await callApi(`/api/products/${fx.product.id}/declare-sale`, {
       method: "POST",
+      token,
       body: { quantity: 9999, useReservation: true },
     });
 
@@ -284,6 +291,7 @@ describe("POST /api/products/[identifier]/declare-sale", () => {
   it("refuse une valeur non booléenne pour useReservation", async () => {
     const res = await callApi(`/api/products/${fx.product.id}/declare-sale`, {
       method: "POST",
+      token,
       body: { quantity: 1, useReservation: "oui" },
     });
 
@@ -292,36 +300,67 @@ describe("POST /api/products/[identifier]/declare-sale", () => {
   });
 });
 
-/**
- * Deux écarts de sécurité connus, figés ici pour être corrigés sciemment — avec
- * le client mobile — et non découverts par accident au milieu d'un refactor.
- *
- *  1. `block`, `release` et `declare-sale` n'exigent aucune authentification,
- *     alors que `GET /api/products` et `PATCH /api/products/[id]` en exigent une.
- *  2. `apiAuthMiddleware` vérifie la signature du jeton mais jamais le rôle :
- *     n'importe quel client inscrit sur la boutique peut muter le stock.
- */
-describe("écarts de sécurité connus (à corriger en phase 02)", () => {
-  it.each(["block", "release"])(
-    "%s accepte encore une requête sans jeton",
+describe("mutations de stock : authentification", () => {
+  it.each(["block", "release", "declare-sale"])(
+    "%s refuse une requête sans jeton",
     async (action) => {
+      const body =
+        action === "declare-sale"
+          ? { quantity: 1, useReservation: false }
+          : { quantity: 1 };
+
       const res = await callApi(`/api/products/${fx.product.id}/${action}`, {
         method: "POST",
-        body: { quantity: 1 },
+        body,
       });
 
-      expect(res.status).not.toBe(401);
-
-      if (action === "block") {
-        await callApi(`/api/products/${fx.product.id}/release`, {
-          method: "POST",
-          body: { quantity: 1 },
-        });
-      }
+      expect(res.status).toBe(401);
+      expect(res.json).toEqual({ message: "Not authenticated" });
     }
   );
 
-  it("un utilisateur au rôle 'user' peut muter le stock", async () => {
+  it.each(["block", "release", "declare-sale"])(
+    "%s refuse un jeton signé avec un autre secret",
+    async (action) => {
+      const forged = jwt.sign({ userId: fx.user.id }, "mauvais-secret");
+      const body =
+        action === "declare-sale"
+          ? { quantity: 1, useReservation: false }
+          : { quantity: 1 };
+
+      const res = await callApi(`/api/products/${fx.product.id}/${action}`, {
+        method: "POST",
+        token: forged,
+        body,
+      });
+
+      expect(res.status).toBe(401);
+    }
+  );
+
+  it("ne modifie pas le stock quand la requête est refusée", async () => {
+    const before = await readProduct(fx.product.id);
+
+    await callApi(`/api/products/${fx.product.id}/block`, {
+      method: "POST",
+      body: { quantity: 5 },
+    });
+
+    expect(await readProduct(fx.product.id)).toEqual(before);
+  });
+});
+
+/**
+ * Écart restant, figé pour être corrigé sciemment.
+ *
+ * `apiAuthMiddleware` vérifie la signature du jeton mais jamais le rôle :
+ * n'importe quel client inscrit sur la boutique peut obtenir un jeton via
+ * /api/auth/login et muter le stock. Fermer cet écart déconnecterait
+ * l'application mobile si le compte qu'elle utilise n'est pas administrateur —
+ * d'où l'attente d'une confirmation. Voir docs/api-mobile.md.
+ */
+describe("écart de sécurité restant : le rôle n'est pas vérifié", () => {
+  it("un utilisateur au rôle 'user' peut encore muter le stock", async () => {
     expect(fx.user.role).toBe("user");
 
     const res = await callApi(`/api/products/${fx.product.id}`, {

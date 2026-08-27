@@ -1,4 +1,5 @@
 import { hashSync } from "bcrypt-ts-edge";
+import slugify from "slugify";
 
 type ProductType = {
   name: string;
@@ -108,7 +109,12 @@ for (let i = 1; i <= 30; i++) {
 
   sampleData.products.push({
     name: `Tambour TMB${i.toString().padStart(3, "0")} en peau de ${skinType}`,
-    slug: `tambour-TMB${i.toString().padStart(3, "0")}-peau-${skinType.toLowerCase()}`,
+    // slugify, comme le fait le formulaire d'administration : un slug
+    // accentué ne se retrouve pas après encodage dans l'URL.
+    slug: slugify(`tambour-TMB${i.toString().padStart(3, "0")}-peau-${skinType}`, {
+      lower: true,
+      strict: true,
+    }),
     description: `Un tambour unique avec une peau de ${skinType}`,
     images: [],
     price: 100 + i,

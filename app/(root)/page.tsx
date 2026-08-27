@@ -21,6 +21,9 @@ const HomePage = async () => {
   const featuredProducts = await getFeaturedProducts();
   const featuredArticles = await getFeaturedArticles();
 
+  // Le carrousel n'affiche qu'une bannière : un contenu mis en avant sans
+  // visuel produisait une image cassée (le repli `/default-banner.jpg`
+  // n'existe pas dans public/). On l'écarte plutôt que de l'afficher vide.
   const featuredContent = [
     ...featuredArticles.map((article) => ({
       id: article.id,
@@ -36,7 +39,9 @@ const HomePage = async () => {
           name: product.name,
         }))
       : []),
-  ];
+  ].filter((item): item is typeof item & { banner: string } =>
+    Boolean(item.banner)
+  );
 
   return (
     <>
