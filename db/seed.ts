@@ -165,6 +165,7 @@ async function main() {
             position: index + 1,
             title: section.title,
             body: section.body,
+            image: section.image ?? null,
           })),
         },
       },

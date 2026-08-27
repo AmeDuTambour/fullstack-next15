@@ -134,10 +134,14 @@ table : `Drum` (peau + dimensions) ou `Other` (couleur / matière / taille), jam
   donc des outils légitimes ici — mais jamais pointés ailleurs que sur la branche `dev`.
 - `npm run seed` exige désormais `--force` et affiche l'hôte visé avant d'effacer quoi que
   ce soit : `npm run seed -- --force`. Il produit 40 produits (34 publiés) et 3 articles.
-- Les produits et articles n'ont **aucune image** : il faut les vraies photos de l'atelier
-  avant de pouvoir juger l'interface. Pour la même raison, aucun contenu n'est `isFeatured` —
-  le carrousel de la home affiche `banner` et se rabattrait sur un `/default-banner.jpg`
-  inexistant.
+- Les visuels réels de l'atelier sont référencés dans `db/media.ts` : cinq tambours
+  photographiés (face avant et arrière) et les bannières des trois articles. Le reste du
+  catalogue est généré pour le volume et reste sans image.
+- ⚠️ Les **textes** des articles seedés sont des remplissages, marqués « TEXTE DE
+  REMPLISSAGE ». Ils doivent être remplacés par les mots de Julien avant toute mise en ligne.
+- UploadThing est en v7 : le jeton est `UPLOADTHING_TOKEN` (JSON base64), pas la clé héritée
+  `sk_live_…`. Les fichiers sont servis depuis `<appId>.ufs.sh`, autorisé dans
+  `next.config.ts`. Côté client, lire `res[0].ufsUrl` — `url` et `appUrl` disparaissent en v9.
 - Contrairement à ce que laissait craindre l'unique migration datée de février 2025, le
   schéma n'a **pas** dérivé : `prisma migrate diff` entre la base et le datamodel est vide,
   et la migration crée exactement les 17 modèles du schéma. Pas de `migrate reset` à faire.

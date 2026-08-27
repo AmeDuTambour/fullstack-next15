@@ -112,8 +112,8 @@ const PublishProductForm: React.FC<PublishProductFormProps> = ({ product }) => {
                 </Card>
                 <UploadButton
                   endpoint="imageUploader"
-                  onClientUploadComplete={(res: { url: string }[]) => {
-                    form.setValue("banner", res[0].url);
+                  onClientUploadComplete={(res: { ufsUrl: string }[]) => {
+                    form.setValue("banner", res[0].ufsUrl);
                   }}
                   onUploadError={(error: Error) => {
                     toast({

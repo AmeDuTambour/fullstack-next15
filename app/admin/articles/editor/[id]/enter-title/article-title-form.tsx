@@ -238,8 +238,8 @@ const ArticleTitleForm: React.FC<ArticleTitleFormProps> = ({
                   <FormControl>
                     <UploadButton
                       endpoint="imageUploader"
-                      onClientUploadComplete={(res: { url: string }[]) => {
-                        form.setValue("thumbnail", res[0].url, {
+                      onClientUploadComplete={(res: { ufsUrl: string }[]) => {
+                        form.setValue("thumbnail", res[0].ufsUrl, {
                           shouldValidate: true,
                         });
                       }}

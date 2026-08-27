@@ -221,8 +221,8 @@ export const SectionEditor = ({
                   <FormControl>
                     <UploadButton
                       endpoint="imageUploader"
-                      onClientUploadComplete={(res: { url: string }[]) => {
-                        form.setValue("image", res[0].url, {
+                      onClientUploadComplete={(res: { ufsUrl: string }[]) => {
+                        form.setValue("image", res[0].ufsUrl, {
                           shouldDirty: true,
                         });
                       }}

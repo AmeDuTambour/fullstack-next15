@@ -227,10 +227,10 @@ const BaseProductForm = ({ product, categories }: BaseProductFormProps) => {
                       <FormControl>
                         <UploadButton
                           endpoint="imageUploader"
-                          onClientUploadComplete={(res: { url: string }[]) => {
+                          onClientUploadComplete={(res: { ufsUrl: string }[]) => {
                             form.setValue("images", [
                               ...(form.watch("images") || []),
-                              res[0].url,
+                              res[0].ufsUrl,
                             ]);
                           }}
                           onUploadError={(error: Error) => {
