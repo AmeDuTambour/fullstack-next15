@@ -27,9 +27,17 @@ export const shippingAddressDefaultValues = {
   country: "",
 };
 
+// Le parsing est `split(", ")` : dans .env, la virgule doit être suivie
+// d'une espace. Les libellés affichés sont dans PAYMENT_METHOD_LABELS.
 export const PAYMENT_METHODS = process.env.PAYMENT_METHODS
   ? process.env.PAYMENT_METHODS.split(", ")
-  : ["Stripe", "Transfer"];
+  : ["Stripe", "PayPal", "Transfer"];
+
+export const PAYMENT_METHOD_LABELS: Record<string, string> = {
+  Stripe: "Carte bancaire",
+  PayPal: "PayPal",
+  Transfer: "Virement bancaire",
+};
 
 export const DEFAULT_PAYMENT_METHOD =
   process.env.DEFAULT_PAYMENT_METHOD || "Stripe";

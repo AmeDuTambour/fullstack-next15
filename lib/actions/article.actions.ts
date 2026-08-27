@@ -3,6 +3,7 @@
 import { prisma } from "@/db/prisma";
 import { convertToPlainObject, formatError } from "../utils";
 import {
+  insertArticleCommentSchema,
   insertArticleSchema,
   updateArticleSchema,
   updateArticleSectionSchema,
@@ -12,7 +13,12 @@ import { z } from "zod";
 import { Prisma } from "@prisma/client";
 import { articleSectionFormDefaultValues } from "../constants";
 import { Article } from "@/types";
-import { isAdmin, requireAdmin } from "../auth-guards";
+import {
+  isAdmin,
+  requireAdmin,
+  requireOwnerOrAdmin,
+  requireUser,
+} from "../auth-guards";
 
 function sortByCategory(articles: Array<Article>): {
   [key: string]: Article[];
@@ -383,6 +389,94 @@ export async function getArticleCategories() {
   try {
     const data = await prisma.articleCategory.findMany();
     return { success: true, data };
+  } catch (error) {
+    return { success: false, message: formatError(error) };
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/*                          Commentaires d'articles                           */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Les commentaires sont publics en lecture, réservés aux membres connectés en
+ * écriture. Chacun peut supprimer les siens ; un administrateur peut supprimer
+ * n'importe lequel, ce qui tient lieu de modération.
+ */
+export async function getArticleComments(articleId: string) {
+  try {
+    const data = await prisma.articleComment.findMany({
+      where: { articleId },
+      orderBy: { createdAt: "desc" },
+      include: {
+        user: { select: { id: true, name: true } },
+      },
+    });
+
+    return { success: true, data: convertToPlainObject(data) };
+  } catch (error) {
+    return { success: false, message: formatError(error), data: [] };
+  }
+}
+
+export async function createArticleComment(
+  articleId: string,
+  data: z.infer<typeof insertArticleCommentSchema>
+) {
+  try {
+    const { userId } = await requireUser();
+    const comment = insertArticleCommentSchema.parse(data);
+
+    const article = await prisma.article.findFirst({
+      where: { id: articleId },
+      select: { slug: true, isPublished: true },
+    });
+
+    if (!article) throw new Error("Article introuvable");
+
+    // Pas de commentaire sur un brouillon : il n'est pas censé être visible.
+    if (!article.isPublished) {
+      throw new Error("Cet article n'est pas publié");
+    }
+
+    const res = await prisma.articleComment.create({
+      data: {
+        articleId,
+        userId,
+        title: comment.title,
+        body: comment.body,
+      },
+    });
+
+    revalidatePath(`/blog/${article.slug}`);
+
+    return {
+      success: true,
+      message: "Commentaire publié",
+      data: convertToPlainObject(res),
+    };
+  } catch (error) {
+    return { success: false, message: formatError(error) };
+  }
+}
+
+export async function deleteArticleComment(commentId: string) {
+  try {
+    const comment = await prisma.articleComment.findFirst({
+      where: { id: commentId },
+      include: { article: { select: { slug: true } } },
+    });
+
+    if (!comment) throw new Error("Commentaire introuvable");
+
+    // L'auteur supprime le sien, l'administrateur modère.
+    await requireOwnerOrAdmin(comment.userId);
+
+    await prisma.articleComment.delete({ where: { id: commentId } });
+
+    revalidatePath(`/blog/${comment.article.slug}`);
+
+    return { success: true, message: "Commentaire supprimé" };
   } catch (error) {
     return { success: false, message: formatError(error) };
   }

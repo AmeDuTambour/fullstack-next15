@@ -18,11 +18,9 @@ import { requireAdmin, requireOwnerOrAdmin } from "../auth-guards";
 export async function createOrder() {
   try {
     const session = await auth();
-    console.log("Session récupérée:", session);
     if (!session) throw new Error("User is not authenticated");
 
     const cart = await getUserCart();
-    console.log("Panier récupéré:", cart);
 
     const userId = session?.user?.id;
     if (!userId) throw new Error("User not found");
@@ -134,6 +132,7 @@ export async function createPayPalOrder(orderId: string) {
       },
     });
     if (order) {
+      await requireOwnerOrAdmin(order.userId);
       const payPalOrder = await paypal.createOrder(Number(order.totalPrice));
       await prisma.order.update({
         where: {
@@ -174,6 +173,8 @@ export async function approvePayPalOrder(
     });
 
     if (!order) throw new Error("Order not found");
+    await requireOwnerOrAdmin(order.userId);
+
     const captureData = await paypal.capturePayment(data.orderID);
     if (
       !captureData ||
@@ -190,7 +191,7 @@ export async function approvePayPalOrder(
         status: captureData.status,
         email_address: captureData.payer.email_address,
         pricePaid:
-          captureData.purchase_units[0]?.payments?.captures[0]?.amout?.value,
+          captureData.purchase_units[0]?.payments?.captures[0]?.amount?.value,
       },
     });
 
@@ -434,6 +435,6 @@ export async function markOrderAsDelivered(orderId: string) {
       message: "Order has been marked delivered",
     };
   } catch (error) {
-    return { succes: false, message: formatError(error) };
+    return { success: false, message: formatError(error) };
   }
 }

@@ -78,6 +78,7 @@ export type ArticleComment = z.infer<typeof insertArticleCommentSchema> & {
   articleId: string;
   createdAt: Date;
   updatedAt: Date;
+  user?: { id: string; name: string };
 };
 
 export type ContactFormData = z.infer<typeof contactFormSchema>;

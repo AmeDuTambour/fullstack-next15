@@ -50,7 +50,7 @@ const AdminArticlesPage = async () => {
                   )}
                 </Link>
               </CardHeader>
-              <CardContent className="='p-4 grid gap-4">
+              <CardContent className="p-4 grid gap-4">
                 <h3 className="h3-bold truncate">{article.title}</h3>
                 <Link
                   href={`/admin/articles/editor/${article.id}/add-sections`}

@@ -7,7 +7,11 @@ import React, { useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { DEFAULT_PAYMENT_METHOD, PAYMENT_METHODS } from "@/lib/constants";
+import {
+  DEFAULT_PAYMENT_METHOD,
+  PAYMENT_METHODS,
+  PAYMENT_METHOD_LABELS,
+} from "@/lib/constants";
 import {
   Form,
   FormControl,
@@ -89,9 +93,8 @@ const PaymentMethodForm: React.FC<PaymentMethodFormProps> = ({
                               />
                             </FormControl>
                             <FormLabel className="font-normal">
-                              {paymentMethod === "Stripe"
-                                ? "Carte Bancaire"
-                                : "Virement"}
+                              {PAYMENT_METHOD_LABELS[paymentMethod] ??
+                                paymentMethod}
                             </FormLabel>
                           </FormItem>
                         ))}

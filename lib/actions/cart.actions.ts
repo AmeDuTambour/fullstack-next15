@@ -101,8 +101,6 @@ export async function addItemToCart(data: CartItem) {
       };
     }
   } catch (error) {
-    console.log("Catch error:", error);
-
     return {
       success: false,
       message: formatError(error),

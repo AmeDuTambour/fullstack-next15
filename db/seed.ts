@@ -74,6 +74,7 @@ async function main() {
   console.log("✅ Catégories, peaux, dimensions et utilisateurs insérés.");
 
   let published = 0;
+  let comments = 0;
 
   for (const product of sampleData.products) {
     const category = await prisma.productCategory.findUnique({
@@ -150,7 +151,7 @@ async function main() {
       create: { id: article.categoryId, name: article.categoryName },
     });
 
-    await prisma.article.create({
+    const createdArticle = await prisma.article.create({
       data: {
         title: article.title,
         slug: article.slug,
@@ -168,9 +169,32 @@ async function main() {
         },
       },
     });
+
+    for (const comment of article.comments) {
+      const author = await prisma.user.findUnique({
+        where: { email: comment.authorEmail },
+      });
+
+      if (!author) {
+        console.warn(`⚠️  Auteur introuvable : ${comment.authorEmail}`);
+        continue;
+      }
+
+      await prisma.articleComment.create({
+        data: {
+          articleId: createdArticle.id,
+          userId: author.id,
+          title: comment.title,
+          body: comment.body,
+        },
+      });
+      comments++;
+    }
   }
 
-  console.log(`✅ ${sampleData.articles.length} articles insérés.`);
+  console.log(
+    `✅ ${sampleData.articles.length} articles insérés, avec ${comments} commentaires.`
+  );
   console.log("\n🥁 Base de démonstration prête.\n");
 }
 

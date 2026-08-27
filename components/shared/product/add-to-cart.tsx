@@ -33,7 +33,7 @@ const AddToCart: React.FC<AddToCartProps> = ({ item, cart }) => {
         description: res.message,
         action: (
           <ToastAction
-            className="bg-primary text-white , hover:bg-gray-800"
+            className="bg-primary text-primary-foreground hover:bg-primary/90"
             altText="Go To Cart"
             onClick={() => router.push("/cart")}
           >
@@ -88,7 +88,7 @@ const AddToCart: React.FC<AddToCartProps> = ({ item, cart }) => {
   ) : (
     <Button
       disabled={isPending}
-      className="'w-full"
+      className="w-full"
       type="button"
       onClick={handleAddToCart}
     >

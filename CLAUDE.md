@@ -143,9 +143,14 @@ table : `Drum` (peau + dimensions) ou `Other` (couleur / matière / taille), jam
   et la migration crée exactement les 17 modèles du schéma. Pas de `migrate reset` à faire.
 - `prisma migrate` passe mal à travers le pooler PgBouncer : le schéma déclare un
   `directUrl` (`DIRECT_URL`, le même hôte sans `-pooler`). Garder les deux en phase.
-- `ArticleComment` est modélisé et chargé dans toutes les requêtes d'articles, mais n'est ni
-  affiché ni créé nulle part. PayPal est câblé de bout en bout mais absent de
-  `PAYMENT_METHODS`. Les deux sont du code mort.
+- Les commentaires d'articles sont implémentés : lecture publique, écriture réservée aux
+  membres connectés, suppression par l'auteur ou par un administrateur — c'est ce qui tient
+  lieu de modération. Pas de commentaire sur un brouillon.
+- PayPal est actif : `PAYMENT_METHODS` vaut `Stripe, PayPal, Transfer`. Le tester exige des
+  identifiants sandbox (`PAYPAL_CLIENT_ID`, `PAYPAL_APP_SECRET`) ; sans eux, le bouton
+  s'affiche mais la création de commande échoue.
+- Les libellés des moyens de paiement vivent dans `PAYMENT_METHOD_LABELS` (`lib/constants`),
+  pas en dur dans les composants.
 - `.env.example` est incomplet : il manque `STRIPE_SECRET_KEY`,
   `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`, `STRIPE_WEBHOOK_SECRET`, `RESEND_API_KEY`,
   `SENDER_EMAIL`, `JWT_SECRET`, `UPLOADTHING_TOKEN`, `PAGE_SIZE`, `LATEST_PRODUCTS_LIMIT`,

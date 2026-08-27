@@ -220,7 +220,6 @@ export async function updateBaseProduct(
   try {
     await requireAdmin();
     const product = UpdateProductSchema.parse(data);
-    console.log("Validating product: ", product);
 
     const existingProduct = await prisma.product.findUnique({
       where: { id: product.id },

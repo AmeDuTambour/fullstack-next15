@@ -4,6 +4,7 @@ import ArticleSectionBlock from "./article-section-block";
 import { formatDateTime } from "@/lib/utils";
 import ShareButton from "@/components/shared/share-button";
 import { Separator } from "@/components/ui/separator";
+import Comments from "./comments";
 
 const ArticlePage = async (props: {
   params: Promise<{
@@ -31,11 +32,10 @@ const ArticlePage = async (props: {
       <Separator className="my-2" />
       {article.sections.map((section) => (
         <div key={section.sectionId} className="pt-16">
-          {" "}
-          {/* Espacement réduit */}
           <ArticleSectionBlock section={section} />
         </div>
       ))}
+      <Comments articleId={article.id} slug={slug} />
     </div>
   );
 };

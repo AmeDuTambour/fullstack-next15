@@ -32,6 +32,7 @@ type ArticleType = {
   banner: string | null;
   thumbnail: string | null;
   sections: { title: string; body: string }[];
+  comments: { authorEmail: string; title: string; body: string }[];
 };
 
 const sampleData: {
@@ -148,6 +149,18 @@ sampleData.articles = [
     isFeatured: false,
     banner: null,
     thumbnail: null,
+    comments: [
+      {
+        authorEmail: "jeancharlesbarq@gmail.com",
+        title: "Question sur le bison",
+        body: "Combien de temps faut-il pour qu'une peau de bison s'installe vraiment ?",
+      },
+      {
+        authorEmail: "amedutambour@gmail.com",
+        title: "Réponse",
+        body: "Quelques semaines de jeu régulier. La peau se détend, puis se stabilise.",
+      },
+    ],
     sections: [
       {
         title: "La chèvre, une voix claire",
@@ -168,6 +181,7 @@ sampleData.articles = [
     isFeatured: false,
     banner: null,
     thumbnail: null,
+    comments: [],
     sections: [
       {
         title: "L'humidité fait le son",
@@ -188,6 +202,7 @@ sampleData.articles = [
     isFeatured: false,
     banner: null,
     thumbnail: null,
+    comments: [],
     sections: [
       {
         title: "Au pied des Pyrénées",

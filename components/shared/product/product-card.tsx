@@ -32,7 +32,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           )}
         </Link>
       </CardHeader>
-      <CardContent className="='p-4 grid gap-4">
+      <CardContent className="p-4 grid gap-4">
         <Link href={`/product/${product.slug}`}>
           <h2 className="text-sm font-medium">{product.name}</h2>
         </Link>
