@@ -1,8 +1,6 @@
 # Specification Quality Checklist: Cohérence de l'interface et du parcours d'achat
 
-**Purpose**: Validate specification completeness and quality before proceeding to planning
-**Created**: 2026-08-28
-**Feature**: [spec.md](../spec.md)
+**Created**: 2026-08-28 · **Feature**: [spec.md](../spec.md)
 
 ## Content Quality
 
@@ -16,7 +14,7 @@
 - [x] No [NEEDS CLARIFICATION] markers remain
 - [x] Requirements are testable and unambiguous
 - [x] Success criteria are measurable
-- [x] Success criteria are technology-agnostic (no implementation details)
+- [x] Success criteria are technology-agnostic
 - [x] All acceptance scenarios are defined
 - [x] Edge cases are identified
 - [x] Scope is clearly bounded
@@ -31,35 +29,19 @@
 
 ## Notes
 
-C'est la spécification la plus large des cinq : dix-huit exigences, cinq histoires. Elle a été
-maintenue d'un seul tenant parce que ses parties partagent la même cause — aucun langage de
-composants commun — et que les traiter séparément produirait trois fois le même arbitrage.
+**Deux valeurs manquent et ne peuvent pas être inventées** : le délai d'expédition réel, et
+l'explication du jargon métier — ce que change une peau de bison, ce que signifie `45x7`. Le
+plan prévoit leur emplacement ; leur contenu doit venir de l'artisan. Sans eux, FR-003 et
+FR-016 sont structurellement livrés mais matériellement vides.
 
-Les cinq histoires sont néanmoins livrables indépendamment, dans l'ordre de priorité indiqué.
-Si le périmètre doit être réduit, les stories 1 et 2 suffisent à répondre à la demande
-initiale du propriétaire.
+**Point de vigilance du plan.** La nature d'un produit est liée à sa catégorie. Une catégorie
+renommée, ou une troisième ajoutée, hérite du comportement de repli — « article reproductible ».
+C'est le choix le moins destructeur, puisqu'il n'interdit rien et ne promet aucune rareté, mais
+il est silencieux : rien ne signalera qu'une nouvelle catégorie de pièces uniques est traitée
+comme du stock courant.
 
-**Correction de fond après retour du propriétaire, le 2026-08-28.** La première rédaction
-parlait d'un délai de fabrication, en reprenant une question de l'audit qui supposait une
-fabrication à la commande. C'est faux : les tambours vendus sont **déjà fabriqués et existent
-en un seul exemplaire**. Seul le délai d'expédition est à annoncer.
-
-Cette correction a ouvert un sujet bien plus important qu'un renommage, devenu la story 2 :
-l'interface traite chaque tambour comme une référence de catalogue reproductible. Le panier
-propose d'augmenter la quantité, la fiche annonce « En stock », et un tambour vendu s'affiche
-« Stock épuisé » — formule qui promet un réassort qui n'arrivera jamais. FR-003b et SC-009
-rendent la règle vérifiable.
-
-**Question tranchée par le propriétaire le 2026-08-28 : les accessoires existent bien en
-plusieurs exemplaires.** La nature du produit est donc portée par sa catégorie — tambour, pièce
-unique ; accessoire, article reproductible — et non par une propriété saisie produit par
-produit. FR-003b, FR-003c et FR-003d couvrent les deux cas, y compris la contrainte que
-l'administration ne puisse pas saisir deux exemplaires d'un tambour.
-
-**Point de vigilance pour le plan.** Lier une règle métier à une catégorie suppose que les
-catégories soient stables. Le catalogue n'en compte que deux aujourd'hui ; une troisième devra
-déclarer sa nature, faute de quoi elle héritera d'un comportement arbitraire.
-
-**Collision assumée avec la spécification 004.** Cette spécification déplace et fusionne des
-composants que la 004 doit ensuite reteinter. L'ordre 002 puis 004 est délibéré et documenté
-dans les hypothèses des deux.
+**Tension avec l'article IV de la constitution**, résolue en conception. Plusieurs exigences
+sont visuelles et ne se testent pas unitairement. Trois règles sont isolées en fonctions pures
+— format de prix, nature, disponibilité — et testées ; le reste passe par le guide de
+validation, dont la section 7 couvre le défaut qu'une revue statique avait manqué et qu'une
+mesure au navigateur avait révélé.
