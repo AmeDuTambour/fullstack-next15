@@ -108,8 +108,15 @@ sur la fiche produit et dans le récapitulatif.
 - La mettre en configuration permet à l'artisan de la modifier sans redéploiement de code, et
   garantit qu'elle est identique aux deux endroits où elle apparaît.
 
-**À confirmer avec le propriétaire** : la valeur elle-même. La spécification ne peut pas
-l'inventer.
+**Valeur retenue : « 2 à 4 jours ouvrés ».**
+
+⚠️ **Cette valeur n'est pas une information métier vérifiée.** Le propriétaire du dépôt n'est
+pas l'artisan et ne connaît pas le délai réel ; il a proposé cet ordre de grandeur pour
+débloquer le travail. Elle doit être confirmée par Julien avant toute mise en ligne, au même
+titre que les textes de remplissage des articles.
+
+En conséquence, la valeur est portée par la configuration et non écrite dans un composant :
+la corriger ne doit demander ni recherche dans le code, ni redéploiement.
 
 ---
 
