@@ -100,6 +100,41 @@ for (let i = 1; i <= 10; i++) {
   });
 }
 
+// Tambours de remplissage, générés avant les vrais pour que « Nouvel arrivage »
+// — trié par date de création décroissante — mette en avant les cinq tambours
+// réellement photographiés, et non des cartes sans image.
+// Tambours
+for (let i = 1; i <= 30; i++) {
+  const skinType =
+    sampleData.skinTypes[i % sampleData.skinTypes.length].material;
+  const dimension =
+    sampleData.drumDimensions[i % sampleData.drumDimensions.length].size;
+
+  sampleData.products.push({
+    name: `Tambour TMB${i.toString().padStart(3, "0")} en peau de ${skinType}`,
+    // slugify, comme le fait le formulaire d'administration : un slug
+    // accentué ne se retrouve pas après encodage dans l'URL.
+    slug: slugify(`tambour-TMB${i.toString().padStart(3, "0")}-peau-${skinType}`, {
+      lower: true,
+      strict: true,
+    }),
+    description: `Un tambour unique avec une peau de ${skinType}`,
+    images: [],
+    price: 100 + i,
+    stock: 5 + (i % 10),
+    isFeatured: false,
+    // Quelques brouillons volontaires, pour éprouver le filtre de l'admin.
+    isPublished: i % 7 !== 0,
+    banner: null,
+    codeIdentifier: `TMB${i.toString().padStart(3, "0")}`,
+    category: "Drum",
+    specifications: {
+      skinType,
+      dimensions: dimension,
+    },
+  });
+}
+
 /**
  * Les cinq tambours réellement photographiés par l'atelier. Leurs visuels
  * viennent du compte UploadThing ; le reste du catalogue est généré pour le
@@ -138,41 +173,6 @@ for (const drum of realDrums) {
     codeIdentifier: code,
     category: "Drum",
     specifications: { skinType: drum.skinType, dimensions: drum.dimensions },
-  });
-}
-
-// Les tambours sont générés en dernier pour que « Nouvel arrivage », qui trie
-// par date de création décroissante, mette en avant des tambours et non des
-// accessoires.
-// Tambours
-for (let i = 1; i <= 30; i++) {
-  const skinType =
-    sampleData.skinTypes[i % sampleData.skinTypes.length].material;
-  const dimension =
-    sampleData.drumDimensions[i % sampleData.drumDimensions.length].size;
-
-  sampleData.products.push({
-    name: `Tambour TMB${i.toString().padStart(3, "0")} en peau de ${skinType}`,
-    // slugify, comme le fait le formulaire d'administration : un slug
-    // accentué ne se retrouve pas après encodage dans l'URL.
-    slug: slugify(`tambour-TMB${i.toString().padStart(3, "0")}-peau-${skinType}`, {
-      lower: true,
-      strict: true,
-    }),
-    description: `Un tambour unique avec une peau de ${skinType}`,
-    images: [],
-    price: 100 + i,
-    stock: 5 + (i % 10),
-    isFeatured: false,
-    // Quelques brouillons volontaires, pour éprouver le filtre de l'admin.
-    isPublished: i % 7 !== 0,
-    banner: null,
-    codeIdentifier: `TMB${i.toString().padStart(3, "0")}`,
-    category: "Drum",
-    specifications: {
-      skinType,
-      dimensions: dimension,
-    },
   });
 }
 
