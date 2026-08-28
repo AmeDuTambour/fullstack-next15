@@ -9,11 +9,12 @@
  * stockés en base, et les messages destinés aux développeurs ou à l'application
  * mobile — ces derniers restent en anglais.
  */
+import { account } from "./account";
 import { common } from "./common";
 import { errors } from "./errors";
 import { order } from "./order";
 import { payment } from "./payment";
 
-export const labels = { common, errors, order, payment } as const;
+export const labels = { account, common, errors, order, payment } as const;
 
-export { common, errors, order, payment };
+export { account, common, errors, order, payment };

@@ -2,9 +2,10 @@ import { Metadata } from "next";
 import { auth } from "@/auth";
 import { SessionProvider } from "next-auth/react";
 import ProfileForm from "./profile-form";
+import { account as t } from "@/lib/labels";
 
 export const metadata: Metadata = {
-  title: "Customer Profile",
+  title: "Mon profil",
 };
 
 const ProfilePage = async () => {
@@ -12,7 +13,7 @@ const ProfilePage = async () => {
   return (
     <SessionProvider session={session}>
       <div className="max-w-md mx-auto space-y-4">
-        <h2 className="h2-bold">Profile</h2>
+        <h2 className="h2-bold">{t.profileTitle}</h2>
         <ProfileForm />
       </div>
     </SessionProvider>

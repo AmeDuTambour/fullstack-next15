@@ -13,6 +13,7 @@ import Image from "next/image";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import SignUpForm from "./sign-up-form";
+import { account as t } from "@/lib/labels";
 
 export const metadata: Metadata = {
   title: "Sign Up",
@@ -52,9 +53,9 @@ const SignUpPage = async (props: {
               width={100}
             />
           </Link>
-          <CardTitle className="text-center">Create Account</CardTitle>
+          <CardTitle className="text-center">{t.signUpTitle}</CardTitle>
           <CardDescription className="text-center">
-            Enter your information below to sign up
+            {t.signUpDescription}
           </CardDescription>
         </CardHeader>
         <CardContent>

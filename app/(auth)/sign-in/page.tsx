@@ -12,6 +12,7 @@ import Image from "next/image";
 import CredentialsSignInForm from "./credentials-sign-in-form";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
+import { account as t } from "@/lib/labels";
 
 export const metadata: Metadata = {
   title: "Sign In",
@@ -51,9 +52,9 @@ const SignInPage = async (props: {
               width={100}
             />
           </Link>
-          <CardTitle className="text-center">Se connecter</CardTitle>
+          <CardTitle className="text-center">{t.signInTitle}</CardTitle>
           <CardDescription className="text-center">
-            Connectez-vous à votre compte
+            {t.signInDescription}
           </CardDescription>
         </CardHeader>
         <CardContent>

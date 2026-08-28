@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import { account as t } from "@/lib/labels";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -24,7 +25,7 @@ const CredentialsSignInForm = () => {
 
     return (
       <Button disabled={pending} className="w-full">
-        {pending ? "Signing In..." : "Sign In"}
+        {pending ? t.signingIn : t.signIn}
       </Button>
     );
   };

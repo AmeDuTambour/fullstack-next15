@@ -196,6 +196,67 @@ async function main() {
   console.log(
     `✅ ${sampleData.articles.length} articles insérés, avec ${comments} commentaires.`
   );
+
+  // Trois commandes de démonstration, une par état, pour que les écrans de
+  // commande et l'historique aient quelque chose à montrer. Sans elles, les
+  // deux pages sont vides et invérifiables.
+  const buyer = await prisma.user.findFirstOrThrow({
+    where: { email: "jeancharlesbarq@gmail.com" },
+  });
+  const soldDrums = await prisma.product.findMany({
+    where: { images: { isEmpty: false } },
+    take: 3,
+  });
+
+  const shippingAddress = {
+    fullName: "Jean-Charles Barq",
+    streetAddress: "12 rue des Couteliers",
+    city: "Mirepoix",
+    postalCode: "09500",
+    country: "France",
+  };
+
+  const orderStates = [
+    { method: "Stripe", isPaid: true, isDelivered: true },
+    { method: "Stripe", isPaid: true, isDelivered: false },
+    { method: "Transfer", isPaid: false, isDelivered: false },
+  ];
+
+  for (const [index, state] of orderStates.entries()) {
+    const product = soldDrums[index];
+    if (!product) continue;
+
+    const itemsPrice = Number(product.price);
+    const shippingPrice = itemsPrice > 150 ? 0 : 10;
+
+    await prisma.order.create({
+      data: {
+        userId: buyer.id,
+        shippingAddress,
+        paymentMethod: state.method,
+        itemsPrice,
+        shippingPrice,
+        taxPrice: Math.round((itemsPrice / 6) * 100) / 100,
+        totalPrice: itemsPrice + shippingPrice,
+        isPaid: state.isPaid,
+        paidAt: state.isPaid ? new Date() : null,
+        isDelivered: state.isDelivered,
+        deliveredAt: state.isDelivered ? new Date() : null,
+        orderitems: {
+          create: {
+            productId: product.id,
+            qty: 1,
+            price: product.price,
+            name: product.name,
+            slug: product.slug,
+            image: product.images[0] ?? "",
+          },
+        },
+      },
+    });
+  }
+
+  console.log(`✅ ${orderStates.length} commandes de démonstration insérées.`);
   console.log("\n🥁 Base de démonstration prête.\n");
 }
 

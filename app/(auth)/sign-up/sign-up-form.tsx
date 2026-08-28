@@ -1,4 +1,5 @@
 "use client";
+import { account as t } from "@/lib/labels";
 
 import { useActionState } from "react";
 import { Button } from "@/components/ui/button";
@@ -24,7 +25,7 @@ const SignUpForm = () => {
 
     return (
       <Button disabled={pending} className="w-full">
-        {pending ? "Submitting..." : "Sign Up"}
+        {pending ? t.signingUp : t.signUp}
       </Button>
     );
   };
@@ -67,7 +68,7 @@ const SignUpForm = () => {
           />
         </div>
         <div>
-          <Label htmlFor="confirmPassword">Confirmation du mot de passe</Label>
+          <Label htmlFor="confirmPassword">{t.confirmPassword}</Label>
           <Input
             id="confirmPassword"
             name="confirmPassword"

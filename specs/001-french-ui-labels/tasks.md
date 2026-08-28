@@ -92,11 +92,11 @@ tout texte non français.
 **Test indépendant** : ouvrir les deux écrans d'authentification et l'espace compte, vérifier
 qu'aucun mot anglais ne subsiste, états transitoires compris.
 
-- [ ] T026 [US3] Créer `lib/labels/account.ts` avec les libellés d'authentification et d'espace compte
-- [ ] T027 [P] [US3] Traduire `app/(auth)/sign-in/page.tsx` et `credentials-sign-in-form.tsx` — titre de carte, bouton, état d'envoi
-- [ ] T028 [P] [US3] Traduire `app/(auth)/sign-up/page.tsx` et `sign-up-form.tsx` — titre, description, bouton, état d'envoi
-- [ ] T029 [P] [US3] Traduire `app/user/main-nav.tsx`, `app/user/profile/page.tsx`, `profile-form.tsx` et `app/user/orders/page.tsx`
-- [ ] T030 [US3] Ajouter les étiquettes manquantes aux champs de `profile-form.tsx` — ils n'ont aujourd'hui qu'un texte d'exemple, qui disparaît à la saisie
+- [X] T026 [US3] Créer `lib/labels/account.ts` avec les libellés d'authentification et d'espace compte
+- [X] T027 [P] [US3] Traduire `app/(auth)/sign-in/page.tsx` et `credentials-sign-in-form.tsx` — titre de carte, bouton, état d'envoi
+- [X] T028 [P] [US3] Traduire `app/(auth)/sign-up/page.tsx` et `sign-up-form.tsx` — titre, description, bouton, état d'envoi
+- [X] T029 [P] [US3] Traduire `app/user/main-nav.tsx`, `app/user/profile/page.tsx`, `profile-form.tsx` et `app/user/orders/page.tsx`
+- [X] T030 [US3] Ajouter les étiquettes manquantes aux champs de `profile-form.tsx` — ils n'ont aujourd'hui qu'un texte d'exemple, qui disparaît à la saisie
 
 ---
 

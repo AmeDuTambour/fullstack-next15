@@ -4,10 +4,11 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
+import { account as t } from "@/lib/labels";
 
 const links = [
-  { title: "Profile", href: "/user/profile" },
-  { title: "Orders", href: "/user/orders" },
+  { title: t.profile, href: "/user/profile" },
+  { title: t.orders, href: "/user/orders" },
 ];
 
 type MainNavProps = React.HTMLAttributes<HTMLElement>;
