@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { getOrderById } from "@/lib/actions/order.actions";
 import Link from "next/link";
+import { order as t } from "@/lib/labels";
 import { notFound, redirect } from "next/navigation";
 import Stripe from "stripe";
 
@@ -43,10 +44,10 @@ const SuccessPage = async (props: {
   return (
     <div className="max-w-4xl w-full mx-auto space-y-8">
       <div className="flex flex-col gap-6 items-center">
-        <h1 className="h1-bold">Merci pour votre commande 🙏</h1>
-        <div>Nous traitons votre commande 📦</div>
+        <h1 className="h1-bold">{t.thanksTitle}</h1>
+        <div>{t.thanksBody}</div>
         <Button asChild>
-          <Link href={`/order/${id}`}>Voir la commande</Link>
+          <Link href={`/order/${id}`}>{t.viewOrder}</Link>
         </Button>
       </div>
     </div>

@@ -29,6 +29,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import StripePayment from "./stripe-payment";
+import { common, order as t } from "@/lib/labels";
 
 type OrderDetailsTableProps = {
   order: Omit<Order, "paymentResult">;
@@ -64,10 +65,10 @@ const OrderDetailsTable: React.FC<OrderDetailsTableProps> = ({
     const [{ isPending, isRejected }] = usePayPalScriptReducer();
     let status = "";
     if (isPending) {
-      status = "Loading PayPal...";
+      status = t.paypalLoading;
     }
     if (isRejected) {
-      status = "Error Loading PayPal";
+      status = t.paypalError;
     }
     return status;
   };
@@ -108,7 +109,7 @@ const OrderDetailsTable: React.FC<OrderDetailsTableProps> = ({
           })
         }
       >
-        {isPending ? "Processing..." : "Mark As Paid"}
+        {isPending ? common.processing : t.markAsPaid}
       </Button>
     );
   };
@@ -131,32 +132,32 @@ const OrderDetailsTable: React.FC<OrderDetailsTableProps> = ({
           })
         }
       >
-        {isPending ? "Processing..." : "Mark As Delivered"}
+        {isPending ? common.processing : t.markAsDelivered}
       </Button>
     );
   };
 
   return (
     <>
-      <h1 className="py-4 text-2xl">Order {formatId(id)}</h1>
+      <h1 className="py-4 text-2xl">{t.title(formatId(id))}</h1>
       <div className="grid md:grid-cols-3 md:gap-5">
         <div className="col-span-2 space-4-y overflow-x-auto">
           <Card>
             <CardContent className="p-4 gap-4">
-              <h2 className="text-xl pb-4">Payment Method</h2>
+              <h2 className="text-xl pb-4">{t.paymentMethod}</h2>
               <p className="mb-2">{paymentMethod}</p>
               {isPaid ? (
                 <Badge variant="secondary">
-                  Paid at {formatDateTime(paidAt!).dateTime}
+                  {t.paidAt(formatDateTime(paidAt!).dateTime)}
                 </Badge>
               ) : (
-                <Badge variant="destructive">Not paid</Badge>
+                <Badge variant="outline">{t.awaitingPayment}</Badge>
               )}
             </CardContent>
           </Card>
           <Card className="my-2">
             <CardContent className="p-4 gap-4">
-              <h2 className="text-xl pb-4">Shipping Address</h2>
+              <h2 className="text-xl pb-4">{t.shippingAddress}</h2>
               <p>{shippingAddress.fullName}</p>
               <p className="mb-2">
                 {shippingAddress.streetAddress}, {shippingAddress.city}{" "}
@@ -164,22 +165,22 @@ const OrderDetailsTable: React.FC<OrderDetailsTableProps> = ({
               </p>
               {isDelivered ? (
                 <Badge variant="secondary">
-                  Delivered at {formatDateTime(deliveredAt!).dateTime}
+                  {t.deliveredAt(formatDateTime(deliveredAt!).dateTime)}
                 </Badge>
               ) : (
-                <Badge variant="destructive">Not delivered</Badge>
+                <Badge variant="outline">{t.notDelivered}</Badge>
               )}
             </CardContent>
           </Card>
           <Card className="my-2">
             <CardContent className="p-4 gap-4">
-              <h2 className="text-xl pb-4">Order Items</h2>
+              <h2 className="text-xl pb-4">{t.items}</h2>
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Item</TableHead>
-                    <TableHead>Quantity</TableHead>
-                    <TableHead>Price</TableHead>
+                    <TableHead>{common.product}</TableHead>
+                    <TableHead>{common.quantity}</TableHead>
+                    <TableHead>{common.price}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -216,19 +217,19 @@ const OrderDetailsTable: React.FC<OrderDetailsTableProps> = ({
           <Card>
             <CardContent className="p-4 gap-4 space-y-4">
               <div className="flex justify-between">
-                <div>Items</div>
+                <div>{t.itemsSubtotal}</div>
                 <div>{formatCurrency(itemsPrice)}</div>
               </div>
               <div className="flex justify-between">
-                <div>Tax</div>
+                <div>{t.tax}</div>
                 <div>{formatCurrency(taxPrice)}</div>
               </div>
               <div className="flex justify-between">
-                <div>Shipping</div>
+                <div>{t.shipping}</div>
                 <div>{formatCurrency(shippingPrice)}</div>
               </div>
               <div className="flex justify-between">
-                <div>Total</div>
+                <div>{t.total}</div>
                 <div>{formatCurrency(totalPrice)}</div>
               </div>
               {!isPaid && paymentMethod === "PayPal" ? (
@@ -256,26 +257,20 @@ const OrderDetailsTable: React.FC<OrderDetailsTableProps> = ({
               ) : null}
 
               {!isPaid && paymentMethod === "Transfer" ? (
-                <div className="bg-blue-300 p-3 rounded-md text-black">
-                  <p>
-                    Merci pour votre commande. Notre équipe vous contactera très
-                    prochainement pour finaliser le paiement par virement
-                    bancaire.
-                  </p>
-                  <p className="text-sm mt-2">
-                    Vous recevrez un email avec les détails du compte de
-                    virement sous peu.
+                <div className="rounded-md border p-3">
+                  <p className="font-medium">{t.transferPendingTitle}</p>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    {t.transferPendingBody}
                   </p>
                 </div>
               ) : null}
 
-              <div className="bg-red-800 p-3 rounded-md text-blue-800">
-                {isAdmin && !isPaid ? <MarkAsPaidButton /> : null}
-
-                {isAdmin && isPaid && !isDelivered ? (
-                  <MarkAsDeliveredButton />
-                ) : null}
-              </div>
+              {isAdmin && (!isPaid || !isDelivered) ? (
+                <div className="rounded-md border p-3">
+                  {!isPaid ? <MarkAsPaidButton /> : null}
+                  {isPaid && !isDelivered ? <MarkAsDeliveredButton /> : null}
+                </div>
+              ) : null}
             </CardContent>
           </Card>
         </div>

@@ -25,10 +25,10 @@ spécification.
 
 ## Phase 1 : Mise en place
 
-- [ ] T001 Créer le répertoire `lib/labels/` et son point d'entrée `lib/labels/index.ts`, exportant un objet unique typé `as const` conformément à [contracts/labels.md](./contracts/labels.md)
-- [ ] T002 [P] Créer `lib/labels/common.ts` avec les actions et états partagés — enregistrer, annuler, supprimer, modifier, retour, suivant, précédent, chargement en cours
-- [ ] T003 [P] Créer `lib/labels/errors.ts` avec les messages d'échec présentés au visiteur, dont le message générique de repli unique
-- [ ] T004 Déplacer `PAYMENT_METHOD_LABELS` de `lib/constants/index.ts` vers `lib/labels/`, en conservant l'export existant en réexport pour ne casser aucun appelant
+- [X] T001 Créer le répertoire `lib/labels/` et son point d'entrée `lib/labels/index.ts`, exportant un objet unique typé `as const` conformément à [contracts/labels.md](./contracts/labels.md)
+- [X] T002 [P] Créer `lib/labels/common.ts` avec les actions et états partagés — enregistrer, annuler, supprimer, modifier, retour, suivant, précédent, chargement en cours
+- [X] T003 [P] Créer `lib/labels/errors.ts` avec les messages d'échec présentés au visiteur, dont le message générique de repli unique
+- [X] T004 Déplacer `PAYMENT_METHOD_LABELS` de `lib/constants/index.ts` vers `lib/labels/`, en conservant l'export existant en réexport pour ne casser aucun appelant
 
 ---
 
@@ -36,11 +36,11 @@ spécification.
 
 **⚠️ À terminer avant toute histoire utilisateur.**
 
-- [ ] T005 Remplacer `lang="en"` par `lang="fr"` dans `app/layout.tsx`
-- [ ] T006 Traduire les 35 messages de validation de `lib/validators.ts`, en corrigeant au passage les deux fautes de frappe (« at lest », « exatcly »)
-- [ ] T007 Réécrire `formatError` dans `lib/utils.ts` en table de correspondance : formes reconnues traduites depuis `lib/labels/errors.ts`, repli générique unique pour tout le reste, message d'origine journalisé côté serveur et jamais renvoyé
-- [ ] T008 ⚠️ Vérifier que les routes de `app/api/` renvoient toujours leurs messages **en anglais** — ils s'adressent à un client logiciel, pas à un humain. Exécuter `npm test` : les 23 tests de contrat doivent rester verts
-- [ ] T009 Vérifier que `npx tsc --noEmit` passe après l'introduction du référentiel
+- [X] T005 Remplacer `lang="en"` par `lang="fr"` dans `app/layout.tsx`
+- [X] T006 Traduire les 35 messages de validation de `lib/validators.ts`, en corrigeant au passage les deux fautes de frappe (« at lest », « exatcly »)
+- [X] T007 Réécrire `formatError` dans `lib/utils.ts` en table de correspondance : formes reconnues traduites depuis `lib/labels/errors.ts`, repli générique unique pour tout le reste, message d'origine journalisé côté serveur et jamais renvoyé
+- [X] T008 ⚠️ Vérifier que les routes de `app/api/` renvoient toujours leurs messages **en anglais** — ils s'adressent à un client logiciel, pas à un humain. Exécuter `npm test` : les 23 tests de contrat doivent rester verts
+- [X] T009 Vérifier que `npx tsc --noEmit` passe après l'introduction du référentiel
 
 **Point de contrôle** : la langue du document est correcte, les erreurs sont françaises côté
 site et inchangées côté API, et le référentiel est utilisable.
@@ -55,12 +55,12 @@ rouge anglais à un client qui vient de payer.
 **Test indépendant** : passer une commande avec chacun des trois moyens de paiement et lire la
 page de confirmation. Aucun mot anglais, aucun état formulé comme un échec.
 
-- [ ] T010 [US1] Créer `lib/labels/order.ts` avec les libellés du panier, du tunnel et de la page de commande
-- [ ] T011 [US1] Traduire `app/(root)/order/[id]/order-details-table.tsx` — titre, moyen de paiement, adresse de livraison, en-têtes du tableau, totaux, états payé et livré, actions d'administration
-- [ ] T012 [P] [US1] Traduire `app/(root)/order/[id]/StripeForm.tsx` — intitulé du paiement, état d'envoi, messages d'erreur
-- [ ] T013 [P] [US1] Traduire `app/(root)/order/[id]/stripe-payment-success/page.tsx` et vérifier la cohérence avec les autres fins de parcours
-- [ ] T014 [US1] Reformuler l'état de paiement en attente pour un virement : une étape à venir, pas un échec (scénario d'acceptation 2 de US1)
-- [ ] T015 [US1] Exécuter `npm test` et vérifier que la page de commande s'affiche correctement pour les trois moyens de paiement
+- [X] T010 [US1] Créer `lib/labels/order.ts` avec les libellés du panier, du tunnel et de la page de commande
+- [X] T011 [US1] Traduire `app/(root)/order/[id]/order-details-table.tsx` — titre, moyen de paiement, adresse de livraison, en-têtes du tableau, totaux, états payé et livré, actions d'administration
+- [X] T012 [P] [US1] Traduire `app/(root)/order/[id]/StripeForm.tsx` — intitulé du paiement, état d'envoi, messages d'erreur
+- [X] T013 [P] [US1] Traduire `app/(root)/order/[id]/stripe-payment-success/page.tsx` et vérifier la cohérence avec les autres fins de parcours
+- [X] T014 [US1] Reformuler l'état de paiement en attente pour un virement : une étape à venir, pas un échec (scénario d'acceptation 2 de US1)
+- [X] T015 [US1] Exécuter `npm test` et vérifier que la page de commande s'affiche correctement pour les trois moyens de paiement
 
 ---
 

@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { errors } from "@/lib/labels/errors";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -15,35 +16,57 @@ export function formatNumberWithDecimal(num: number): string {
   return decimal ? `${int}.${decimal.padEnd(2, "0")}` : `${int}.00`;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function formatError(error: any) {
-  if (error.name === "ZodError") {
-    const fieldErrors = Object.keys(error.errors).map(
-      (field) => error.errors[field].message
-    );
-    return fieldErrors.join(". ");
-  }
-  if (
-    error.name === "PrismaClientKnownRequestError" &&
-    error.code === "P2002"
-  ) {
-    const field = error.meta?.target ? error.meta.target[0] : "Field";
-
-    return `${field.charAt(0).toUpperCase() + field.slice(1)} already exists`;
-  }
-
-  return typeof error.message === "string"
-    ? error.message
-    : JSON.stringify(error.message);
-}
+type ErrorLike = {
+  name?: string;
+  code?: string;
+  message?: unknown;
+  errors?: Record<string, { message?: string }>;
+  meta?: { target?: string[] };
+};
 
 /**
- * Arrondit à deux décimales.
+ * Met en forme une erreur pour l'afficher à un visiteur.
  *
- * Le parenthésage était faux — `Math.round(((v + EPSILON) * 100) / 100)` vaut
- * `Math.round(v)` — et tous les totaux de panier et de commande perdaient leurs
- * centimes. La multiplication doit être arrondie avant la division.
+ * Table de correspondance, pas passe-plat : seules les formes reconnues sont
+ * traduites, tout le reste retourne un message générique unique. L'implémentation
+ * précédente se terminait par un retour du message brut — c'est par là que
+ * l'anglais de Prisma atteignait des notifications françaises, et par là qu'un
+ * détail d'implémentation pouvait fuir vers un visiteur.
+ *
+ * ⚠️ Ne concerne QUE les server actions du site. Les routes de `app/api/`
+ * n'utilisent pas cette fonction : leurs messages s'adressent à l'application
+ * mobile, restent en anglais, et sont figés par les tests de contrat.
  */
+export function formatError(error: unknown): string {
+  const e = (error ?? {}) as ErrorLike;
+
+  // Validation : les messages des schémas sont déjà rédigés en français.
+  if (e.name === "ZodError" && e.errors) {
+    const fieldErrors = Object.keys(e.errors).map(
+      (field) => e.errors![field]?.message ?? ""
+    );
+    const joined = fieldErrors.filter(Boolean).join(". ");
+    if (joined) return joined;
+  }
+
+  // Refus d'autorisation : le message des gardes est déjà en français.
+  if (e.name === "AuthorizationError" && typeof e.message === "string") {
+    return e.message;
+  }
+
+  // Contrainte d'unicité : le champ est nommé en clair, jamais par sa colonne.
+  if (e.name === "PrismaClientKnownRequestError" && e.code === "P2002") {
+    const column = e.meta?.target?.[0];
+    const readable = column ? errors.fieldNames[column] : undefined;
+    if (readable) return errors.alreadyExists(readable);
+    return errors.unexpected;
+  }
+
+  // Tout le reste : journalisé côté serveur, générique côté visiteur.
+  console.error("Erreur non reconnue :", error);
+  return errors.unexpected;
+}
+
 export function round2(value: number | string) {
   const numeric = typeof value === "number" ? value : Number(value);
 

@@ -505,6 +505,12 @@ export async function getProductByCodeIdentifier(codeIdentifier: string) {
   return convertToPlainObject(product);
 }
 
+/**
+ * ⚠️ Les messages d'erreur de cette fonction et des deux suivantes sont renvoyés
+ * tels quels par les routes de `app/api/`, consommées par l'application mobile.
+ * Ils s'adressent à un client logiciel, pas à un humain : ils restent en anglais
+ * et sont figés par les tests de contrat. Ne pas les traduire.
+ */
 export async function blockProductUnit(id: string, quantity: number) {
   const product = await prisma.product.findUnique({
     where: { id },

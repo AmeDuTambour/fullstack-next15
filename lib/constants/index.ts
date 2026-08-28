@@ -33,11 +33,11 @@ export const PAYMENT_METHODS = process.env.PAYMENT_METHODS
   ? process.env.PAYMENT_METHODS.split(", ")
   : ["Stripe", "PayPal", "Transfer"];
 
-export const PAYMENT_METHOD_LABELS: Record<string, string> = {
-  Stripe: "Carte bancaire",
-  PayPal: "PayPal",
-  Transfer: "Virement bancaire",
-};
+/**
+ * Déplacé dans le référentiel de libellés (`lib/labels/payment.ts`).
+ * Réexporté ici pour ne casser aucun appelant existant.
+ */
+export { methodLabels as PAYMENT_METHOD_LABELS } from "@/lib/labels/payment";
 
 export const DEFAULT_PAYMENT_METHOD =
   process.env.DEFAULT_PAYMENT_METHOD || "Stripe";
