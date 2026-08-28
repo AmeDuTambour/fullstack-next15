@@ -50,10 +50,15 @@ propose d'augmenter la quantité, la fiche annonce « En stock », et un tambour
 « Stock épuisé » — formule qui promet un réassort qui n'arrivera jamais. FR-003b et SC-009
 rendent la règle vérifiable.
 
-**Point de vigilance pour le plan.** La règle de pièce unique vaut pour les tambours. Les
-accessoires peuvent exister en plusieurs exemplaires : le plan devra vérifier si le modèle
-diffère par catégorie. Les données actuelles ne tranchent pas — les cinq tambours réels ont un
-stock de 1, mais les produits de démonstration en portent jusqu'à 14.
+**Question tranchée par le propriétaire le 2026-08-28 : les accessoires existent bien en
+plusieurs exemplaires.** La nature du produit est donc portée par sa catégorie — tambour, pièce
+unique ; accessoire, article reproductible — et non par une propriété saisie produit par
+produit. FR-003b, FR-003c et FR-003d couvrent les deux cas, y compris la contrainte que
+l'administration ne puisse pas saisir deux exemplaires d'un tambour.
+
+**Point de vigilance pour le plan.** Lier une règle métier à une catégorie suppose que les
+catégories soient stables. Le catalogue n'en compte que deux aujourd'hui ; une troisième devra
+déclarer sa nature, faute de quoi elle héritera d'un comportement arbitraire.
 
 **Collision assumée avec la spécification 004.** Cette spécification déplace et fusionne des
 composants que la 004 doit ensuite reteinter. L'ordre 002 puis 004 est délibéré et documenté

@@ -41,17 +41,22 @@ panier, le montant courant et les frais restent visibles. Livrable seul.
 
 ### User Story 2 - Le tambour se présente comme la pièce unique qu'il est (Priority: P1)
 
-Chaque tambour est un objet unique, déjà fabriqué, existant en un seul exemplaire. L'interface
-le traite pourtant comme une référence de catalogue reproductible : le panier propose
-d'augmenter la quantité, la fiche affiche « En stock » comme s'il y avait un réassort, et un
-tambour vendu s'annonce « Stock épuisé » — formule qui laisse croire qu'il reviendra.
+Le catalogue contient deux natures de produits, et l'interface les confond. Un **tambour** est
+un objet unique, déjà fabriqué, existant en un seul exemplaire : vendu, il ne revient pas. Un
+**accessoire** existe au contraire en plusieurs exemplaires et se réapprovisionne normalement.
+
+Aujourd'hui les deux sont traités comme des références de catalogue reproductibles : le panier
+propose d'augmenter la quantité y compris pour un tambour, la fiche affiche « En stock » comme
+s'il y avait un réassort, et un tambour vendu s'annonce « Stock épuisé » — formule qui laisse
+croire qu'il reviendra.
 
 **Why this priority**: C'est la nature même du produit, et l'argument qui justifie le prix. Une
 interface qui le présente comme un article de série efface ce qui le rend désirable, et promet
 implicitement un réapprovisionnement qui n'arrivera jamais.
 
-**Independent Test**: Consulter un tambour disponible puis un tambour vendu, et vérifier qu'à
-aucun moment l'interface ne suggère la possibilité d'en obtenir un second exemplaire.
+**Independent Test**: Consulter un tambour disponible, un tambour vendu, puis un accessoire,
+et vérifier que l'interface ne suggère jamais un second exemplaire d'un tambour, tout en
+laissant commander plusieurs accessoires.
 
 **Acceptance Scenarios**:
 
@@ -63,6 +68,10 @@ aucun moment l'interface ne suggère la possibilité d'en obtenir un second exem
    que cette pièce est vendue, sans laisser entendre qu'elle sera réapprovisionnée.
 4. **Given** un tambour vendu, **When** un visiteur consulte sa fiche, **Then** une
    continuation lui est proposée vers les pièces encore disponibles.
+5. **Given** un accessoire disponible en plusieurs exemplaires, **When** l'acheteur l'ajoute au
+   panier, **Then** il peut en demander plusieurs, dans la limite du stock.
+6. **Given** un accessoire momentanément indisponible, **When** un visiteur consulte sa fiche,
+   **Then** l'indisponibilité est formulée comme temporaire, à la différence d'un tambour vendu.
 
 ---
 
@@ -206,7 +215,11 @@ un instrument correspondant à un besoin, et observer s'il utilise les filtres.
   depuis le panier, et MUST provenir d'une source unique.
 - **FR-003b**: Un tambour MUST être présenté comme un exemplaire unique : aucune commande ne
   MUST permettre d'en demander plusieurs, et son indisponibilité MUST être formulée comme une
-  vente définitive et non comme une rupture temporaire.
+  vente définitive.
+- **FR-003c**: Un accessoire MUST rester commandable en plusieurs exemplaires dans la limite de
+  son stock, et son indisponibilité MUST être formulée comme temporaire.
+- **FR-003d**: Un tambour MUST ne jamais pouvoir porter plus d'un exemplaire disponible, y
+  compris lorsqu'il est saisi depuis l'espace d'administration.
 - **FR-004**: Toutes les commandes MUST aboutir à une page de confirmation unique, dont le
   message s'adapte au moyen de paiement.
 - **FR-005**: Un même rôle typographique MUST recevoir un traitement identique sur toutes les
@@ -246,6 +259,8 @@ un instrument correspondant à un besoin, et observer s'il utilise les filtres.
   affichée à plusieurs endroits.
 - **Pièce unique** : un tambour, existant en un seul exemplaire déjà fabriqué. Disponible ou
   vendu — jamais réapprovisionné.
+- **Article reproductible** : un accessoire, existant en plusieurs exemplaires et
+  réapprovisionnable. Disponible en quantité, ou temporairement épuisé.
 
 ## Success Criteria *(mandatory)*
 
@@ -267,14 +282,19 @@ un instrument correspondant à un besoin, et observer s'il utilise les filtres.
 - **SC-008**: Le taux d'abandon entre l'ajout au panier et la validation diminue.
 - **SC-009**: Aucun écran ne laisse penser qu'un tambour vendu pourrait redevenir disponible,
   ni qu'un second exemplaire pourrait être commandé.
+- **SC-010**: Un accessoire reste commandable en plusieurs exemplaires, et la distinction entre
+  une pièce vendue et un article temporairement épuisé est lisible sans explication.
 
 ## Assumptions
 
 - Les tambours vendus sont déjà fabriqués et existent en un seul exemplaire : il n'y a pas de
   fabrication à la commande, donc pas de délai de fabrication. Seul le délai d'expédition est
   à annoncer, et l'artisan peut le fournir.
-- Les accessoires, eux, peuvent exister en plusieurs exemplaires. La règle de pièce unique
-  s'applique aux tambours ; le plan devra vérifier si elle vaut pour toutes les catégories.
+- Les accessoires existent en plusieurs exemplaires et se réapprovisionnent : le propriétaire
+  l'a confirmé le 2026-08-28. La distinction est donc portée par la catégorie du produit, et
+  non par une propriété saisie au cas par cas.
+- Le catalogue ne comporte aujourd'hui que ces deux catégories. Une catégorie ajoutée plus tard
+  devra déclarer laquelle des deux natures elle suit.
 - Le récapitulatif latéral est adapté aux grands écrans. Sur mobile, une forme repliée ou
   résumée est acceptable tant que le montant reste visible.
 - L'explication du jargon — dimensions, types de peau — n'exige pas de nouvelle donnée en
