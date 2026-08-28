@@ -57,6 +57,16 @@ const sampleData: {
       password: hashSync("123456", 10),
       role: "admin",
     },
+    // Compte client de démonstration. Les deux comptes ci-dessus sont
+    // administrateurs : sans celui-ci, il est impossible de voir les écrans
+    // tels qu'un acheteur les voit — la page de commande affiche en plus les
+    // actions de gestion à un administrateur.
+    {
+      name: "Marie Lefèvre",
+      email: "cliente@example.test",
+      password: hashSync("123456", 10),
+      role: "user",
+    },
   ],
   categories: [{ name: "Drum" }, { name: "Other" }],
   skinTypes: [

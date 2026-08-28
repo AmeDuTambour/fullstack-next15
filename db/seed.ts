@@ -200,8 +200,11 @@ async function main() {
   // Trois commandes de démonstration, une par état, pour que les écrans de
   // commande et l'historique aient quelque chose à montrer. Sans elles, les
   // deux pages sont vides et invérifiables.
+  // Rattachées au compte client, pas à un administrateur : sur la page de
+  // commande, un administrateur voit en plus les actions de gestion, donc la
+  // vue serait celle du gestionnaire et non celle de l'acheteur.
   const buyer = await prisma.user.findFirstOrThrow({
-    where: { email: "jeancharlesbarq@gmail.com" },
+    where: { email: "cliente@example.test" },
   });
   const soldDrums = await prisma.product.findMany({
     where: { images: { isEmpty: false } },
@@ -209,7 +212,7 @@ async function main() {
   });
 
   const shippingAddress = {
-    fullName: "Jean-Charles Barq",
+    fullName: "Marie Lefèvre",
     streetAddress: "12 rue des Couteliers",
     city: "Mirepoix",
     postalCode: "09500",
