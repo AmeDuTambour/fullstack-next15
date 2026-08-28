@@ -39,9 +39,21 @@ Les cinq histoires sont néanmoins livrables indépendamment, dans l'ordre de pr
 Si le périmètre doit être réduit, les stories 1 et 2 suffisent à répondre à la demande
 initiale du propriétaire.
 
-**Point de vigilance pour le plan.** FR-003 exige une source unique pour le délai de
-fabrication, mais cette donnée n'existe nulle part aujourd'hui — ni en base, ni en
-configuration. Le plan devra décider où elle vit, et si elle varie par type d'instrument.
+**Correction de fond après retour du propriétaire, le 2026-08-28.** La première rédaction
+parlait d'un délai de fabrication, en reprenant une question de l'audit qui supposait une
+fabrication à la commande. C'est faux : les tambours vendus sont **déjà fabriqués et existent
+en un seul exemplaire**. Seul le délai d'expédition est à annoncer.
+
+Cette correction a ouvert un sujet bien plus important qu'un renommage, devenu la story 2 :
+l'interface traite chaque tambour comme une référence de catalogue reproductible. Le panier
+propose d'augmenter la quantité, la fiche annonce « En stock », et un tambour vendu s'affiche
+« Stock épuisé » — formule qui promet un réassort qui n'arrivera jamais. FR-003b et SC-009
+rendent la règle vérifiable.
+
+**Point de vigilance pour le plan.** La règle de pièce unique vaut pour les tambours. Les
+accessoires peuvent exister en plusieurs exemplaires : le plan devra vérifier si le modèle
+diffère par catégorie. Les données actuelles ne tranchent pas — les cinq tambours réels ont un
+stock de 1, mais les produits de démonstration en portent jusqu'à 14.
 
 **Collision assumée avec la spécification 004.** Cette spécification déplace et fusionne des
 composants que la 004 doit ensuite reteinter. L'ordre 002 puis 004 est délibéré et documenté

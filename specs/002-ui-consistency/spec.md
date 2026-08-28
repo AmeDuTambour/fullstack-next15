@@ -15,8 +15,8 @@
 Marie ajoute un tambour à 290 € au panier et commence la commande. Dès l'écran suivant, son
 tambour disparaît : elle saisit une adresse complète sur une page qui ne montre ni le produit,
 ni le montant, ni les frais de livraison. Elle découvre le coût de la livraison à la dernière
-étape, après avoir tout renseigné. Aucune indication de délai de fabrication n'apparaît nulle
-part sur le site — pour un objet fait à la main, c'est pourtant sa première question.
+étape, après avoir tout renseigné. Aucun délai d'expédition n'est annoncé nulle part — pour un
+achat à 290 € chez un artisan qu'elle ne connaît pas, c'est pourtant sa première question.
 
 **Why this priority**: C'est le point d'abandon classique du commerce en ligne, et il touche
 directement le chiffre d'affaires.
@@ -32,14 +32,41 @@ panier, le montant courant et les frais restent visibles. Livrable seul.
    **Then** les frais de livraison applicables lui sont annoncés avant qu'il ne saisisse la
    moindre donnée personnelle.
 3. **Given** un acheteur qui consulte un tambour ou son panier, **When** il cherche à savoir
-   sous quel délai il sera livré, **Then** le délai de fabrication annoncé lui est présenté.
+   sous quel délai il sera livré, **Then** le délai d'expédition annoncé lui est présenté.
 4. **Given** un acheteur qui vient de valider sa commande, **When** il arrive sur la
    confirmation, **Then** il voit la même page de remerciement quel que soit le moyen de
    paiement choisi, avec un message adapté à ce moyen.
 
 ---
 
-### User Story 2 - Le site donne l'impression d'avoir été fait par une seule main (Priority: P1)
+### User Story 2 - Le tambour se présente comme la pièce unique qu'il est (Priority: P1)
+
+Chaque tambour est un objet unique, déjà fabriqué, existant en un seul exemplaire. L'interface
+le traite pourtant comme une référence de catalogue reproductible : le panier propose
+d'augmenter la quantité, la fiche affiche « En stock » comme s'il y avait un réassort, et un
+tambour vendu s'annonce « Stock épuisé » — formule qui laisse croire qu'il reviendra.
+
+**Why this priority**: C'est la nature même du produit, et l'argument qui justifie le prix. Une
+interface qui le présente comme un article de série efface ce qui le rend désirable, et promet
+implicitement un réapprovisionnement qui n'arrivera jamais.
+
+**Independent Test**: Consulter un tambour disponible puis un tambour vendu, et vérifier qu'à
+aucun moment l'interface ne suggère la possibilité d'en obtenir un second exemplaire.
+
+**Acceptance Scenarios**:
+
+1. **Given** un tambour disponible, **When** l'acheteur consulte sa fiche, **Then** son
+   caractère unique lui est signalé explicitement.
+2. **Given** un tambour dans le panier, **When** l'acheteur regarde la ligne correspondante,
+   **Then** aucune commande ne lui propose d'en ajouter un second exemplaire.
+3. **Given** un tambour déjà vendu, **When** un visiteur atteint sa fiche, **Then** il apprend
+   que cette pièce est vendue, sans laisser entendre qu'elle sera réapprovisionnée.
+4. **Given** un tambour vendu, **When** un visiteur consulte sa fiche, **Then** une
+   continuation lui est proposée vers les pièces encore disponibles.
+
+---
+
+### User Story 3 - Le site donne l'impression d'avoir été fait par une seule main (Priority: P1)
 
 Aujourd'hui le titre principal change de taille selon la page — celui de la fiche produit est
 plus petit que le titre d'une section de l'accueil. Six pages n'ont aucun titre principal. Les
@@ -71,7 +98,7 @@ l'état, et vérifier qu'un même rôle reçoit partout le même traitement.
 
 ---
 
-### User Story 3 - L'acheteur sait toujours où il en est dans sa commande (Priority: P2)
+### User Story 4 - L'acheteur sait toujours où il en est dans sa commande (Priority: P2)
 
 La barre d'étapes affiche quatre puces, mais seule l'étape courante se distingue : rien ne
 sépare une étape franchie d'une étape à venir, et un séparateur orphelin s'affiche après la
@@ -96,7 +123,7 @@ navigateur.
 
 ---
 
-### User Story 4 - Thomas lit un article jusqu'au bout, puis va voir les tambours (Priority: P2)
+### User Story 5 - Thomas lit un article jusqu'au bout, puis va voir les tambours (Priority: P2)
 
 Le blog présente une file de carrousels, un par catégorie — dont un carrousel pour un article
 unique. Les commandes de défilement sont positionnées hors du cadre : sur mobile elles sont
@@ -129,7 +156,7 @@ grand écran.
 
 ---
 
-### User Story 5 - Marie comprend et utilise les filtres de la boutique (Priority: P2)
+### User Story 6 - Marie comprend et utilise les filtres de la boutique (Priority: P2)
 
 La boutique propose vingt filtres affichés comme du texte noir sur fond crème, sans
 soulignement, sans cadre, sans état de survol. Seul un caractère gras signale le filtre actif.
@@ -175,8 +202,11 @@ un instrument correspondant à un besoin, et observer s'il utilise les filtres.
   d'achat, du panier jusqu'à la validation.
 - **FR-002**: Les frais de livraison applicables MUST être annoncés avant toute saisie de
   données personnelles.
-- **FR-003**: Le délai de fabrication annoncé MUST être visible depuis la fiche produit et
+- **FR-003**: Le délai d'expédition annoncé MUST être visible depuis la fiche produit et
   depuis le panier, et MUST provenir d'une source unique.
+- **FR-003b**: Un tambour MUST être présenté comme un exemplaire unique : aucune commande ne
+  MUST permettre d'en demander plusieurs, et son indisponibilité MUST être formulée comme une
+  vente définitive et non comme une rupture temporaire.
 - **FR-004**: Toutes les commandes MUST aboutir à une page de confirmation unique, dont le
   message s'adapte au moyen de paiement.
 - **FR-005**: Un même rôle typographique MUST recevoir un traitement identique sur toutes les
@@ -212,8 +242,10 @@ un instrument correspondant à un besoin, et observer s'il utilise les filtres.
   courante, à venir.
 - **Indicateur d'état** : la représentation d'un état binaire métier — payé, livré, publié —
   toujours accompagnée de sa mention textuelle.
-- **Délai de fabrication** : la durée annoncée entre la commande et l'expédition. Valeur
-  unique, affichée à plusieurs endroits.
+- **Délai d'expédition** : la durée annoncée entre la commande et l'envoi. Valeur unique,
+  affichée à plusieurs endroits.
+- **Pièce unique** : un tambour, existant en un seul exemplaire déjà fabriqué. Disponible ou
+  vendu — jamais réapprovisionné.
 
 ## Success Criteria *(mandatory)*
 
@@ -233,11 +265,16 @@ un instrument correspondant à un besoin, et observer s'il utilise les filtres.
 - **SC-007**: Un lecteur arrivé au bout d'un article dispose toujours d'au moins une
   destination proposée.
 - **SC-008**: Le taux d'abandon entre l'ajout au panier et la validation diminue.
+- **SC-009**: Aucun écran ne laisse penser qu'un tambour vendu pourrait redevenir disponible,
+  ni qu'un second exemplaire pourrait être commandé.
 
 ## Assumptions
 
-- Le délai de fabrication est une donnée que l'artisan connaît et peut fournir. S'il varie
-  selon le type d'instrument, la source unique doit le permettre.
+- Les tambours vendus sont déjà fabriqués et existent en un seul exemplaire : il n'y a pas de
+  fabrication à la commande, donc pas de délai de fabrication. Seul le délai d'expédition est
+  à annoncer, et l'artisan peut le fournir.
+- Les accessoires, eux, peuvent exister en plusieurs exemplaires. La règle de pièce unique
+  s'applique aux tambours ; le plan devra vérifier si elle vaut pour toutes les catégories.
 - Le récapitulatif latéral est adapté aux grands écrans. Sur mobile, une forme repliée ou
   résumée est acceptable tant que le montant reste visible.
 - L'explication du jargon — dimensions, types de peau — n'exige pas de nouvelle donnée en

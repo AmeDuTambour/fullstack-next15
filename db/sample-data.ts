@@ -121,7 +121,9 @@ for (let i = 1; i <= 30; i++) {
     description: `Un tambour unique avec une peau de ${skinType}`,
     images: [],
     price: 100 + i,
-    stock: 5 + (i % 10),
+    // Chaque tambour est une pièce unique, déjà fabriquée : le stock ne peut
+    // valoir que 0 ou 1. Les accessoires, eux, existent en plusieurs exemplaires.
+    stock: i % 8 === 0 ? 0 : 1,
     isFeatured: false,
     // Quelques brouillons volontaires, pour éprouver le filtre de l'admin.
     isPublished: i % 7 !== 0,

@@ -37,6 +37,11 @@ spécification couvre l'existence, l'emplacement et l'accessibilité de ces page
 doit être fourni par le propriétaire ou son conseil. Sans lui, les pages peuvent être créées
 mais restent vides, et SC-008 n'est pas atteignable.
 
+Le propriétaire a indiqué le 2026-08-28 qu'il s'en occuperait plus tard. La mise en œuvre peut
+donc livrer la structure, les emplacements et les liens, et laisser le contenu en attente — à
+condition qu'une page annoncée mais vide ne soit jamais publiée telle quelle, ce que le cas
+limite déjà prévu couvre.
+
 **Point de vigilance.** Les mentions légales exigent des coordonnées d'entreprise. Si
 l'artisan ne souhaite pas publier son adresse d'atelier, l'obligation demeure et le plan devra
 trouver la forme acceptable.
