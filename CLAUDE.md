@@ -108,6 +108,11 @@ résorber, pas un exemple.
 
 ## Commandes
 
+⚠️ **Ne jamais supprimer `.next` pendant qu'un serveur de développement tourne.** Le serveur
+continue de servir des morceaux compilés qui n'existent plus, et chaque page tombe sur
+`Cannot find module './xxxx.js'`. Pour vérifier le build sans `.env`, arrêter le serveur
+d'abord, puis le relancer après.
+
 ```bash
 npm run dev          # serveur de dev
 npm run build        # build de production
