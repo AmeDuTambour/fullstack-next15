@@ -10,6 +10,7 @@ import Image from "next/image";
 import { EyeClosed, EyeIcon, ImageOff, PenIcon } from "lucide-react";
 import { formatDateTime } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { admin as t } from "@/lib/labels";
 
 const AdminArticlesPage = async () => {
   const articles = await getAllArticles({
@@ -21,11 +22,11 @@ const AdminArticlesPage = async () => {
   return (
     <div className="space-y-2">
       <div className="flex-between mb-8">
-        <h1 className="h1-bold">Articles</h1>
+        <h1 className="h1-bold">{t.articlesTitle}</h1>
         <Button asChild variant="default">
           <Link href="/admin/articles/editor/new/enter-title">
             <PenIcon />
-            New Article
+            {t.newArticle}
           </Link>
         </Button>
       </div>
@@ -56,21 +57,21 @@ const AdminArticlesPage = async () => {
                   href={`/admin/articles/editor/${article.id}/add-sections`}
                 >
                   <h2 className="text-xs font-medium">
-                    Created at: {formatDateTime(article.createdAt).dateOnly}
+                    {t.createdAt} {formatDateTime(article.createdAt).dateOnly}
                   </h2>
                   <h2 className="text-xs font-medium">
-                    Updated at: {formatDateTime(article.updatedAt).dateOnly}
+                    {t.updatedAt} {formatDateTime(article.updatedAt).dateOnly}
                   </h2>
                 </Link>
               </CardContent>
               <CardFooter className="w-full flex justify-end p-4">
                 {article.isPublished ? (
                   <div className="flex flex-row">
-                    <EyeIcon /> <span>Published</span>
+                    <EyeIcon /> <span>{t.published}</span>
                   </div>
                 ) : (
                   <div className="flex flex-row">
-                    <EyeClosed /> <span>Draft</span>
+                    <EyeClosed /> <span>{t.draft}</span>
                   </div>
                 )}
               </CardFooter>

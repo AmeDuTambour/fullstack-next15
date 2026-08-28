@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
-import { account as t } from "@/lib/labels";
+import { account as t, common as t2 } from "@/lib/labels";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -35,7 +35,7 @@ const CredentialsSignInForm = () => {
       <input type="hidden" name="callbackUrl" value={callbackUrl} />
       <div className="space-y-6">
         <div>
-          <Label htmlFor="email">E-mail</Label>
+          <Label htmlFor="email">{t2.email}</Label>
           <Input
             id="email"
             name="email"
@@ -46,7 +46,7 @@ const CredentialsSignInForm = () => {
           />
         </div>
         <div>
-          <Label htmlFor="password">Mot de passe</Label>
+          <Label htmlFor="password">{t2.password}</Label>
           <Input
             id="password"
             name="password"
@@ -63,9 +63,9 @@ const CredentialsSignInForm = () => {
           ) : null}
         </div>
         <div className="text-sm text-center text-muted-foreground">
-          Vous n&apos;avez pas de compte ?{" "}
+          {t.noAccount}{" "}
           <Link href="/sign-up" target="_self" className="link underline">
-            Inscrivez-vous
+            {t.goSignUp}
           </Link>
         </div>
       </div>

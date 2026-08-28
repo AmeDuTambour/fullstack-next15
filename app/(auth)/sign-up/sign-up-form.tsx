@@ -1,5 +1,5 @@
 "use client";
-import { account as t } from "@/lib/labels";
+import { account as t, common as t2 } from "@/lib/labels";
 
 import { useActionState } from "react";
 import { Button } from "@/components/ui/button";
@@ -35,7 +35,7 @@ const SignUpForm = () => {
       <input type="hidden" name="callbackUrl" value={callbackUrl} />
       <div className="space-y-6">
         <div>
-          <Label htmlFor="name">Nom</Label>
+          <Label htmlFor="name">{t2.name}</Label>
           <Input
             id="name"
             name="name"
@@ -46,7 +46,7 @@ const SignUpForm = () => {
           />
         </div>
         <div>
-          <Label htmlFor="email">E-mail</Label>
+          <Label htmlFor="email">{t2.email}</Label>
           <Input
             id="email"
             name="email"
@@ -57,7 +57,7 @@ const SignUpForm = () => {
           />
         </div>
         <div>
-          <Label htmlFor="password">Mot de passe</Label>
+          <Label htmlFor="password">{t2.password}</Label>
           <Input
             id="password"
             name="password"
@@ -85,9 +85,9 @@ const SignUpForm = () => {
           ) : null}
         </div>
         <div className="text-sm text-center text-muted-foreground">
-          Vous avez déjà un compte ?{" "}
+          {t.hasAccount}{" "}
           <Link href="/sign-in" target="_self" className="link underline">
-            Connectez-vous
+            {t.goSignIn}
           </Link>
         </div>
       </div>

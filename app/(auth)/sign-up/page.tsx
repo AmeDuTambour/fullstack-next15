@@ -16,7 +16,7 @@ import SignUpForm from "./sign-up-form";
 import { account as t } from "@/lib/labels";
 
 export const metadata: Metadata = {
-  title: "Sign Up",
+  title: "Créer un compte",
 };
 
 const SignUpPage = async (props: {

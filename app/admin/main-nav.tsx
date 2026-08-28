@@ -4,13 +4,14 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
+import { admin as t } from "@/lib/labels";
 
 const links = [
-  { title: "Overview", href: "/admin/overview" },
-  { title: "Products", href: "/admin/products" },
-  { title: "Orders", href: "/admin/orders" },
-  { title: "Users", href: "/admin/users" },
-  { title: "Articles", href: "/admin/articles" },
+  { title: t.nav.overview, href: "/admin/overview" },
+  { title: t.nav.products, href: "/admin/products" },
+  { title: t.nav.orders, href: "/admin/orders" },
+  { title: t.nav.users, href: "/admin/users" },
+  { title: t.nav.articles, href: "/admin/articles" },
 ];
 
 type MainNavProps = React.HTMLAttributes<HTMLElement>;

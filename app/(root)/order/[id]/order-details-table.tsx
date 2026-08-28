@@ -61,6 +61,16 @@ const OrderDetailsTable: React.FC<OrderDetailsTableProps> = ({
 
   const { toast } = useToast();
 
+  // Composée hors du balisage : une adresse est une donnée, pas un libellé.
+  const formattedAddress = [
+    shippingAddress.streetAddress,
+    shippingAddress.city,
+    shippingAddress.postalCode,
+    shippingAddress.country,
+  ]
+    .filter(Boolean)
+    .join(", ");
+
   const PrintLoadingState = () => {
     const [{ isPending, isRejected }] = usePayPalScriptReducer();
     let status = "";
@@ -93,6 +103,7 @@ const OrderDetailsTable: React.FC<OrderDetailsTableProps> = ({
 
   const MarkAsPaidButton = () => {
     const { toast } = useToast();
+
     const [isPending, startTransition] = useTransition();
 
     return (
@@ -116,6 +127,7 @@ const OrderDetailsTable: React.FC<OrderDetailsTableProps> = ({
 
   const MarkAsDeliveredButton = () => {
     const { toast } = useToast();
+
     const [isPending, startTransition] = useTransition();
 
     return (
@@ -159,10 +171,7 @@ const OrderDetailsTable: React.FC<OrderDetailsTableProps> = ({
             <CardContent className="p-4 gap-4">
               <h2 className="text-xl pb-4">{t.shippingAddress}</h2>
               <p>{shippingAddress.fullName}</p>
-              <p className="mb-2">
-                {shippingAddress.streetAddress}, {shippingAddress.city}{" "}
-                {shippingAddress.postalCode}, {shippingAddress.country}
-              </p>
+              <p className="mb-2">{formattedAddress}</p>
               {isDelivered ? (
                 <Badge variant="secondary">
                   {t.deliveredAt(formatDateTime(deliveredAt!).dateTime)}

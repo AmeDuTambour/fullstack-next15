@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
 import React from "react";
+import { admin as t } from "@/lib/labels";
 
 type EditorStepsProps = {
   current: number;
@@ -10,11 +11,11 @@ const EditorSteps: React.FC<EditorStepsProps> = ({
   current = 0,
   mode = "article",
 }) => {
-  const articleSteps = ["Enter a title", "Add sections", "Publish article"];
+  const articleSteps = [t.steps.enterTitle, t.steps.addSections, t.steps.publishArticle];
   const productStep = [
-    "Create product",
-    "Add specifications",
-    "Publish product",
+    t.steps.createProduct,
+    t.steps.addSpecifications,
+    t.steps.publishProduct,
   ];
   const steps = mode === "article" ? articleSteps : productStep;
 
@@ -30,7 +31,7 @@ const EditorSteps: React.FC<EditorStepsProps> = ({
           >
             {step}
           </div>
-          {step !== "Publish article" ? (
+          {index < steps.length - 1 ? (
             <hr className="w-56 border border-t-accent mx-2" />
           ) : null}
         </React.Fragment>

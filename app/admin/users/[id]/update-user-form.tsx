@@ -1,4 +1,5 @@
 "use client";
+import { admin as t, common } from "@/lib/labels";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -78,11 +79,11 @@ const UpdateUserForm: React.FC<UpdateUserFormProps> = ({ user }) => {
               >;
             }) => (
               <FormItem className="w-full">
-                <FormLabel>Email</FormLabel>
+                <FormLabel>{common.email}</FormLabel>
                 <FormControl>
                   <Input
                     disabled={true}
-                    placeholder="Enter user email"
+                    placeholder={common.email}
                     {...field}
                   />
                 </FormControl>
@@ -104,9 +105,9 @@ const UpdateUserForm: React.FC<UpdateUserFormProps> = ({ user }) => {
               >;
             }) => (
               <FormItem className="w-full">
-                <FormLabel>Name</FormLabel>
+                <FormLabel>{common.name}</FormLabel>
                 <FormControl>
-                  <Input placeholder="Enter user name" {...field} />
+                  <Input placeholder={common.name} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -126,14 +127,14 @@ const UpdateUserForm: React.FC<UpdateUserFormProps> = ({ user }) => {
               >;
             }) => (
               <FormItem className="w-full">
-                <FormLabel>Role</FormLabel>
+                <FormLabel>{common.role}</FormLabel>
                 <Select
                   onValueChange={field.onChange}
                   value={field.value.toString()}
                 >
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select a role" />
+                      <SelectValue placeholder={t.selectRole} />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
@@ -156,7 +157,7 @@ const UpdateUserForm: React.FC<UpdateUserFormProps> = ({ user }) => {
             className="w-full"
             disabled={form.formState.isSubmitting}
           >
-            {form.formState.isSubmitting ? "Submitting..." : "Update User"}
+            {form.formState.isSubmitting ? common.submitting : t.updateUser}
           </Button>
         </div>
       </form>

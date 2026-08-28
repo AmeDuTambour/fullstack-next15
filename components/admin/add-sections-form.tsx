@@ -1,4 +1,5 @@
 "use client";
+import { admin as t, common } from "@/lib/labels";
 
 import { ArticleSection } from "@/types";
 import { Button } from "../ui/button";
@@ -50,19 +51,19 @@ const AddSectionsForm: React.FC<ArticleSectionsFormProps> = ({
           ) : (
             <PlusIcon className="h-4 w-4" />
           )}{" "}
-          Add Section
+          {t.addSection}
         </Button>
       </div>
       <div className="flex justify-between">
         <Button disabled={isSaving} asChild type="button" variant="outline">
           <Link href={`/admin/articles/editor/${articleId}/enter-title`}>
-            Previous
+            {common.previous}
           </Link>
         </Button>
 
         <Button disabled={isSaving} asChild type="button" variant="outline">
           <Link href={`/admin/articles/editor/${articleId}/publish-article`}>
-            Next
+            {common.next}
           </Link>
         </Button>
       </div>

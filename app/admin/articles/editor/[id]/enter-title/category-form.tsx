@@ -1,4 +1,5 @@
 "use client";
+import { admin as t, common } from "@/lib/labels";
 
 import * as React from "react";
 import { useEffect } from "react";
@@ -88,19 +89,19 @@ export function CategoryForm({
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-2">
       <div className="w-full flex justify-center font-semibold">
-        {category ? "Update Category" : "Create Category"}
+        {category ? t.updateCategory : t.createCategory}
       </div>
 
       <Input
-        placeholder="Category name"
-        {...register("name", { required: "This field is required" })}
+        placeholder={t.categoryName}
+        {...register("name", { required: t.requiredField })}
       />
       {errors.name && (
         <p className="text-red-500 text-sm">{errors.name.message}</p>
       )}
 
       <Button type="submit" className="w-full">
-        {category ? "Update" : "Create"} Category
+        {category ? t.updateCategory : t.createCategory}
       </Button>
 
       {category && (
@@ -110,7 +111,7 @@ export function CategoryForm({
           type="button"
           onClick={handleDelete}
         >
-          Delete
+          {common.delete}
         </Button>
       )}
     </form>

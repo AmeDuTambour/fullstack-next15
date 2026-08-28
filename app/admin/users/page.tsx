@@ -14,9 +14,10 @@ import { deleteUser, getAllUsers } from "@/lib/actions/user.actions";
 import { formatId } from "@/lib/utils";
 import { Metadata } from "next";
 import Link from "next/link";
+import { admin as t, common } from "@/lib/labels";
 
 export const metadata: Metadata = {
-  title: "Admin Users",
+  title: "Utilisateurs",
 };
 
 const AdminUsersPage = async (props: {
@@ -31,13 +32,13 @@ const AdminUsersPage = async (props: {
   return (
     <div className="space-y-2">
       <div className="flex items-center gap-3">
-        <h1 className="h2-bold">Users</h1>
+        <h1 className="h2-bold">{t.usersTitle}</h1>
         {searchText && (
           <div>
-            Filtered by <i>&quot;{searchText}&quot;</i>{" "}
+            {t.filteredBy(searchText)}{" "}
             <Link href="/admin/users">
               <Button variant="outline" size="sm">
-                Remove Filter
+                {t.clearFilter}
               </Button>
             </Link>
           </div>
@@ -47,11 +48,11 @@ const AdminUsersPage = async (props: {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>ID</TableHead>
-              <TableHead>NAME</TableHead>
-              <TableHead>EMAIL</TableHead>
-              <TableHead>ROLE</TableHead>
-              <TableHead>ACTIONS</TableHead>
+              <TableHead>{t.reference}</TableHead>
+              <TableHead>{common.name}</TableHead>
+              <TableHead>{common.email}</TableHead>
+              <TableHead>{common.role}</TableHead>
+              <TableHead>{common.actions}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -62,14 +63,14 @@ const AdminUsersPage = async (props: {
                 <TableCell>{user.email}</TableCell>
                 <TableCell>
                   {user.role === "user" ? (
-                    <Badge variant="secondary">User</Badge>
+                    <Badge variant="secondary">{t.roleUser}</Badge>
                   ) : (
-                    <Badge variant="default">Admin</Badge>
+                    <Badge variant="default">{t.roleAdmin}</Badge>
                   )}
                 </TableCell>
                 <TableCell>
                   <Button asChild variant="outline" size="sm">
-                    <Link href={`/admin/users/${user.id}`}>Edit</Link>
+                    <Link href={`/admin/users/${user.id}`}>{common.edit}</Link>
                   </Button>
                   <DeleteDialog id={user.id} action={deleteUser} />
                 </TableCell>

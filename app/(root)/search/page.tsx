@@ -14,41 +14,38 @@ const sortOrders = [
   { query: "highest", label: "Prix + haut" },
 ];
 
+/**
+ * Titre de la page boutique.
+ *
+ * L'ancienne version construisait « Search : Category Drum » et s'appuyait sur
+ * des paramètres `price` et `rating` que la boutique n'expose pas — ils ne
+ * pouvaient donc jamais apparaître.
+ */
 export async function generateMetadata(props: {
   searchParams: Promise<{
-    q: string;
-    category: string;
-    price: string;
-    rating: string;
+    category?: string;
+    skin?: string;
+    dimension?: string;
   }>;
 }) {
-  const {
-    q = "all",
-    category = "all",
-    price = "all",
-    rating = "all",
-  } = await props.searchParams;
+  const { category = "all", skin = "all", dimension = "all" } =
+    await props.searchParams;
 
-  const isQuerySet = q && q !== "all" && q.trim() !== "";
-  const isCategorySet =
-    category && category !== "all" && category.trim() !== "";
-  const isPriceSet = price && price !== "all" && price.trim() !== "";
-  const isRatingSet = rating && rating !== "all" && rating.trim() !== "";
+  const precisions = [
+    category !== "all" && category !== ""
+      ? category === "Drum"
+        ? "Tambours"
+        : "Accessoires"
+      : null,
+    skin !== "all" ? `peau de ${skin.toLowerCase()}` : null,
+    dimension !== "all" ? dimension : null,
+  ].filter(Boolean);
 
-  if (isQuerySet || isCategorySet || isPriceSet || isRatingSet) {
-    return {
-      title: `
-        Search ${isQuerySet ? q : ""}
-        ${isCategorySet ? `: Category ${category}` : ""}
-        ${isPriceSet ? `: Price ${price}` : ""}
-        ${isRatingSet ? `: Rating ${rating}` : ""}
-      `,
-    };
-  } else {
-    return {
-      title: "Search Products",
-    };
-  }
+  return {
+    title: precisions.length
+      ? `Boutique — ${precisions.join(", ")}`
+      : "Boutique",
+  };
 }
 
 const SearchPage = async (props: {

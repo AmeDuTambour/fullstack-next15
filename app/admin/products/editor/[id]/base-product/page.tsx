@@ -5,9 +5,10 @@ import {
 } from "@/lib/actions/product.actions";
 import { Metadata } from "next";
 import BaseProductForm from "./base-product-form";
+import { admin as t } from "@/lib/labels";
 
 export const metadata: Metadata = {
-  title: "Create a product",
+  title: "Créer un produit",
 };
 
 const BaseProductPage = async (props: {
@@ -24,7 +25,7 @@ const BaseProductPage = async (props: {
     <>
       <EditorSteps current={0} mode="product" />
       <div className="flex flex-col p-4 gap-4">
-        <h1 className="h2-bold mt-4">Create a product</h1>
+        <h1 className="h2-bold mt-4">{t.createProductTitle}</h1>
       </div>
       <BaseProductForm product={product} categories={categories} />
     </>

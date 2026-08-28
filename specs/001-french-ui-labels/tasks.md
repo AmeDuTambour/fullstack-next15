@@ -72,16 +72,16 @@ C'est le plus gros volume : ~140 littéraux sur 22 fichiers.
 **Test indépendant** : parcourir les cinq sections et les deux éditeurs multi-étapes en relevant
 tout texte non français.
 
-- [ ] T016 [US2] Créer `lib/labels/admin.ts` avec les libellés de l'espace d'administration
-- [ ] T017 [P] [US2] Traduire `app/admin/layout.tsx` et `app/admin/main-nav.tsx` — noms des cinq sections
-- [ ] T018 [P] [US2] Traduire `app/admin/overview/page.tsx` et `app/admin/overview/chart.tsx` — titres des indicateurs, en-têtes du tableau des ventes récentes
-- [ ] T019 [P] [US2] Traduire `app/admin/products/page.tsx` — en-têtes de colonnes, actions, mention de filtre actif
-- [ ] T020 [P] [US2] Traduire `app/admin/orders/page.tsx` et `app/admin/users/page.tsx` ainsi que `app/admin/users/[id]/update-user-form.tsx`
-- [ ] T021 [P] [US2] Traduire `app/admin/articles/page.tsx` — états publié et brouillon, dates, action de création
-- [ ] T022 [US2] Traduire les trois étapes de l'éditeur produit : `base-product/page.tsx`, `base-product-form.tsx`, `product-specifications/page.tsx`, `product-specifications-form.tsx`, `publish-product/page.tsx`, `publish-product-form.tsx`
-- [ ] T023 [US2] Traduire les trois étapes de l'éditeur article : `enter-title/page.tsx`, `article-title-form.tsx`, `category-form.tsx`, `add-sections/page.tsx`, `publish-article/page.tsx`, `publish-article-form.tsx`
-- [ ] T024 [P] [US2] Traduire les composants partagés `components/admin/add-sections-form.tsx`, `components/admin/section-editor.tsx`, `components/admin/admin-search.tsx` et `components/shared/editor-steps.tsx`
-- [ ] T025 [US2] Remplacer le déversement brut des erreurs de validation dans `base-product-form.tsx` par un affichage lisible — un dump technique n'est pas un message d'interface
+- [X] T016 [US2] Créer `lib/labels/admin.ts` avec les libellés de l'espace d'administration
+- [X] T017 [P] [US2] Traduire `app/admin/layout.tsx` et `app/admin/main-nav.tsx` — noms des cinq sections
+- [X] T018 [P] [US2] Traduire `app/admin/overview/page.tsx` et `app/admin/overview/chart.tsx` — titres des indicateurs, en-têtes du tableau des ventes récentes
+- [X] T019 [P] [US2] Traduire `app/admin/products/page.tsx` — en-têtes de colonnes, actions, mention de filtre actif
+- [X] T020 [P] [US2] Traduire `app/admin/orders/page.tsx` et `app/admin/users/page.tsx` ainsi que `app/admin/users/[id]/update-user-form.tsx`
+- [X] T021 [P] [US2] Traduire `app/admin/articles/page.tsx` — états publié et brouillon, dates, action de création
+- [X] T022 [US2] Traduire les trois étapes de l'éditeur produit : `base-product/page.tsx`, `base-product-form.tsx`, `product-specifications/page.tsx`, `product-specifications-form.tsx`, `publish-product/page.tsx`, `publish-product-form.tsx`
+- [X] T023 [US2] Traduire les trois étapes de l'éditeur article : `enter-title/page.tsx`, `article-title-form.tsx`, `category-form.tsx`, `add-sections/page.tsx`, `publish-article/page.tsx`, `publish-article-form.tsx`
+- [X] T024 [P] [US2] Traduire les composants partagés `components/admin/add-sections-form.tsx`, `components/admin/section-editor.tsx`, `components/admin/admin-search.tsx` et `components/shared/editor-steps.tsx`
+- [X] T025 [US2] Remplacer le déversement brut des erreurs de validation dans `base-product-form.tsx` par un affichage lisible — un dump technique n'est pas un message d'interface
 
 ---
 
@@ -106,9 +106,9 @@ qu'aucun mot anglais ne subsiste, états transitoires compris.
 
 **Test indépendant** : ouvrir chaque type de page et relever le titre de l'onglet.
 
-- [ ] T031 [US4] Traduire les titres de document statiques des dix pages concernées, dont `admin/overview`, `admin/orders`, `admin/users`, `user/orders`, `(auth)/sign-in` et `(auth)/sign-up`
-- [ ] T032 [US4] Réécrire le titre construit dynamiquement dans `app/(root)/search/page.tsx` — il produit aujourd'hui « Search : Category Drum »
-- [ ] T033 [US4] Traduire les titres des deux éditeurs multi-étapes, `Create a product` et `Create an article`
+- [X] T031 [US4] Traduire les titres de document statiques des dix pages concernées, dont `admin/overview`, `admin/orders`, `admin/users`, `user/orders`, `(auth)/sign-in` et `(auth)/sign-up`
+- [X] T032 [US4] Réécrire le titre construit dynamiquement dans `app/(root)/search/page.tsx` — il produit aujourd'hui « Search : Category Drum »
+- [X] T033 [US4] Traduire les titres des deux éditeurs multi-étapes, `Create a product` et `Create an article`
 
 ---
 
@@ -117,10 +117,10 @@ qu'aucun mot anglais ne subsiste, états transitoires compris.
 **⚠️ À faire en dernier.** Activer la règle avant la traduction produirait des centaines
 d'erreurs sans valeur.
 
-- [ ] T034 Activer `react/jsx-no-literals` dans `eslint.config.mjs`, appliquée par répertoire aux surfaces traduites : `app/(auth)`, `app/user`, `app/admin`, `app/(root)/order`
-- [ ] T035 Ajuster la configuration de la règle pour couvrir les attributs porteurs de texte visible — texte d'exemple, intitulé accessible, texte alternatif
-- [ ] T036 Exécuter `npx next lint` et corriger les littéraux restants dans les répertoires couverts
-- [ ] T037 ✅ Vérifier la garantie : ajouter volontairement un texte anglais en dur dans une surface couverte, constater que le linting échoue, puis retirer la modification. C'est le seul contrôle qui prouve SC-004
+- [X] T034 Activer `react/jsx-no-literals` dans `eslint.config.mjs`, appliquée par répertoire aux surfaces traduites : `app/(auth)`, `app/user`, `app/admin`, `app/(root)/order`
+- [X] T035 Ajuster la configuration de la règle pour couvrir les attributs porteurs de texte visible — texte d'exemple, intitulé accessible, texte alternatif
+- [X] T036 Exécuter `npx next lint` et corriger les littéraux restants dans les répertoires couverts
+- [X] T037 ✅ Vérifier la garantie : ajouter volontairement un texte anglais en dur dans une surface couverte, constater que le linting échoue, puis retirer la modification. C'est le seul contrôle qui prouve SC-004
 
 ---
 

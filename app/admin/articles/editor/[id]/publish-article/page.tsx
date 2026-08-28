@@ -3,6 +3,7 @@ import { getArticleById } from "@/lib/actions/article.actions";
 import PublishArticleForm from "./publish-article-form";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { admin as t, common } from "@/lib/labels";
 
 const PublishArticlePage = async (props: {
   params: Promise<{
@@ -20,18 +21,18 @@ const PublishArticlePage = async (props: {
     <>
       <EditorSteps current={2} />
       <div className="space-y-8 max-w-5xl mx-auto">
-        <h1 className="h2-bold">Publish Article</h1>
+        <h1 className="h2-bold">{t.publishArticleTitle}</h1>
         <PublishArticleForm article={article ?? undefined} />
 
         <div className="flex justify-between">
           <Button asChild type="button" variant="outline">
             <Link href={`/admin/articles/editor/${id}/add-sections`}>
-              Previous
+              {common.previous}
             </Link>
           </Button>
 
           <Button asChild type="button" variant="outline">
-            <Link href={`/admin/articles`}>Return To Articles</Link>
+            <Link href={`/admin/articles`}>{t.returnToArticles}</Link>
           </Button>
         </div>
       </div>

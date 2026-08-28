@@ -17,6 +17,7 @@ import {
 import { formatId, getProductCategory } from "@/lib/utils";
 import { Eye, EyeClosed } from "lucide-react";
 import Link from "next/link";
+import { admin as t, common } from "@/lib/labels";
 
 type AdminProductsPageProps = {
   page?: string;
@@ -41,13 +42,13 @@ const AdminProductsPage = async (props: {
     <div className="space-y-2">
       <div className="flex-between">
         <div className="flex items-center gap-3">
-          <h1 className="h2-bold">Products</h1>
+          <h1 className="h2-bold">{t.productsTitle}</h1>
           {query && (
             <div>
-              Filtered by <i>&quot;{query}&quot;</i>{" "}
+              {t.filteredBy(query)}{" "}
               <Link href="/admin/products">
                 <Button variant="outline" size="sm">
-                  Remove filter
+                  {t.clearFilter}
                 </Button>
               </Link>
             </div>
@@ -55,7 +56,7 @@ const AdminProductsPage = async (props: {
         </div>
         <Button asChild variant="default">
           <Link href="/admin/products/editor/new/base-product">
-            Create Product
+            {t.createProduct}
           </Link>
         </Button>
       </div>
@@ -63,13 +64,13 @@ const AdminProductsPage = async (props: {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>ID</TableHead>
-            <TableHead>NAME</TableHead>
-            <TableHead className="text-right">PRICE</TableHead>
-            <TableHead>CATEGORY</TableHead>
-            <TableHead>STOCK</TableHead>
-            <TableHead>PUBLISHED</TableHead>
-            <TableHead>ACTIONS</TableHead>
+            <TableHead>{t.reference}</TableHead>
+            <TableHead>{common.name}</TableHead>
+            <TableHead className="text-right">{common.price}</TableHead>
+            <TableHead>{t.category}</TableHead>
+            <TableHead>{t.stock}</TableHead>
+            <TableHead>{t.published}</TableHead>
+            <TableHead>{common.actions}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -96,7 +97,7 @@ const AdminProductsPage = async (props: {
                     <Link
                       href={`/admin/products/editor/${product.id}/base-product`}
                     >
-                      Edit
+                      {common.edit}
                     </Link>
                   </Button>
                   <DeleteDialog id={product.id} action={deleteProduct} />

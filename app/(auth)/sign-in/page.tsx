@@ -15,7 +15,7 @@ import { redirect } from "next/navigation";
 import { account as t } from "@/lib/labels";
 
 export const metadata: Metadata = {
-  title: "Sign In",
+  title: "Connexion",
 };
 
 const SignInPage = async (props: {

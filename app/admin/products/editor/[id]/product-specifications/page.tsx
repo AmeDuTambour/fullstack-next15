@@ -8,6 +8,7 @@ import {
 } from "@/lib/actions/product.actions";
 import { notFound } from "next/navigation";
 import { getProductCategory } from "@/lib/utils";
+import { admin as t } from "@/lib/labels";
 
 const SpecificationsPage = async (props: {
   params: Promise<{
@@ -35,7 +36,7 @@ const SpecificationsPage = async (props: {
     <>
       <EditorSteps current={1} mode="product" />
       <div className="flex flex-col p-4 gap-4">
-        <h1 className="h2-bold mt-4">Add Specifications</h1>
+        <h1 className="h2-bold mt-4">{t.addSpecificationsTitle}</h1>
       </div>
       <ProductSpecificationsForm
         category={name}

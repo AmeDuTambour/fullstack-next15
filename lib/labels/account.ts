@@ -8,6 +8,8 @@ export const account = {
   signIn: "Se connecter",
   signingIn: "Connexion en cours…",
   noAccount: "Vous n'avez pas de compte ?",
+  goSignUp: "Inscrivez-vous",
+  goSignIn: "Connectez-vous",
 
   // Inscription
   signUpTitle: "Créer un compte",

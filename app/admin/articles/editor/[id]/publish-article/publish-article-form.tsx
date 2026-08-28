@@ -1,4 +1,5 @@
 "use client";
+import { admin as t, common } from "@/lib/labels";
 
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -60,7 +61,7 @@ const PublishArticleForm: React.FC<PublishArticleFormProps> = ({ article }) => {
         >
           <div className="updload-field">
             <div className="flex flex-row gap-8">
-              <h2 className="font-bold mb-2 text-lg">Feature Article</h2>
+              <h2 className="font-bold mb-2 text-lg">{t.featureArticle}</h2>
               <FormField
                 control={form.control}
                 name="isFeatured"
@@ -84,7 +85,7 @@ const PublishArticleForm: React.FC<PublishArticleFormProps> = ({ article }) => {
                     {banner && (
                       <Image
                         src={banner}
-                        alt="banner image"
+                        alt={t.banner}
                         className="w-full object-cover object-center rounded-sm"
                         width={1920}
                         height={680}
@@ -108,7 +109,7 @@ const PublishArticleForm: React.FC<PublishArticleFormProps> = ({ article }) => {
             ) : null}
           </div>
           <div className="flex flex-row gap-8">
-            <h2 className="font-bold mb-2 text-lg">Publish Article</h2>
+            <h2 className="font-bold mb-2 text-lg">{t.publishArticleTitle}</h2>
             <FormField
               control={form.control}
               name="isPublished"
@@ -131,13 +132,13 @@ const PublishArticleForm: React.FC<PublishArticleFormProps> = ({ article }) => {
             disabled={form.formState.isSubmitting}
             className="button w-fit"
           >
-            {form.formState.isSubmitting ? "Submitting..." : "Submit"}
+            {form.formState.isSubmitting ? common.submitting : common.save}
           </Button>
         </form>
       </Form>
       <div className="flex justify-between">
         <Button asChild type="button" variant="outline">
-          <Link href={`/admin/articles`}>Return to articles</Link>
+          <Link href={`/admin/articles`}>{t.returnToArticles}</Link>
         </Button>
       </div>
     </>

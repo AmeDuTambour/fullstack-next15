@@ -3,7 +3,6 @@ import { APP_NAME } from "@/lib/constants";
 import Image from "next/image";
 import Link from "next/link";
 import MainNav from "./main-nav";
-import { Input } from "@/components/ui/input";
 
 export default function UserLayout({
   children,
@@ -33,13 +32,6 @@ export default function UserLayout({
             </Link>
             <MainNav className="mx-6" />
             <div className="ml-auto items-center flex space-x-4">
-              <div>
-                <Input
-                  type="search"
-                  placeholder="Search..."
-                  className="md:w-[100px] lg:w-[300px"
-                />
-              </div>
               <Menu />
             </div>
           </div>

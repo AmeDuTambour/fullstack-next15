@@ -1,4 +1,5 @@
 "use client";
+import { admin as t } from "@/lib/labels";
 
 import {
   Form,
@@ -131,14 +132,14 @@ export const SectionEditor = ({
           }) => (
             <FormItem className="w-full">
               <FormLabel className="h2-bold flex flex-row items-center gap-4">
-                Section {index + 1}
+                {t.section(index + 1)}
                 {isPending ? (
                   <Loader className="w-5 h-5 animate-spin text-green-600" />
                 ) : null}
               </FormLabel>
               <FormControl>
                 <Input
-                  placeholder="Enter title"
+                  placeholder={t.sectionTitle}
                   {...field}
                   value={field.value ?? ""}
                 />
@@ -162,7 +163,7 @@ export const SectionEditor = ({
             <FormItem className="w-full">
               <FormControl>
                 <Textarea
-                  placeholder="Enter paragraph"
+                  placeholder={t.sectionBody}
                   {...field}
                   value={field.value ?? ""}
                 />
@@ -172,7 +173,7 @@ export const SectionEditor = ({
           )}
         />
 
-        <div className="text-lg font-bold">Add media (optional)</div>
+        <div className="text-lg font-bold">{t.media}</div>
         <RadioGroup
           value={mediaType}
           onValueChange={(value: "video" | "image" | "none") =>
@@ -181,15 +182,15 @@ export const SectionEditor = ({
         >
           <div className="flex items-center space-x-2">
             <RadioGroupItem value="none" id="none" />
-            <Label htmlFor="none">None</Label>
+            <Label htmlFor="none">{t.mediaNone}</Label>
           </div>
           <div className="flex items-center space-x-2">
             <RadioGroupItem value="image" id="image" />
-            <Label htmlFor="image">Image</Label>
+            <Label htmlFor="image">{t.mediaImage}</Label>
           </div>
           <div className="flex items-center space-x-2">
             <RadioGroupItem value="video" id="video" />
-            <Label htmlFor="video">YouTube video</Label>
+            <Label htmlFor="video">{t.mediaVideo}</Label>
           </div>
         </RadioGroup>
 
@@ -207,7 +208,7 @@ export const SectionEditor = ({
               >;
             }) => (
               <FormItem className="w-full">
-                <FormLabel>Image</FormLabel>
+                <FormLabel>{t.mediaImage}</FormLabel>
                 <div className="flex items-center space-x-2">
                   {field.value && (
                     <Image
@@ -255,10 +256,10 @@ export const SectionEditor = ({
               >;
             }) => (
               <FormItem className="w-full">
-                <FormLabel>Video URL</FormLabel>
+                <FormLabel>{t.videoUrl}</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="Enter YouTube URL"
+                    placeholder={t.videoUrlPlaceholder}
                     {...field}
                     value={field.value ?? ""}
                   />

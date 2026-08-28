@@ -14,9 +14,10 @@ import { deleteOrder, getAllOrders } from "@/lib/actions/order.actions";
 import { formatCurrency, formatDateTime, formatId } from "@/lib/utils";
 import { Metadata } from "next";
 import Link from "next/link";
+import { admin as t, common } from "@/lib/labels";
 
 export const metadata: Metadata = {
-  title: "Admin Orders",
+  title: "Commandes",
 };
 
 const AdminOrdersPage = async (props: {
@@ -37,13 +38,13 @@ const AdminOrdersPage = async (props: {
   return (
     <div className="space-y-2">
       <div className="flex items-center gap-3">
-        <h1 className="h2-bold">Orders</h1>
+        <h1 className="h2-bold">{t.ordersTitle}</h1>
         {searchText && (
           <div>
-            Filtered by <i>&quot;{searchText}&quot;</i>{" "}
+            {t.filteredBy(searchText)}{" "}
             <Link href="/admin/orders">
               <Button variant="outline" size="sm">
-                Remove Filter
+                {t.clearFilter}
               </Button>
             </Link>
           </div>
@@ -53,13 +54,13 @@ const AdminOrdersPage = async (props: {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>ID</TableHead>
-              <TableHead>DATE</TableHead>
-              <TableHead>BUYER</TableHead>
-              <TableHead>TOTAL</TableHead>
-              <TableHead>PAID</TableHead>
-              <TableHead>DELIVERED</TableHead>
-              <TableHead>ACTIONS</TableHead>
+              <TableHead>{t.reference}</TableHead>
+              <TableHead>{common.date}</TableHead>
+              <TableHead>{t.buyer}</TableHead>
+              <TableHead>{common.total}</TableHead>
+              <TableHead>{t.paid}</TableHead>
+              <TableHead>{t.delivered}</TableHead>
+              <TableHead>{common.actions}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -74,16 +75,16 @@ const AdminOrdersPage = async (props: {
                 <TableCell>
                   {order.isPaid && order.paidAt
                     ? formatDateTime(order.paidAt).dateTime
-                    : "Not Paid"}
+                    : t.notPaid}
                 </TableCell>
                 <TableCell>
                   {order.isDelivered && order.deliveredAt
                     ? formatDateTime(order.deliveredAt).dateTime
-                    : "Not Delivered"}
+                    : t.notDelivered}
                 </TableCell>
                 <TableCell>
                   <Button asChild variant="outline" size="sm">
-                    <Link href={`/order/${order.id}`}>Details</Link>
+                    <Link href={`/order/${order.id}`}>{common.details}</Link>
                   </Button>
 
                   <DeleteDialog id={order.id} action={deleteOrder} />

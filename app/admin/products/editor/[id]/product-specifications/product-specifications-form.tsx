@@ -1,4 +1,5 @@
 "use client";
+import { admin as t, common, errors } from "@/lib/labels";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -81,7 +82,7 @@ const ProductSpecificationsForm = ({
         description: `Error: ${error}`,
       });
 
-      form.setError("root", { message: "An unexpected error occurred." });
+      form.setError("root", { message: errors.unexpected });
     }
   };
 
@@ -94,11 +95,11 @@ const ProductSpecificationsForm = ({
             name="skinTypeId"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Skin Type</FormLabel>
+                <FormLabel>{t.skinType}</FormLabel>
                 <Select value={field.value} onValueChange={field.onChange}>
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select a skin type">
+                      <SelectValue placeholder={t.selectSkinType}>
                         {formOptions.skinTypes.find(
                           (skin) => skin.id === field.value
                         )?.material || "Select a skin type"}
@@ -122,11 +123,11 @@ const ProductSpecificationsForm = ({
             name="dimensionsId"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Dimensions</FormLabel>
+                <FormLabel>{t.dimensions}</FormLabel>
                 <Select value={field.value} onValueChange={field.onChange}>
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select dimensions">
+                      <SelectValue placeholder={t.selectDimensions}>
                         {formOptions.dimensions.find(
                           (dim) => dim.id === field.value
                         )?.size || "Select dimensions"}
@@ -157,9 +158,9 @@ const ProductSpecificationsForm = ({
             name="size"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Size</FormLabel>
+                <FormLabel>{t.size}</FormLabel>
                 <FormControl>
-                  <Input placeholder="Enter size" {...field} />
+                  <Input placeholder={t.sizePlaceholder} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -170,9 +171,9 @@ const ProductSpecificationsForm = ({
             name="color"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Color</FormLabel>
+                <FormLabel>{t.color}</FormLabel>
                 <FormControl>
-                  <Input placeholder="Enter color" {...field} />
+                  <Input placeholder={t.colorPlaceholder} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -183,9 +184,9 @@ const ProductSpecificationsForm = ({
             name="material"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Material</FormLabel>
+                <FormLabel>{t.material}</FormLabel>
                 <FormControl>
-                  <Input placeholder="Enter material" {...field} />
+                  <Input placeholder={t.materialPlaceholder} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -214,8 +215,8 @@ const ProductSpecificationsForm = ({
             className="button w-fit"
           >
             {form.formState.isSubmitting
-              ? "Submitting"
-              : `${product.specifications ? "Update Specs" : "Add Specs"}`}
+              ? common.submitting
+              : t.saveSpecifications}
           </Button>
         </form>
       </Form>
@@ -230,7 +231,7 @@ const ProductSpecificationsForm = ({
         >
           <ArrowBigLeft />
           <Link href={`/admin/products/editor/${product?.id}/base-product`}>
-            Previous
+            {common.previous}
           </Link>
         </Button>
         <Button
@@ -241,7 +242,7 @@ const ProductSpecificationsForm = ({
           className="flex flex-row"
         >
           <Link href={`/admin/products/editor/${product?.id}/publish-product`}>
-            Next
+            {common.next}
           </Link>
           <ArrowBigRight />
         </Button>

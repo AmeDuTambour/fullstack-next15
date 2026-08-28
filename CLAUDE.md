@@ -79,6 +79,24 @@ Tout texte visible par un visiteur ou par l'administrateur est en français. Le 
 de variables, les commits et les commentaires sont en anglais. L'existant est incohérent
 (`/order/[id]` est entièrement en anglais) : corriger au passage, ne pas ajouter d'anglais.
 
+### 4 bis. Aucun texte visible n'est écrit en dur
+
+Tout texte affiché à un humain vient de `lib/labels/`, découpé par surface. Deux contrôles le
+rendent exécutoire sur les surfaces déjà traduites — `app/(auth)`, `app/user`, `app/admin`,
+`app/(root)/order`, `components/admin` :
+
+- `react/jsx-no-literals` dans `eslint.config.mjs` interdit toute chaîne littérale dans le
+  balisage ;
+- `tests/no-hardcoded-labels.test.ts` couvre ce que la règle ne voit pas : les attributs
+  porteurs de texte visible (`placeholder`, `aria-label`, `alt`, `title`).
+
+Étendre la portée au fur et à mesure que d'autres surfaces sont traduites. Ni l'un ni l'autre
+ne voit une chaîne passée en propriété ou construite par concaténation : ils relèvent le
+plancher, ils ne scellent pas la pièce.
+
+⚠️ Les messages des routes de `app/api/` restent en anglais : ils s'adressent à l'application
+mobile, pas à un humain, et sont figés par les tests de contrat.
+
 ### 5. Les couleurs passent par les tokens du thème
 
 Utiliser `bg-background`, `text-foreground`, `bg-card`, `text-muted-foreground`,

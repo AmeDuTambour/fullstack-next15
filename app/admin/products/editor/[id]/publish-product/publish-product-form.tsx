@@ -1,4 +1,5 @@
 "use client";
+import { admin as t, common } from "@/lib/labels";
 
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -69,7 +70,7 @@ const PublishProductForm: React.FC<PublishProductFormProps> = ({ product }) => {
         >
           <div className="updload-field">
             <div className="flex flex-row gap-8">
-              <h2 className="font-bold mb-2 text-lg">Feature Product</h2>
+              <h2 className="font-bold mb-2 text-lg">{t.featureProduct}</h2>
 
               <FormField
                 control={form.control}
@@ -102,7 +103,7 @@ const PublishProductForm: React.FC<PublishProductFormProps> = ({ product }) => {
                     {isFeatured && banner ? (
                       <Image
                         src={banner}
-                        alt="banner image"
+                        alt={t.banner}
                         className="w-full object-cover object-center rounded-sm"
                         width={1920}
                         height={680}
@@ -126,7 +127,7 @@ const PublishProductForm: React.FC<PublishProductFormProps> = ({ product }) => {
             ) : null}
           </div>
           <div className="flex flex-row gap-8">
-            <h2 className="font-bold mb-2 text-lg">Publish Product</h2>
+            <h2 className="font-bold mb-2 text-lg">{t.publishProductTitle}</h2>
 
             <FormField
               control={form.control}
@@ -157,7 +158,7 @@ const PublishProductForm: React.FC<PublishProductFormProps> = ({ product }) => {
             disabled={form.formState.isSubmitting}
             className="button w-fit"
           >
-            {form.formState.isSubmitting ? "Submitting..." : "Submit"}
+            {form.formState.isSubmitting ? common.submitting : common.save}
           </Button>
         </form>
       </Form>
@@ -168,12 +169,12 @@ const PublishProductForm: React.FC<PublishProductFormProps> = ({ product }) => {
             href={`/admin/products/editor/${product?.id}/product-specifications`}
           >
             <ArrowBigLeft />
-            Previous
+            {common.previous}
           </Link>
         </Button>
 
         <Button asChild type="button" variant="outline">
-          <Link href={`/admin/products`}>Return to products</Link>
+          <Link href={`/admin/products`}>{t.returnToProducts}</Link>
         </Button>
       </div>
     </>

@@ -1,4 +1,5 @@
 "use client";
+import { admin as t, common } from "@/lib/labels";
 
 import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -23,14 +24,14 @@ const AdminSearch = () => {
     <form action={formActionUrl}>
       <Input
         type="search"
-        placeholder="Search..."
+        placeholder={t.searchPlaceholder}
         name="query"
         value={queryValue}
         onChange={(e) => setQueryValue(e.target.value)}
         className="md:w-[100px] lg:w-[300px]"
       />
       <button className="sr-only" type="submit">
-        Search
+        {common.search}
       </button>
     </form>
   );
