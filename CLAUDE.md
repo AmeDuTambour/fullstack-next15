@@ -169,6 +169,30 @@ continue de servir des morceaux compilés qui n'existent plus, et chaque page to
 `Cannot find module './xxxx.js'`. Pour vérifier le build sans `.env`, arrêter le serveur
 d'abord, puis le relancer après.
 
+⚠️ **Arrêter le serveur avant toute modification de la structure des routes** — créer,
+déplacer ou supprimer un `page.tsx`, un `layout.tsx`, un `loading.tsx`, un `error.tsx`.
+La recompilation incrémentale corrompt son manifeste et lève
+`InvariantError: Expected clientReferenceManifest to be defined`. Le symptôme visible n'a
+rien à voir avec la cause : **la feuille de style renvoie 404 et le site s'affiche sans
+aucun style — un logo en pleine page.** Le code, lui, est intact ; `npm run build` passe.
+
+La remise en route :
+
+```bash
+pkill -f "next dev"; sleep 3
+rm -rf .next node_modules/.cache
+npm run dev
+```
+
+Et le contrôle qui tranche — le code de réponse ne suffit pas, il faut les octets :
+
+```bash
+CSS=$(curl -s http://localhost:3000/ | grep -oE '/_next/static/css/[^"]+\.css' | head -1)
+curl -s -o /dev/null -w "%{http_code} %{size_download}\n" "http://localhost:3000$CSS"
+```
+
+Une feuille de 9 octets est un 404 déguisé.
+
 ```bash
 npm run dev          # serveur de dev
 npm run build        # build de production
