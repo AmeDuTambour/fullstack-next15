@@ -33,6 +33,8 @@ const FeaturedCarousel: React.FC<FeaturedCarouselProps> = ({ data }) => {
       plugins={[
         Autoplay({
           delay: 5000,
+          stopOnInteraction: true,
+          stopOnMouseEnter: true,
         }),
       ]}
     >

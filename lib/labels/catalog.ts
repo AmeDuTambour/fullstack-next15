@@ -24,6 +24,15 @@ export const catalog = {
 
   // États vides
   shopTitle: "La boutique",
+  categories: "Catégories",
+  skinType: "Type de peau",
+  dimensions: "Dimensions",
+  allFilter: "Tous",
+  drums: "Tambours",
+  accessories: "Accessoires",
+  sortBy: "Trier par",
+  searchPlaceholder: "Rechercher un instrument…",
+  searchLabel: "Rechercher dans la boutique",
   latestArrivals: "Derniers instruments",
   browseShop: "Voir toute la boutique",
   productCount: (n: number) =>

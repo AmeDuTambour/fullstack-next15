@@ -5,6 +5,10 @@ import { formatDateTime } from "@/lib/utils";
 import ShareButton from "@/components/shared/share-button";
 import { Separator } from "@/components/ui/separator";
 import Comments from "./comments";
+import ContentImage from "@/components/ui/content-image";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { blog as t } from "@/lib/labels";
 
 const ArticlePage = async (props: {
   params: Promise<{
@@ -18,7 +22,18 @@ const ArticlePage = async (props: {
   return (
     <div className="space-y-4 p-8 max-w-5xl mx-auto">
       {" "}
-      <h1 className="h1-bold text-4xl">{article.title}</h1>{" "}
+      {article.banner ? (
+        <ContentImage
+          src={article.banner}
+          alt={article.title}
+          width={1920}
+          height={680}
+          sizes="(min-width: 1024px) 64rem, 100vw"
+          priority
+          className="aspect-[16/6] w-full rounded-lg object-cover"
+        />
+      ) : null}
+      <h1 className="page-title">{article.title}</h1>{" "}
       <Separator className="my-2" />
       <div className="flex justify-between px-4">
         <p className="text-gray-500 italic pb-4">
@@ -35,6 +50,17 @@ const ArticlePage = async (props: {
           <ArticleSectionBlock section={section} />
         </div>
       ))}
+      {/* Un article se terminait sur rien : ni retour, ni suite, ni lien vers
+          les instruments dont il parle. */}
+      <div className="flex flex-wrap gap-3 pt-16">
+        <Button asChild variant="outline">
+          <Link href="/blog">{t.backToBlog}</Link>
+        </Button>
+        <Button asChild>
+          <Link href="/search">{t.seeDrums}</Link>
+        </Button>
+      </div>
+
       <Comments articleId={article.id} slug={slug} />
     </div>
   );

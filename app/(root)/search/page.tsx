@@ -110,6 +110,33 @@ const SearchPage = async (props: {
 
     return `/search?${new URLSearchParams(params).toString()}`;
   };
+  /**
+   * Les vingt filtres étaient des liens sans soulignement, sans cadre et sans
+   * état de survol : rien n'indiquait qu'ils étaient cliquables, et seule la
+   * graisse du texte signalait l'actif.
+   */
+  const FilterLink = ({
+    href,
+    active,
+    children,
+  }: {
+    href: string;
+    active: boolean;
+    children: React.ReactNode;
+  }) => (
+    <Link
+      href={href}
+      aria-current={active ? "true" : undefined}
+      className={
+        active
+          ? "inline-flex rounded-full bg-secondary px-3 py-1 text-sm font-medium text-secondary-foreground"
+          : "inline-flex rounded-full border px-3 py-1 text-sm text-muted-foreground transition-colors hover:border-foreground hover:text-foreground"
+      }
+    >
+      {children}
+    </Link>
+  );
+
   const products = await getAllProducts({
     category,
     skinType: skin,
@@ -128,76 +155,41 @@ const SearchPage = async (props: {
 
       <div className="grid md:grid-cols-5 md:gap-5">
       <div className="filter-links hidden md:block">
-        <div className="text-xl mb-4 mt-3">Catégories</div>
-        <ul className="space-y-1">
+        <h2 className="section-title mb-3">{t.categories}</h2>
+        <ul className="flex flex-col items-start gap-2">
           <li>
-            <Link
-              className={`${category === "all" && "font-bold"}`}
-              href={getFilterUrl({ c: "all" })}
-            >
-              Tous
-            </Link>
+            <FilterLink active={category === "all"} href={getFilterUrl({ c: "all" })}>{t.allFilter}</FilterLink>
           </li>
           <li>
-            <Link
-              className={`${category === "Drum" && "font-bold"}`}
-              href={getFilterUrl({ c: "Drum" })}
-            >
-              Tambours
-            </Link>
+            <FilterLink active={category === "Drum"} href={getFilterUrl({ c: "Drum" })}>{t.drums}</FilterLink>
           </li>
           <li>
-            <Link
-              className={`${category === "Other" && "font-bold"}`}
-              href={getFilterUrl({ c: "Other" })}
-            >
-              Autre
-            </Link>
+            <FilterLink active={category === "Other"} href={getFilterUrl({ c: "Other" })}>{t.accessories}</FilterLink>
           </li>
         </ul>
 
         {category === "Drum" && (
           <>
-            <div className="text-xl mb-2 mt-8">Type de peau</div>
-            <ul className="space-y-1">
+            <h2 className="section-title mb-3 mt-8">{t.skinType}</h2>
+            <ul className="flex flex-col items-start gap-2">
               <li>
-                <Link
-                  className={`${skin === "all" && "font-bold"}`}
-                  href={getFilterUrl({ sk: "all" })}
-                >
-                  Tous
-                </Link>
+                <FilterLink active={skin === "all"} href={getFilterUrl({ sk: "all" })}>{t.allFilter}</FilterLink>
               </li>
               {skinTypes.map((sk) => (
                 <li key={sk.id}>
-                  <Link
-                    href={getFilterUrl({ sk: sk.material })}
-                    className={`${skin === sk.material && "font-bold"}`}
-                  >
-                    {sk.material}
-                  </Link>
+                  <FilterLink active={skin === sk.material} href={getFilterUrl({ sk: sk.material })}>{sk.material}</FilterLink>
                 </li>
               ))}
             </ul>
 
-            <div className="text-xl mb-2 mt-8">Dimensions</div>
-            <ul className="space-y-1">
+            <h2 className="section-title mb-3 mt-8">{t.dimensions}</h2>
+            <ul className="flex flex-col items-start gap-2">
               <li>
-                <Link
-                  className={`${dimension === "all" && "font-bold"}`}
-                  href={getFilterUrl({ d: "all" })}
-                >
-                  Tous
-                </Link>
+                <FilterLink active={dimension === "all"} href={getFilterUrl({ d: "all" })}>{t.allFilter}</FilterLink>
               </li>
               {dimensions.map((dim) => (
                 <li key={dim.id}>
-                  <Link
-                    href={getFilterUrl({ d: dim.size })}
-                    className={`${dimension === dim.size && "font-bold"}`}
-                  >
-                    {dim.size}
-                  </Link>
+                  <FilterLink active={dimension === dim.size} href={getFilterUrl({ d: dim.size })}>{dim.size}</FilterLink>
                 </li>
               ))}
             </ul>
@@ -206,72 +198,37 @@ const SearchPage = async (props: {
       </div>
 
       <div className="md:hidden mb-8">
-        <ul className="space-x-4 flex flex-row mb-2">
+        <ul className="mb-2 flex flex-row flex-wrap gap-2">
           <li>
-            <Link
-              className={`${category === "all" && "font-bold"}`}
-              href={getFilterUrl({ c: "all" })}
-            >
-              Tous
-            </Link>
+            <FilterLink active={category === "all"} href={getFilterUrl({ c: "all" })}>{t.allFilter}</FilterLink>
           </li>
           <li>
-            <Link
-              className={`${category === "Drum" && "font-bold"}`}
-              href={getFilterUrl({ c: "Drum" })}
-            >
-              Tambours
-            </Link>
+            <FilterLink active={category === "Drum"} href={getFilterUrl({ c: "Drum" })}>{t.drums}</FilterLink>
           </li>
           <li>
-            <Link
-              className={`${category === "Other" && "font-bold"}`}
-              href={getFilterUrl({ c: "Other" })}
-            >
-              Autre
-            </Link>
+            <FilterLink active={category === "Other"} href={getFilterUrl({ c: "Other" })}>{t.accessories}</FilterLink>
           </li>
         </ul>
         {category === "Drum" && (
           <>
-            <ul className="space-x-4 flex flex-row mb-2">
+            <ul className="mb-2 flex flex-row flex-wrap gap-2">
               <li>
-                <Link
-                  className={`${skin === "all" && "font-bold"}`}
-                  href={getFilterUrl({ sk: "all" })}
-                >
-                  Tous
-                </Link>
+                <FilterLink active={skin === "all"} href={getFilterUrl({ sk: "all" })}>{t.allFilter}</FilterLink>
               </li>
               {skinTypes.map((sk) => (
                 <li key={sk.id}>
-                  <Link
-                    href={getFilterUrl({ sk: sk.material })}
-                    className={`${skin === sk.material && "font-bold"}`}
-                  >
-                    {sk.material}
-                  </Link>
+                  <FilterLink active={skin === sk.material} href={getFilterUrl({ sk: sk.material })}>{sk.material}</FilterLink>
                 </li>
               ))}
             </ul>
 
-            <ul className="space-x-4 flex flex-row">
+            <ul className="flex flex-row flex-wrap gap-2">
               <li>
-                <Link
-                  className={`${dimension === "all" && "font-bold"}`}
-                  href={getFilterUrl({ d: "all" })}
-                >
-                  Tous
-                </Link>
+                <FilterLink active={dimension === "all"} href={getFilterUrl({ d: "all" })}>{t.allFilter}</FilterLink>
               </li>
               {dimensions.map((dim) => (
                 <li key={dim.id}>
-                  <Link
-                    href={getFilterUrl({ d: dim.size })}
-                    className={`${dimension === dim.size && "font-bold"}`}
-                  >
-                    {dim.size}
-                  </Link>
+                  <FilterLink active={dimension === dim.size} href={getFilterUrl({ d: dim.size })}>{dim.size}</FilterLink>
                 </li>
               ))}
             </ul>
@@ -290,7 +247,7 @@ const SearchPage = async (props: {
             dimension !== "all" ||
             skin !== "all" ? (
               <Button variant="link" asChild>
-                <Link href="/search">Effacer</Link>
+                <Link href="/search">{t.clearFilters}</Link>
               </Button>
             ) : null}
           </div>
@@ -299,13 +256,13 @@ const SearchPage = async (props: {
             {sortOrders
               .filter((el) => category !== "Other" || el.query === "newest")
               .map((el) => (
-                <Link
+                <FilterLink
                   key={el.query}
-                  className={`mx-2 ${sort === el.query && "font-bold"}`}
+                  active={sort === el.query}
                   href={getFilterUrl({ s: el.query })}
                 >
                   {el.label}
-                </Link>
+                </FilterLink>
               ))}
           </div>
         </div>

@@ -407,7 +407,9 @@ export async function getArticleComments(articleId: string) {
   try {
     const data = await prisma.articleComment.findMany({
       where: { articleId },
-      orderBy: { createdAt: "desc" },
+      // Ordre de rédaction : une réponse affichée avant sa question rend le fil
+      // incompréhensible.
+      orderBy: { createdAt: "asc" },
       include: {
         user: { select: { id: true, name: true } },
       },

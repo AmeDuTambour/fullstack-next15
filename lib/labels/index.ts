@@ -11,6 +11,7 @@
  */
 import { account } from "./account";
 import { admin } from "./admin";
+import { blog } from "./blog";
 import { catalog } from "./catalog";
 import { common } from "./common";
 import { errors } from "./errors";
@@ -20,6 +21,7 @@ import { payment } from "./payment";
 export const labels = {
   account,
   admin,
+  blog,
   catalog,
   common,
   errors,
@@ -27,4 +29,4 @@ export const labels = {
   payment,
 } as const;
 
-export { account, admin, catalog, common, errors, order, payment };
+export { account, admin, blog, catalog, common, errors, order, payment };

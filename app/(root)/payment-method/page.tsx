@@ -3,6 +3,7 @@ import { Metadata } from "next";
 import PaymentMethodForm from "./payment-method-form";
 import { getUserById } from "@/lib/actions/user.actions";
 import CheckoutSteps from "@/components/shared/checkout-steps";
+import OrderSummary from "@/components/shared/order-summary";
 
 export const metadata: Metadata = {
   title: "Méthode de paiement",
@@ -19,7 +20,12 @@ const PaymentMethodPage = async () => {
   return (
     <>
       <CheckoutSteps current={2} />
-      <PaymentMethodForm preferredPaymentMethod={user.paymentMethod} />
+      <div className="grid gap-8 lg:grid-cols-[1fr_20rem]">
+        <div><PaymentMethodForm preferredPaymentMethod={user.paymentMethod} /></div>
+        <aside className="lg:sticky lg:top-6 lg:self-start">
+          <OrderSummary />
+        </aside>
+      </div>
     </>
   );
 };

@@ -3,6 +3,7 @@ import Link from "next/link";
 import Menu from "./menu";
 import NavigationLinks from "./navigation-links";
 import NavigationDrawer from "./navigation-drawer";
+import Search from "./search";
 
 const Header = () => {
   return (
@@ -24,9 +25,11 @@ const Header = () => {
             </div>
           </Link>
         </div>
-        <div className="hidden flex-1 md:block">
-          {/* <Search /> */}
+        <div className="hidden flex-1 items-center gap-4 md:flex">
           <NavigationLinks />
+          <div className="ml-auto hidden lg:block">
+            <Search />
+          </div>
         </div>
         <Menu />
       </div>

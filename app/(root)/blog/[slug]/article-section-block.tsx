@@ -29,7 +29,7 @@ const ArticleSectionBlock = ({ section }: { section: ArticleSection }) => {
 
   return (
     <div className="col-span-2 space-y-10">
-      <h3 className="h3-bold text-2xl">{section.title}</h3>{" "}
+      <h2 className="section-title">{section.title}</h2>{" "}
       <div className="flex flex-col md:flex-row gap-4 items-start ">
         {hasImage && (
           <div className="w-full md:w-1/3">
@@ -44,7 +44,7 @@ const ArticleSectionBlock = ({ section }: { section: ArticleSection }) => {
         )}
 
         <div
-          className="flex-1 italic text-xl text-justify"
+          className="flex-1 max-w-[68ch] text-lg leading-relaxed"
           dangerouslySetInnerHTML={{ __html: formatText(section.body ?? "") }}
         />
       </div>

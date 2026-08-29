@@ -4,6 +4,12 @@
 export const order = {
   // Page de commande
   title: (reference: string) => `Commande ${reference}`,
+  summaryTitle: "Votre commande",
+  stepsLabel: "Étapes de la commande",
+  stepSignIn: "Connexion",
+  stepAddress: "Adresse de livraison",
+  stepPayment: "Moyen de paiement",
+  stepReview: "Récapitulatif",
   paymentMethod: "Moyen de paiement",
   shippingAddress: "Adresse de livraison",
   items: "Articles commandés",
