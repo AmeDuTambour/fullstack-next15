@@ -4,7 +4,7 @@
 
 **Created**: 2026-08-28
 
-**Status**: Draft
+**Status**: Implemented
 
 **Input**: Audit Impeccable du 2026-08-28 — heuristique 9 « Diagnostic et récupération d'erreur » notée 1/4. Complété par un relevé de performance du même jour.
 

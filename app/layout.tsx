@@ -5,9 +5,19 @@ import { APP_DESCRIPTION, APP_NAME, SERVER_URL } from "@/lib/constants";
 import type { Metadata } from "next";
 import { Open_Sans } from "next/font/google";
 
+/**
+ * Trois graisses, pas six.
+ *
+ * Six fichiers étaient chargés sur chaque page ; `font-light`, `font-extrabold`
+ * et `font-black` n'apparaissent nulle part dans le code. `display: "swap"`
+ * fait afficher le texte immédiatement dans la police de repli plutôt que de le
+ * masquer le temps du téléchargement.
+ */
 const font = Open_Sans({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700", "800"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+  fallback: ["system-ui", "sans-serif"],
 });
 export const metadata: Metadata = {
   title: {

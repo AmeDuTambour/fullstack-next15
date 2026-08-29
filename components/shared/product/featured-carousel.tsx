@@ -39,17 +39,20 @@ const FeaturedCarousel: React.FC<FeaturedCarouselProps> = ({ data }) => {
       ]}
     >
       <CarouselContent>
-        {data.map((item) => (
+        {data.map((item, index) => (
           <CarouselItem key={item.id}>
             <Link href={`/${item.name ? "product" : "blog"}/${item.slug}`}>
-              <div className="relative mx-auto">
+              {/* Le cadre porte le rapport d'aspect : l'image ne décale plus la
+                  page en apparaissant. Seule la première vue est prioritaire —
+                  les suivantes ne sont pas à l'écran. */}
+              <div className="relative aspect-[2/1] w-full overflow-hidden rounded-lg">
                 <Image
                   src={item.banner}
-                  alt={item.name || item.title || "Image"}
-                  width={800}
-                  height={400}
-                  sizes="100vw"
-                  className="w-full h-auto object-cover"
+                  alt={item.name || item.title || ""}
+                  fill
+                  sizes="(min-width: 1280px) 1280px, 100vw"
+                  priority={index === 0}
+                  className="object-cover"
                 />
               </div>
             </Link>

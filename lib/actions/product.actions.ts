@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, unstable_cache } from "next/cache";
 import { z } from "zod";
 import { LATEST_PRODUCTS_LIMIT } from "../constants";
 import { PAGE_SIZE } from "../constants/index";
@@ -368,11 +368,27 @@ export async function updateProductSpecifications(
   }
 }
 
+/**
+ * Les catégories, mises en cache.
+ *
+ * Il y en a deux, elles ne changent jamais, et chaque affichage de la boutique
+ * ou d'une fiche produit allait les redemander à la base — jusqu'à trois fois
+ * pour un seul rendu de la liste. Le cache est marqué d'une étiquette, pour
+ * qu'un ajout de catégorie puisse l'invalider explicitement.
+ */
+const loadProductCategories = unstable_cache(
+  async () => {
+    const categories = await prisma.productCategory.findMany({
+      orderBy: { name: "asc" },
+    });
+    return convertToPlainObject(categories);
+  },
+  ["product-categories"],
+  { tags: ["product-categories"], revalidate: 3600 }
+);
+
 export async function getAllProductCategories() {
-  const categories = await prisma.productCategory.findMany({
-    orderBy: { name: "asc" },
-  });
-  return convertToPlainObject(categories);
+  return loadProductCategories();
 }
 
 export async function getFeaturedProducts() {
