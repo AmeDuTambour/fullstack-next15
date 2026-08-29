@@ -10,7 +10,7 @@ import {
 import Autoplay from "embla-carousel-autoplay";
 import { useRef } from "react";
 import Link from "next/link";
-import Image from "next/image";
+import ContentImage from "@/components/ui/content-image";
 
 type FeaturedItem = {
   id: string;
@@ -57,14 +57,14 @@ const FeaturedCarousel: React.FC<FeaturedCarouselProps> = ({ data }) => {
                   jamais la recadrer. Un rapport imposé rognait un tiers du
                   visuel. Seule la première vue est prioritaire — les suivantes
                   ne sont pas à l'écran. */}
-              <Image
+              <ContentImage
                 src={item.banner}
                 alt={item.name || item.title || ""}
                 width={1536}
                 height={460}
                 sizes="(min-width: 1280px) 1280px, 100vw"
                 priority={index === 0}
-                className="h-auto w-full rounded-lg object-contain"
+                className="w-full rounded-lg object-contain"
               />
             </Link>
           </CarouselItem>

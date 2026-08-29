@@ -40,6 +40,7 @@ export const catalog = {
         ? "1 instrument trouvé."
         : `${n} instruments trouvés.`,
   clearSearch: "Voir tout le catalogue",
+  showImage: (n: number) => `Afficher la photo ${n}`,
   searchLabel: "Rechercher dans la boutique",
   latestArrivals: "Nouvel arrivage",
   browseShop: "Voir toute la boutique",

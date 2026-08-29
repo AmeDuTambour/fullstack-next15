@@ -1,59 +1,68 @@
 "use client";
 
-import { cn, isValidUrl } from "@/lib/utils";
-import { CameraOff } from "lucide-react";
-import Image from "next/image";
 import { useState } from "react";
+
+import ContentImage from "@/components/ui/content-image";
+import { catalog as t } from "@/lib/labels";
+import { cn } from "@/lib/utils";
 
 type ProductImagesProps = {
   images: string[];
+  /** Nom du produit : c'est lui qui décrit l'image, pas le mot « image ». */
+  name: string;
 };
 
-const ProductImages: React.FC<ProductImagesProps> = ({ images }) => {
-  const [current, setCurrent] = useState<number>(0);
+/**
+ * Galerie de la fiche produit.
+ *
+ * Elle redisait à sa façon ce que `ContentImage` sait déjà faire — repli sans
+ * image, cadre stable — et ses vignettes étaient des `div` cliquables :
+ * inatteignables au clavier, invisibles pour un lecteur d'écran. Ce sont
+ * maintenant des boutons qui annoncent laquelle est affichée.
+ */
+const ProductImages: React.FC<ProductImagesProps> = ({ images, name }) => {
+  const [current, setCurrent] = useState(0);
 
   return (
     <div className="space-y-4">
-      {isValidUrl(images[current]) ? (
-        <Image
-          src={images[current]}
-          alt="product image"
-          width={500}
-          height={500}
-          className="min-h-[300] object-cover object-center"
-        />
-      ) : (
-        <div className="h-[500px] w-full flex justify-center items-center rounded-lg border">
-          <CameraOff className="h-10 w-10" />
-        </div>
-      )}
-      <div className="flex">
-        {images.map((image, index) => {
-          return (
-            <div
+      <ContentImage
+        src={images[current]}
+        alt={name}
+        width={500}
+        height={500}
+        sizes="(min-width: 768px) 40vw, 100vw"
+        priority
+        className="aspect-square w-full rounded-lg object-cover object-center"
+      />
+
+      {images.length > 1 ? (
+        <div className="flex flex-wrap gap-2">
+          {images.map((image, index) => (
+            <button
               key={image}
+              type="button"
               onClick={() => setCurrent(index)}
+              aria-label={t.showImage(index + 1)}
+              aria-current={current === index ? "true" : undefined}
               className={cn(
-                "cursor-pointer border mr-2 hover:border-secondary",
-                current === index && "border-secondary"
+                "overflow-hidden rounded-md border transition-colors",
+                current === index
+                  ? "border-primary"
+                  : "border-border hover:border-foreground"
               )}
             >
-              {isValidUrl(image) ? (
-                <Image
-                  src={image}
-                  alt="thumbnail image"
-                  width={100}
-                  height={100}
-                />
-              ) : (
-                <div className="w-[100px] h-[100px] flex justify-center items-center rounded-md border">
-                  <CameraOff />
-                </div>
-              )}
-            </div>
-          );
-        })}
-      </div>
+              <ContentImage
+                src={image}
+                alt=""
+                width={100}
+                height={100}
+                sizes="100px"
+                className="h-20 w-20 object-cover"
+              />
+            </button>
+          ))}
+        </div>
+      ) : null}
     </div>
   );
 };
