@@ -28,6 +28,9 @@ export const admin = {
 
   // Produits
   reference: "Référence",
+  noUsers: "Aucun utilisateur.",
+  noOrders: "Aucune commande.",
+  noProducts: "Aucun produit.",
   productsTitle: "Produits",
   createProduct: "Créer un produit",
   category: "Catégorie",

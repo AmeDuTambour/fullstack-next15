@@ -1,22 +1,15 @@
 "use client";
+import PublishFields from "@/components/admin/publish-fields";
 import { admin as t, common } from "@/lib/labels";
 
-import { Card, CardContent } from "@/components/ui/card";
 import {
   Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage,
 } from "@/components/ui/form";
-import { Switch } from "@/components/ui/switch";
 import { articleFormDefaultValues } from "@/lib/constants";
 import { insertArticleSchema } from "@/lib/validators";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
-import Image from "next/image";
 import { zodResolver } from "@hookform/resolvers/zod";
-import ImageUpload from "@/components/shared/image-upload";
 import { useToast } from "@/hooks/use-toast";
 import { Article } from "@/types";
 import { Button } from "@/components/ui/button";
@@ -37,9 +30,6 @@ const PublishArticleForm: React.FC<PublishArticleFormProps> = ({ article }) => {
     defaultValues: article || articleFormDefaultValues,
   });
 
-  const isFeatured = form.watch("isFeatured");
-  const banner = form.watch("banner");
-
   const onSubmit: SubmitHandler<z.infer<typeof insertArticleSchema>> = async (
     values
   ) => {
@@ -59,66 +49,11 @@ const PublishArticleForm: React.FC<PublishArticleFormProps> = ({ article }) => {
           onSubmit={form.handleSubmit(onSubmit)}
           className="space-y-8"
         >
-          <div className="updload-field">
-            <div className="flex flex-row gap-8">
-              <h2 className="font-bold mb-2 text-lg">{t.featureArticle}</h2>
-              <FormField
-                control={form.control}
-                name="isFeatured"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Switch
-                        checked={field.value ?? false}
-                        onCheckedChange={field.onChange}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-            {isFeatured ? (
-              <div className="flex flex-col gap-4">
-                <Card>
-                  <CardContent className="space-y-2 mt-2">
-                    {banner && (
-                      <Image
-                        src={banner}
-                        alt={t.banner}
-                        className="w-full object-cover object-center rounded-sm"
-                        width={1920}
-                        height={680}
-                      />
-                    )}
-                  </CardContent>
-                </Card>
-                <ImageUpload
-  onUploaded={(url) => {
-    form.setValue("banner", url);
-  }}
-/>
-              </div>
-            ) : null}
-          </div>
-          <div className="flex flex-row gap-8">
-            <h2 className="font-bold mb-2 text-lg">{t.publishArticleTitle}</h2>
-            <FormField
-              control={form.control}
-              name="isPublished"
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <Switch
-                      checked={field.value ?? false}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
+          <PublishFields
+            form={form}
+            featureLabel={t.featureArticle}
+            publishLabel={t.publishArticleTitle}
+          />
           <Button
             type="submit"
             size="lg"
