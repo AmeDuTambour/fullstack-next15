@@ -449,10 +449,12 @@ export async function getAllProducts({
   const filters: any = {};
 
   if (query && query !== "all") {
-    filters.name = {
-      contains: query,
-      mode: "insensitive",
-    };
+    // Chercher aussi dans la description : l'acheteur tape « bison » ou
+    // « cerf », qui décrivent la peau et figurent rarement dans le nom.
+    filters.OR = [
+      { name: { contains: query, mode: "insensitive" } },
+      { description: { contains: query, mode: "insensitive" } },
+    ];
   }
 
   if (category && category !== "all") {

@@ -39,14 +39,6 @@ export const authConfig = {
 
       if (!auth && protectedPaths.some((p) => p.test(pathname))) return false;
 
-      // Un visiteur connecté sans le rôle est arrêté ici, et non par la garde
-      // de la page : celle-ci lève une exception, et un refus de droits n'est
-      // pas une panne. Le contrôle qui compte reste côté serveur — ceci évite
-      // seulement de présenter une erreur là où il n'y en a pas.
-      if (pathname.startsWith("/admin") && auth?.user?.role !== "admin") {
-        return NextResponse.redirect(new URL("/forbidden", request.nextUrl));
-      }
-
       // Le panier anonyme est identifié par ce cookie, posé à la première
       // visite et rattaché à l'utilisateur à la connexion (callback `jwt`).
       if (!request.cookies.get("sessionCartId")) {

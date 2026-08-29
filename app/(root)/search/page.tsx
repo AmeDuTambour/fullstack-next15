@@ -53,6 +53,7 @@ export async function generateMetadata(props: {
 
 const SearchPage = async (props: {
   searchParams: Promise<{
+    query?: string;
     category?: string;
     skin?: string;
     dimension?: string;
@@ -61,6 +62,7 @@ const SearchPage = async (props: {
   }>;
 }) => {
   const {
+    query = "",
     category = "all",
     skin = "all",
     dimension = "all",
@@ -69,19 +71,26 @@ const SearchPage = async (props: {
   } = await props.searchParams;
 
   const getFilterUrl = ({
+    q,
     c,
     sk,
     d,
     s,
     pg,
   }: {
+    q?: string;
     c?: string;
     sk?: string;
     d?: string;
     s?: string;
     pg?: string;
   }) => {
-    const params = { category, skin, dimension, sort, page };
+    const params = { query, category, skin, dimension, sort, page };
+
+    if (q !== undefined) {
+      params.query = q;
+      params.page = "1";
+    }
 
     if (c) {
       params.category = c;
@@ -148,6 +157,7 @@ const FilterLink = ({
   );
 
   const products = await getAllProducts({
+    query,
     category,
     skinType: skin,
     dimensions: dimension,
@@ -161,7 +171,19 @@ const FilterLink = ({
 
   return (
     <div className="space-y-6">
-      <h1 className="page-title">{t.shopTitle}</h1>
+      <div className="space-y-2">
+        <h1 className="page-title">
+          {query ? t.searchResultsFor(query) : t.shopTitle}
+        </h1>
+        {query ? (
+          <p className="text-sm text-muted-foreground">
+            {t.resultCount(products.totalCount ?? products.data.length)}{" "}
+            <Link href={getFilterUrl({ q: "" })} className="underline">
+              {t.clearSearch}
+            </Link>
+          </p>
+        ) : null}
+      </div>
 
       <div className="grid md:grid-cols-5 md:gap-5">
       <div className="filter-links hidden md:block">

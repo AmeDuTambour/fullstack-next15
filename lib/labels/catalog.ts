@@ -31,7 +31,15 @@ export const catalog = {
   drums: "Tambours",
   accessories: "Accessoires",
   sortBy: "Trier par",
-  searchPlaceholder: "Rechercher un instrument…",
+  searchPlaceholder: "Rechercher",
+  searchResultsFor: (query: string) => `Recherche : « ${query} »`,
+  resultCount: (n: number) =>
+    n === 0
+      ? "Aucun instrument ne correspond."
+      : n === 1
+        ? "1 instrument trouvé."
+        : `${n} instruments trouvés.`,
+  clearSearch: "Voir tout le catalogue",
   searchLabel: "Rechercher dans la boutique",
   latestArrivals: "Derniers instruments",
   browseShop: "Voir toute la boutique",
