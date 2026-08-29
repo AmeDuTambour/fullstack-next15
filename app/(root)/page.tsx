@@ -2,7 +2,7 @@ import FeaturedCarousel from "@/components/shared/product/featured-carousel";
 import ProductList from "@/components/shared/product/product-list";
 import ViewAllProductsButton from "@/components/view-all-products";
 import { getFeaturedArticles } from "@/lib/actions/article.actions";
-import { APP_DESCRIPTION } from "@/lib/constants";
+import { APP_DESCRIPTION, APP_NAME } from "@/lib/constants";
 import { catalog as t } from "@/lib/labels";
 import {
   getFeaturedProducts,
@@ -47,12 +47,11 @@ const HomePage = async () => {
 
   return (
     <>
-      {/* La page d'accueil ne portait aucun texte : ni titre, ni indication de
-          ce que vend l'atelier. Le titre reprend la description que le site
-          porte déjà sur lui-même — ce n'est pas une accroche écrite ici, et
-          elle se change dans la configuration. */}
-      <h1 className="page-title mb-8 max-w-2xl text-balance">
-        {APP_DESCRIPTION}
+      {/* Le contenu de l'accueil, ce sont les visuels. Le titre existe pour les
+          lecteurs d'écran et l'indexation, sans s'afficher : une accroche
+          visible relève de l'artisan, pas d'un texte de configuration. */}
+      <h1 className="sr-only">
+        {APP_NAME} — {APP_DESCRIPTION}
       </h1>
 
       {featuredContent.length > 0 && (
