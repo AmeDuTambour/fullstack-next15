@@ -156,7 +156,7 @@ const BaseProductForm = ({ product, categories }: BaseProductFormProps) => {
                   <FormLabel>{t.slug}</FormLabel>
                   <FormControl>
                     <div className="relative flex gap-2">
-                      <Input placeholder={t.slugPlaceholder} {...field} />
+                      <Input placeholder={t.productSlugPlaceholder} {...field} />
                       <Button
                         type="button"
                         className="bg-secondary text-secondary-foreground hover:bg-secondary/80 px-4 py-1"

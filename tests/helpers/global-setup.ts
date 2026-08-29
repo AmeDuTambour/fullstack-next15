@@ -49,7 +49,9 @@ export default async function globalSetup() {
     ["next", "dev", "--port", String(PORT), "--hostname", "127.0.0.1"],
     {
       cwd: process.cwd(),
-      env: process.env,
+      // Dossier de compilation séparé : sans lui, ce serveur et celui de
+      // développement se disputent `.next` et le corrompent tous les deux.
+      env: { ...process.env, NEXT_DIST_DIR: ".next-test" },
       stdio: ["ignore", log, log],
       // Groupe de processus propre, pour pouvoir tuer `next dev` et son enfant.
       detached: true,

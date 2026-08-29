@@ -130,7 +130,7 @@ const ArticleTitleForm: React.FC<ArticleTitleFormProps> = ({
                 <FormLabel>{t.slug}</FormLabel>
                 <FormControl>
                   <div className="relative">
-                    <Input placeholder={t.slugPlaceholder} {...field} />
+                    <Input placeholder={t.articleSlugPlaceholder} {...field} />
                     <Button
                       type="button"
                       className="bg-secondary text-secondary-foreground hover:bg-secondary/80 px-4 py-1 mt-2"

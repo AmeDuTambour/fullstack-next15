@@ -79,7 +79,11 @@ export const admin = {
   productName: "Nom",
   productNamePlaceholder: "Nom du produit",
   slug: "Lien",
-  slugPlaceholder: "lien-du-produit",
+  // Deux formulaires, deux exemples : le même texte parlait de « produit » sur
+  // l'écran de création d'article. Partager un libellé n'a de sens que lorsque
+  // les deux écrans disent réellement la même chose.
+  productSlugPlaceholder: "lien-du-produit",
+  articleSlugPlaceholder: "lien-de-l-article",
   description: "Description",
   descriptionPlaceholder: "Description du produit",
   price: "Prix",

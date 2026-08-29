@@ -60,4 +60,8 @@ export const common = {
     `${year} ${name}. Tous droits réservés.`,
   cart: "Panier",
   openAccountMenu: "Ouvrir le menu du compte",
+  chooseImage: "Choisir une image",
+  uploading: "Envoi en cours…",
+  preparing: "Préparation…",
+  imageMaxSize: "Image de 4 Mo maximum",
 } as const;
