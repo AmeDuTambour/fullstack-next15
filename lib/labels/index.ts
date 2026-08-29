@@ -11,11 +11,20 @@
  */
 import { account } from "./account";
 import { admin } from "./admin";
+import { catalog } from "./catalog";
 import { common } from "./common";
 import { errors } from "./errors";
 import { order } from "./order";
 import { payment } from "./payment";
 
-export const labels = { account, admin, common, errors, order, payment } as const;
+export const labels = {
+  account,
+  admin,
+  catalog,
+  common,
+  errors,
+  order,
+  payment,
+} as const;
 
-export { account, admin, common, errors, order, payment };
+export { account, admin, catalog, common, errors, order, payment };

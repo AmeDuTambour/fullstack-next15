@@ -78,3 +78,17 @@ export const articleSectionFormDefaultValues = {
   image: "",
   youTubeUrl: "",
 };
+
+/**
+ * Délai d'expédition annoncé aux acheteurs.
+ *
+ * ⚠️ Valeur NON VÉRIFIÉE. Le propriétaire du dépôt n'est pas l'artisan et ne
+ * connaît pas le délai réel ; c'est une estimation posée pour débloquer le
+ * travail. À confirmer par Julien avant toute mise en ligne, au même titre que
+ * les textes de remplissage des articles.
+ *
+ * En configuration et non dans un composant : la corriger ne doit demander ni
+ * recherche dans le code, ni redéploiement.
+ */
+export const SHIPPING_DELAY =
+  process.env.NEXT_PUBLIC_SHIPPING_DELAY || "2 à 4 jours ouvrés";

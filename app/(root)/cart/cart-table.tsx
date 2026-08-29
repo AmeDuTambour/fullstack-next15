@@ -14,7 +14,8 @@ import { useToast } from "@/hooks/use-toast";
 import { addItemToCart, removeItemFromCart } from "@/lib/actions/cart.actions";
 import { formatCurrency } from "@/lib/utils";
 import { Cart, CartItem } from "@/types";
-import { ArrowRight, CameraOff, Loader, Minus, Plus } from "lucide-react";
+import { ArrowRight, CameraOff, Loader, Minus, Plus, Trash2 } from "lucide-react";
+import { catalog as t } from "@/lib/labels";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -22,9 +23,11 @@ import { useTransition } from "react";
 
 export type CartTableProps = {
   cart?: Cart;
+  /** Par identifiant de produit : une pièce unique n'expose pas de quantité. */
+  quantityAllowed?: Record<string, boolean>;
 };
 
-const CartTable: React.FC<CartTableProps> = ({ cart }) => {
+const CartTable: React.FC<CartTableProps> = ({ cart, quantityAllowed = {} }) => {
   const router = useRouter();
   const { toast } = useToast();
   const [isPending, startTransition] = useTransition();
@@ -102,33 +105,59 @@ const CartTable: React.FC<CartTableProps> = ({ cart }) => {
                       </Link>
                     </TableCell>
                     <TableCell className="flex-center gap-2">
-                      <Button
-                        disabled={isPending}
-                        variant="outline"
-                        type="button"
-                        onClick={() =>
-                          handleOnRemoveItemFromCart(item.productId)
-                        }
-                      >
-                        {isPending ? (
-                          <Loader className="w-4 h-4 animate-spin" />
-                        ) : (
-                          <Minus className="w-4 h-4" />
-                        )}
-                      </Button>
-                      <span>{item.qty}</span>
-                      <Button
-                        disabled={isPending}
-                        variant="outline"
-                        type="button"
-                        onClick={() => handleOnAddItemToCart(item)}
-                      >
-                        {isPending ? (
-                          <Loader className="w-4 h-4 animate-spin" />
-                        ) : (
-                          <Plus className="w-4 h-4" />
-                        )}
-                      </Button>
+                      {quantityAllowed[item.productId] === false ? (
+                        <>
+                          <span>{item.qty}</span>
+                          <Button
+                            disabled={isPending}
+                            variant="ghost"
+                            size="sm"
+                            type="button"
+                            aria-label={t.removeItem}
+                            onClick={() =>
+                              handleOnRemoveItemFromCart(item.productId)
+                            }
+                          >
+                            {isPending ? (
+                              <Loader className="w-4 h-4 animate-spin" />
+                            ) : (
+                              <Trash2 className="w-4 h-4" />
+                            )}
+                          </Button>
+                        </>
+                      ) : (
+                        <>
+                          <Button
+                            disabled={isPending}
+                            variant="outline"
+                            type="button"
+                            aria-label={t.decreaseQuantity}
+                            onClick={() =>
+                              handleOnRemoveItemFromCart(item.productId)
+                            }
+                          >
+                            {isPending ? (
+                              <Loader className="w-4 h-4 animate-spin" />
+                            ) : (
+                              <Minus className="w-4 h-4" />
+                            )}
+                          </Button>
+                          <span>{item.qty}</span>
+                          <Button
+                            disabled={isPending}
+                            variant="outline"
+                            type="button"
+                            aria-label={t.increaseQuantity}
+                            onClick={() => handleOnAddItemToCart(item)}
+                          >
+                            {isPending ? (
+                              <Loader className="w-4 h-4 animate-spin" />
+                            ) : (
+                              <Plus className="w-4 h-4" />
+                            )}
+                          </Button>
+                        </>
+                      )}
                     </TableCell>
                     <TableCell className="text-right">
                       €{item.price.toString()}

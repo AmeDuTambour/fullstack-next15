@@ -1,6 +1,5 @@
 import AddToCart from "@/components/shared/product/add-to-cart";
 import ProductImages from "@/components/shared/product/product-images";
-import ProductPrice from "@/components/shared/product/product-price";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { getUserCart } from "@/lib/actions/cart.actions";
@@ -8,9 +7,18 @@ import {
   getProductBySlug,
   getAllProductCategories,
 } from "@/lib/actions/product.actions";
-import { getProductCategory } from "@/lib/utils";
+import { formatCurrency, getProductCategory } from "@/lib/utils";
+import {
+  allowsQuantitySelection,
+  getAvailability,
+  getProductNature,
+} from "@/lib/product";
+import { catalog as t, common } from "@/lib/labels";
+import { SHIPPING_DELAY } from "@/lib/constants";
 
 import { notFound } from "next/navigation";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 const ProductDetailPage = async (props: {
   params: Promise<{ slug: string }>;
@@ -24,6 +32,9 @@ const ProductDetailPage = async (props: {
 
   const cart = await getUserCart();
 
+  const nature = getProductNature(category?.name);
+  const availability = getAvailability(nature, product.stock);
+
   return (
     <>
       <section>
@@ -33,13 +44,20 @@ const ProductDetailPage = async (props: {
           </div>
           <div className="col-span-2 p-5">
             <div className="flex flex-col gap-6">
-              <h1 className="h3-bold">{product.name}</h1>
+              <h1 className="page-title">{product.name}</h1>
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-                <ProductPrice
-                  value={Number(product.price)}
-                  className="w-24 rounded-full bg-green-100 text-green-700 px-5 py-2"
-                />
+                <p className="text-2xl font-semibold">
+                  {formatCurrency(product.price)}
+                </p>
+                {nature === "unique" ? (
+                  <Badge variant="secondary">{t.uniquePiece}</Badge>
+                ) : null}
               </div>
+              {nature === "unique" ? (
+                <p className="text-sm text-muted-foreground max-w-prose">
+                  {t.uniquePieceNote}
+                </p>
+              ) : null}
             </div>
             {category.name === "Drum" ? (
               <div className="flex flex-row gap-8">
@@ -62,23 +80,33 @@ const ProductDetailPage = async (props: {
             <Card>
               <CardContent className="p-4">
                 <div className="mb-2 flex justify-between">
-                  <div>Price</div>
-                  <div>
-                    <ProductPrice value={Number(product.price)} />
-                  </div>
+                  <div>{common.price}</div>
+                  <div>{formatCurrency(product.price)}</div>
                 </div>
                 <div className="mb-2 flex justify-between">
-                  <div>Status</div>
-                  {product.stock > 0 ? (
-                    <Badge variant="outline">En stock</Badge>
+                  <div>{common.status}</div>
+                  {availability === "available" ? (
+                    <Badge variant="outline">
+                      {nature === "unique"
+                        ? t.available
+                        : t.inStockCount(product.stock)}
+                    </Badge>
                   ) : (
-                    <Badge variant="destructive">Stock épuisé</Badge>
+                    <Badge variant="secondary">
+                      {availability === "sold" ? t.sold : t.outOfStock}
+                    </Badge>
                   )}
                 </div>
-                {product.stock > 0 ? (
+                {availability === "available" ? (
+                  <p className="mb-3 text-sm text-muted-foreground">
+                    {t.shippingDelay(SHIPPING_DELAY)}
+                  </p>
+                ) : null}
+                {availability === "available" ? (
                   <div className="flex-center">
                     <AddToCart
                       cart={cart}
+                      allowsQuantity={allowsQuantitySelection(nature)}
                       item={{
                         productId: product.id,
                         name: product.name,
@@ -89,7 +117,16 @@ const ProductDetailPage = async (props: {
                       }}
                     />
                   </div>
-                ) : null}
+                ) : (
+                  <div className="space-y-3">
+                    <p className="text-sm text-muted-foreground">
+                      {availability === "sold" ? t.soldNote : t.outOfStock}
+                    </p>
+                    <Button asChild variant="outline" className="w-full">
+                      <Link href="/search">{t.seeAvailable}</Link>
+                    </Button>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>

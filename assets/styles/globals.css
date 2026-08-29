@@ -18,6 +18,18 @@
     @apply flex justify-between items-center;
   }
 
+  /* Rôles typographiques.
+     Nommés par le rôle et non par le niveau : il n'y a plus de décision à
+     prendre écran par écran. Six traitements différents coexistaient, et le
+     titre de la fiche produit était plus petit qu'un titre de section. */
+  .page-title {
+    @apply font-bold text-3xl lg:text-4xl tracking-tight;
+  }
+
+  .section-title {
+    @apply font-bold text-xl lg:text-2xl;
+  }
+
   .h1-bold {
     @apply font-bold text-3xl lg:text-4xl;
   }

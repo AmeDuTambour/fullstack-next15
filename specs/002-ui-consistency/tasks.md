@@ -24,13 +24,13 @@ priorités : US2 et US3 précèdent US1, qui s'appuie sur elles.
 
 **⚠️ Tout le reste s'y appuie.**
 
-- [ ] T001 Créer `lib/product.ts` exposant la nature d'un produit — pièce unique ou article reproductible — résolue depuis le nom de sa catégorie, avec repli sur « reproductible » pour toute catégorie inconnue
-- [ ] T002 Ajouter à `lib/product.ts` la disponibilité dérivée de la nature et du stock : disponible, vendu, épuisé
-- [ ] T003 [P] Écrire `tests/product.test.ts` couvrant les quatre combinaisons de nature et de stock, plus le repli sur catégorie inconnue
-- [ ] T004 [P] Ajouter les rôles typographiques `.page-title` et `.section-title` dans `assets/styles/globals.css`
-- [ ] T005 [P] Ajouter à `lib/constants/index.ts` le délai d'expédition, lu depuis l'environnement, avec « 2 à 4 jours ouvrés » en défaut et un commentaire signalant que la valeur n'est pas vérifiée
-- [ ] T006 [P] Ajouter les libellés de ce travail dans `lib/labels/` — disponibilité, récapitulatif, étapes, états vides
-- [ ] T007 Étendre `tests/utils.test.ts` pour verrouiller le format monétaire français : virgule décimale, symbole après le montant
+- [X] T001 Créer `lib/product.ts` exposant la nature d'un produit — pièce unique ou article reproductible — résolue depuis le nom de sa catégorie, avec repli sur « reproductible » pour toute catégorie inconnue
+- [X] T002 Ajouter à `lib/product.ts` la disponibilité dérivée de la nature et du stock : disponible, vendu, épuisé
+- [X] T003 [P] Écrire `tests/product.test.ts` couvrant les quatre combinaisons de nature et de stock, plus le repli sur catégorie inconnue
+- [X] T004 [P] Ajouter les rôles typographiques `.page-title` et `.section-title` dans `assets/styles/globals.css`
+- [X] T005 [P] Ajouter à `lib/constants/index.ts` le délai d'expédition, lu depuis l'environnement, avec « 2 à 4 jours ouvrés » en défaut et un commentaire signalant que la valeur n'est pas vérifiée
+- [X] T006 [P] Ajouter les libellés de ce travail dans `lib/labels/` — disponibilité, récapitulatif, étapes, états vides
+- [X] T007 Étendre `tests/utils.test.ts` pour verrouiller le format monétaire français : virgule décimale, symbole après le montant
 
 ---
 
@@ -39,11 +39,11 @@ priorités : US2 et US3 précèdent US1, qui s'appuie sur elles.
 **Test indépendant** : consulter un tambour disponible, un tambour vendu, un accessoire
 disponible et un accessoire épuisé. Les quatre se distinguent sans explication.
 
-- [ ] T008 [US2] Remplacer les trois `stock > 0` par la disponibilité de `lib/product.ts` dans `app/(root)/product/[slug]/page.tsx` et `components/shared/product/product-card.tsx`
-- [ ] T009 [US2] Signaler le caractère unique sur la fiche produit d'un tambour, et formuler l'indisponibilité comme une vente définitive plutôt qu'une rupture
-- [ ] T010 [US2] Retirer la commande de quantité pour une pièce unique dans `components/shared/product/add-to-cart.tsx` et `app/(root)/cart/cart-table.tsx`, en la conservant pour un article reproductible
-- [ ] T011 [US2] Proposer une continuation vers les pièces disponibles sur la fiche d'un tambour vendu
-- [ ] T012 [US2] Interdire un stock supérieur à 1 sur une pièce unique dans `lib/validators.ts`, y compris à la saisie depuis l'administration
+- [X] T008 [US2] Remplacer les trois `stock > 0` par la disponibilité de `lib/product.ts` dans `app/(root)/product/[slug]/page.tsx` et `components/shared/product/product-card.tsx`
+- [X] T009 [US2] Signaler le caractère unique sur la fiche produit d'un tambour, et formuler l'indisponibilité comme une vente définitive plutôt qu'une rupture
+- [X] T010 [US2] Retirer la commande de quantité pour une pièce unique dans `components/shared/product/add-to-cart.tsx` et `app/(root)/cart/cart-table.tsx`, en la conservant pour un article reproductible
+- [X] T011 [US2] Proposer une continuation vers les pièces disponibles sur la fiche d'un tambour vendu
+- [X] T012 [US2] Interdire un stock supérieur à 1 sur une pièce unique dans `lib/validators.ts`, y compris à la saisie depuis l'administration
 
 ---
 
@@ -53,13 +53,13 @@ disponible et un accessoire épuisé. Les quatre se distinguent sans explication
 même rôle reçoit partout le même traitement.
 
 - [ ] T013 [US3] Appliquer `.page-title` aux titres principaux existants et en ajouter un aux six pages qui n'en ont pas — `/`, `/search`, `/blog`, `/about`, `/user/orders`, `/user/profile`
-- [ ] T014 [US3] Corriger le titre de `app/(root)/product/[slug]/page.tsx`, aujourd'hui plus petit qu'un titre de section
-- [ ] T015 [US3] Supprimer `components/shared/product/product-price.tsx` et router les dix fichiers affichant un prix par le formatage monétaire
+- [X] T014 [US3] Corriger le titre de `app/(root)/product/[slug]/page.tsx`, aujourd'hui plus petit qu'un titre de section
+- [X] T015 [US3] Supprimer `components/shared/product/product-price.tsx` et router les dix fichiers affichant un prix par le formatage monétaire
 - [ ] T016 [US3] Créer `components/shared/status-badge.tsx` — présentation unique, mention textuelle toujours présente
 - [ ] T017 [US3] Appliquer l'indicateur d'état aux six écrans concernés, dont `app/admin/products/page.tsx` où l'état publié n'est aujourd'hui qu'une icône sans légende
 - [ ] T018 [P] [US3] Aligner les trois grilles de produits sur une configuration unique
 - [ ] T019 [P] [US3] Harmoniser les états vides, dont les deux formulations différentes de `app/(root)/search/page.tsx`
-- [ ] T020 [P] [US3] Ajouter un état de survol aux cartes produit, absent alors que les cartes d'articles en ont un
+- [X] T020 [P] [US3] Ajouter un état de survol aux cartes produit, absent alors que les cartes d'articles en ont un
 - [ ] T021 [US3] Remplacer `h-screen` par `min-h-screen` dans `app/(root)/layout.tsx`
 
 ---

@@ -18,6 +18,7 @@ import {
 import { prisma } from "@/db/prisma";
 import { DrumSpecs, OtherSpecs, Product } from "@/types";
 import { isAdmin, requireAdmin } from "../auth-guards";
+import { getMaxOrderableQuantity, getProductNature } from "../product";
 
 async function getProductSpecifications(productId: string, category: string) {
   if (!productId) {
@@ -40,6 +41,32 @@ async function getProductSpecifications(productId: string, category: string) {
   }
 
   return {};
+}
+
+
+/**
+ * Une pièce unique ne peut pas exister en plusieurs exemplaires.
+ *
+ * La contrainte ne peut pas vivre dans le schéma de validation : celui-ci ne
+ * connaît que l'identifiant de la catégorie, pas son nom, et c'est le nom qui
+ * porte la nature. Elle vit donc ici, seul endroit où la catégorie est
+ * résolvable — et elle couvre la saisie depuis l'administration, sans quoi la
+ * règle tiendrait côté vitrine et se contournerait côté back-office.
+ */
+async function assertStockFitsNature(categoryId: string, stock: number) {
+  const category = await prisma.productCategory.findUnique({
+    where: { id: categoryId },
+    select: { name: true },
+  });
+
+  const nature = getProductNature(category?.name);
+  const max = getMaxOrderableQuantity(nature, stock);
+
+  if (nature === "unique" && stock > max) {
+    throw new Error(
+      "Un tambour est une pièce unique : son stock ne peut pas dépasser 1."
+    );
+  }
 }
 
 export async function getLatestProducts(): Promise<Product[]> {
@@ -186,6 +213,7 @@ export async function createProduct(data: z.infer<typeof baseProductSchema>) {
   try {
     await requireAdmin();
     const baseProduct = baseProductSchema.parse(data);
+    await assertStockFitsNature(baseProduct.categoryId, baseProduct.stock);
 
     const createdProduct = await prisma.product.create({
       data: {
@@ -220,6 +248,7 @@ export async function updateBaseProduct(
   try {
     await requireAdmin();
     const product = UpdateProductSchema.parse(data);
+    await assertStockFitsNature(product.categoryId, product.stock);
 
     const existingProduct = await prisma.product.findUnique({
       where: { id: product.id },

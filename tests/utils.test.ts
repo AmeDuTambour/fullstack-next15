@@ -1,4 +1,9 @@
-import { round2, formatNumberWithDecimal, formatText } from "@/lib/utils";
+import {
+  round2,
+  formatNumberWithDecimal,
+  formatText,
+  formatCurrency,
+} from "@/lib/utils";
 
 /**
  * `round2` sert au calcul des totaux de panier et de commande. Son
@@ -83,5 +88,36 @@ describe("formatText", () => {
   it("fonctionne sans DOM", () => {
     expect(() => formatText("texte simple")).not.toThrow();
     expect(formatText("texte simple")).toBe("texte simple");
+  });
+});
+
+/**
+ * Quatre formats de prix coexistaient, dont trois non conformes au français.
+ * Le composant supprimé rendait « € 130 . 00 » : symbole avant, point décimal,
+ * décimales détachées — trois écarts dans un seul affichage.
+ */
+describe("formatCurrency", () => {
+  it("place le symbole après le montant", () => {
+    expect(formatCurrency(130)).toMatch(/€$/);
+  });
+
+  it("utilise la virgule comme séparateur décimal", () => {
+    expect(formatCurrency(130.5)).toContain(",");
+    expect(formatCurrency(130.5)).not.toContain(".");
+  });
+
+  it("affiche toujours deux décimales", () => {
+    expect(formatCurrency(130)).toMatch(/130,00/);
+    expect(formatCurrency(9.9)).toMatch(/9,90/);
+  });
+
+  it("accepte une chaîne comme un nombre", () => {
+    expect(formatCurrency("290")).toBe(formatCurrency(290));
+  });
+
+  it("rend le même résultat pour une même valeur, quel que soit l'appelant", () => {
+    const asNumber = formatCurrency(123.45);
+    const asString = formatCurrency("123.45");
+    expect(asNumber).toBe(asString);
   });
 });
