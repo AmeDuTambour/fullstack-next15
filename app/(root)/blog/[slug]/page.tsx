@@ -9,6 +9,39 @@ import ContentImage from "@/components/ui/content-image";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { blog as t } from "@/lib/labels";
+import { APP_DESCRIPTION } from "@/lib/constants";
+import type { Metadata } from "next";
+
+export async function generateMetadata(props: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await props.params;
+  const article = await getArticleBySlug(slug);
+  if (!article) return {};
+
+  const description =
+    article.sections?.[0]?.body?.slice(0, 200) || APP_DESCRIPTION;
+
+  return {
+    title: article.title,
+    description,
+    alternates: { canonical: `/blog/${slug}` },
+    openGraph: {
+      type: "article",
+      title: article.title,
+      description,
+      url: `/blog/${slug}`,
+      publishedTime: article.createdAt.toISOString(),
+      images: article.banner ? [{ url: article.banner }] : undefined,
+    },
+    twitter: {
+      card: article.banner ? "summary_large_image" : "summary",
+      title: article.title,
+      description,
+      images: article.banner ? [article.banner] : undefined,
+    },
+  };
+}
 
 const ArticlePage = async (props: {
   params: Promise<{

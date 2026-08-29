@@ -52,7 +52,7 @@ const CredentialsSignInForm = () => {
             name="password"
             type="password"
             required
-            autoComplete="password"
+            autoComplete="current-password"
             defaultValue={signInFormDefaultValues.password}
           />
         </div>

@@ -64,5 +64,9 @@ export const order = {
   thanksBody: "Nous préparons votre envoi et vous tenons informé par e-mail.",
   viewOrder: "Voir ma commande",
   orderReference: "Référence",
+  acceptTermsPrefix: "En validant, vous acceptez les",
+  termsLink: "conditions générales de vente",
+  and: "et la politique de",
+  returnsLink: "livraison et retours",
   continueShopping: "Poursuivre la visite",
 } as const;

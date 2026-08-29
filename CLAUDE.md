@@ -139,6 +139,18 @@ section, définis dans `assets/styles/globals.css`. Ne pas composer un titre à 
 `text-2xl font-bold` : six écrans avaient six échelles différentes. Le corps de texte
 long est limité à `max-w-[68ch]` — une ligne plus longue se relit mal.
 
+### 9. Le contenu qui engage Julien ne s'invente pas
+
+`lib/content/` porte ce qui doit venir de lui : le texte des pages légales
+(`legal.ts`), les coordonnées de l'atelier (`workshop.ts`), l'explication du
+vocabulaire du métier (`glossary.ts`). Ces modules sont vides et les écrans le
+disent franchement plutôt que d'afficher un cadre creux ou une formule inventée.
+
+Ne jamais rédiger à sa place une description de produit, une condition de vente
+ou un délai. Le texte fonctionnel — « Ajouter au panier », « Vendu » — est du
+ressort du code ; tout ce qui décrit l'instrument, l'atelier ou l'engagement
+commercial est le sien.
+
 ## Commandes
 
 ⚠️ **Ne jamais supprimer `.next` pendant qu'un serveur de développement tourne.** Le serveur

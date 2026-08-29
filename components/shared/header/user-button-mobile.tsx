@@ -1,3 +1,4 @@
+import { account as t, common } from "@/lib/labels";
 import { auth } from "@/auth";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,7 +19,7 @@ export const UserButtonMobile = async () => {
     return (
       <Button asChild>
         <Link href="/sign-in">
-          <UserIcon /> Se connecter
+          <UserIcon aria-hidden="true" /> {t.signIn}
         </Link>
       </Button>
     );
@@ -28,24 +29,24 @@ export const UserButtonMobile = async () => {
       <nav className="lg:hidden flex flex-col items-start">
         <Button asChild variant="ghost">
           <Link href="/user/profile">
-            <User /> Mon profil
+            <User aria-hidden="true" /> {t.myProfile}
           </Link>
         </Button>
         <Button asChild variant="ghost">
           <Link href="/cart">
-            <ShoppingCart /> Panier
+            <ShoppingCart aria-hidden="true" /> {common.cart}
           </Link>
         </Button>
         <Button asChild variant="ghost">
           <Link href="/user/orders">
             <History />
-            Historique des commandes
+            {t.orderHistory}
           </Link>
         </Button>
         {session?.user?.role === "admin" ? (
           <Button asChild variant="ghost">
             <Link href="/admin/overview">
-              <ShieldCheck /> Admin
+              <ShieldCheck aria-hidden="true" /> {t.adminArea}
             </Link>
           </Button>
         ) : null}

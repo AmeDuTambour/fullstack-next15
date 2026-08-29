@@ -52,4 +52,12 @@ export const common = {
   navContact: "Contact",
   menu: "Menu",
   openMenu: "Ouvrir le menu",
+  navigation: "Navigation",
+  followUs: "Suivez-nous",
+  instagram: "L'Âme Du Tambour sur Instagram",
+  facebook: "L'Âme Du Tambour sur Facebook",
+  copyright: (year: number, name: string) =>
+    `${year} ${name}. Tous droits réservés.`,
+  cart: "Panier",
+  openAccountMenu: "Ouvrir le menu du compte",
 } as const;

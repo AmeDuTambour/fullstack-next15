@@ -14,7 +14,9 @@ import { admin } from "./admin";
 import { blog } from "./blog";
 import { catalog } from "./catalog";
 import { common } from "./common";
+import { contact } from "./contact";
 import { errors } from "./errors";
+import { legal } from "./legal";
 import { order } from "./order";
 import { payment } from "./payment";
 
@@ -24,9 +26,22 @@ export const labels = {
   blog,
   catalog,
   common,
+  contact,
   errors,
+  legal,
   order,
   payment,
 } as const;
 
-export { account, admin, blog, catalog, common, errors, order, payment };
+export {
+  account,
+  admin,
+  blog,
+  catalog,
+  common,
+  contact,
+  errors,
+  legal,
+  order,
+  payment,
+};

@@ -36,4 +36,8 @@ export const account = {
   notPaidShort: "En attente",
   notDeliveredShort: "Pas encore expédiée",
   noOrders: "Vous n'avez pas encore passé de commande.",
+  accountMenu: "Ouvrir le menu du compte",
+  myProfile: "Mon profil",
+  orderHistory: "Historique des commandes",
+  adminArea: "Administration",
 } as const;

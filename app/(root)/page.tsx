@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+
 import FeaturedCarousel from "@/components/shared/product/featured-carousel";
 import ProductList from "@/components/shared/product/product-list";
 import ViewAllProductsButton from "@/components/view-all-products";
@@ -17,6 +19,17 @@ import {
  * servi en SSR complet, donc indexable.
  */
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+  description: APP_DESCRIPTION,
+  alternates: { canonical: "/" },
+  openGraph: {
+    type: "website",
+    title: APP_NAME,
+    description: APP_DESCRIPTION,
+    url: "/",
+  },
+};
 
 const HomePage = async () => {
   const latestProducts = await getLatestProducts();

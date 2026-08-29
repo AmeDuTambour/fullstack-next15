@@ -14,11 +14,50 @@ import {
   getProductNature,
 } from "@/lib/product";
 import { catalog as t, common } from "@/lib/labels";
-import { SHIPPING_DELAY } from "@/lib/constants";
+import { APP_DESCRIPTION, SERVER_URL, SHIPPING_DELAY } from "@/lib/constants";
+import type { Metadata } from "next";
 
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+
+/**
+ * Aperçu de partage et métadonnées propres au produit.
+ *
+ * Chaque tambour partageait le titre générique du site : un lien posté sur
+ * Instagram — le canal d'acquisition principal — s'affichait sans image, sans
+ * titre et sans description. Le lien de la pièce et celui de la page d'accueil
+ * étaient indiscernables.
+ */
+export async function generateMetadata(props: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await props.params;
+  const product = await getProductBySlug(slug);
+  if (!product) return {};
+
+  const description = product.description?.slice(0, 200) || APP_DESCRIPTION;
+  const image = product.images?.[0];
+
+  return {
+    title: product.name,
+    description,
+    alternates: { canonical: `/product/${product.slug}` },
+    openGraph: {
+      type: "website",
+      title: product.name,
+      description,
+      url: `/product/${product.slug}`,
+      images: image ? [{ url: image }] : undefined,
+    },
+    twitter: {
+      card: image ? "summary_large_image" : "summary",
+      title: product.name,
+      description,
+      images: image ? [image] : undefined,
+    },
+  };
+}
 
 const ProductDetailPage = async (props: {
   params: Promise<{ slug: string }>;
@@ -35,8 +74,37 @@ const ProductDetailPage = async (props: {
   const nature = getProductNature(category?.name);
   const availability = getAvailability(nature, product.stock);
 
+  // Fiche structurée : sans elle, un moteur voit une page parmi d'autres, pas
+  // un objet ayant un prix et une disponibilité. C'est ce qui fait apparaître
+  // le prix sous le résultat de recherche.
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: product.name,
+    description: product.description || undefined,
+    image: product.images?.length ? product.images : undefined,
+    sku: product.id,
+    category: category?.name || undefined,
+    offers: {
+      "@type": "Offer",
+      url: `${SERVER_URL}/product/${product.slug}`,
+      priceCurrency: "EUR",
+      price: Number(product.price).toFixed(2),
+      availability:
+        availability === "available"
+          ? "https://schema.org/InStock"
+          : nature === "unique"
+            ? "https://schema.org/SoldOut"
+            : "https://schema.org/OutOfStock",
+    },
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
       <section>
         <div className="grid grid-cols-1 md:grid-cols-5">
           <div className="col-span-2">

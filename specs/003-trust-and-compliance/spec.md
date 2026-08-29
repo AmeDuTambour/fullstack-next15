@@ -4,7 +4,7 @@
 
 **Created**: 2026-08-28
 
-**Status**: Draft
+**Status**: Implemented (contenu juridique à fournir par le propriétaire)
 
 **Input**: Audit Impeccable du 2026-08-28 — heuristique 10 « Aide et documentation » notée 0/4, la seule note nulle du rapport. Complété par un relevé SEO du même jour.
 

@@ -1,3 +1,4 @@
+import { account as t } from "@/lib/labels";
 import { auth } from "@/auth";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,7 +19,7 @@ const UserButton = async () => {
     return (
       <Button asChild>
         <Link href="/sign-in">
-          <UserIcon /> Se connecter
+          <UserIcon aria-hidden="true" /> {t.signIn}
         </Link>
       </Button>
     );
@@ -32,7 +33,8 @@ const UserButton = async () => {
           <div className="flex items-center">
             <Button
               variant="ghost"
-              className="relative flex h-8 w-8 items-center justify-center rounded-full ml-2 bg-secondary text-secondary-foreground"
+              aria-label={t.accountMenu}
+              className="relative ml-2 flex h-11 w-11 items-center justify-center rounded-full bg-secondary text-secondary-foreground"
             >
               {firstInitial}
             </Button>
@@ -51,19 +53,19 @@ const UserButton = async () => {
           </DropdownMenuLabel>
           <DropdownMenuItem>
             <Link href="/user/profile" className="w-full">
-              Mon profil
+              {t.myProfile}
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem>
             <Link href="/user/orders" className="w-full">
-              Historique des commandes
+              {t.orderHistory}
             </Link>
           </DropdownMenuItem>
 
           {session?.user?.role === "admin" ? (
             <DropdownMenuItem>
               <Link href="/admin/overview" className="w-full">
-                Admin
+                {t.adminArea}
               </Link>
             </DropdownMenuItem>
           ) : null}
