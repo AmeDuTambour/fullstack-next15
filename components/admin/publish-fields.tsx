@@ -28,15 +28,21 @@ type PublishFieldsProps<T extends FieldValues> = {
   form: UseFormReturn<T>;
   featureLabel: string;
   publishLabel: string;
+  /** Ce que signifie l'interrupteur allumé, puis éteint. */
+  publishOnHint: string;
+  publishOffHint: string;
 };
 
 export function PublishFields<T extends FieldValues>({
   form,
   featureLabel,
   publishLabel,
+  publishOnHint,
+  publishOffHint,
 }: PublishFieldsProps<T>) {
   const isFeatured = form.watch("isFeatured" as Path<T>);
   const banner = form.watch("banner" as Path<T>);
+  const isPublished = form.watch("isPublished" as Path<T>);
 
   return (
     <>
@@ -85,23 +91,34 @@ export function PublishFields<T extends FieldValues>({
         ) : null}
       </div>
 
-      <div className="flex flex-row items-center gap-8">
-        <h2 className="section-title">{publishLabel}</h2>
-        <FormField
-          control={form.control}
-          name={"isPublished" as Path<T>}
-          render={({ field }) => (
-            <FormItem>
-              <FormControl>
-                <Switch
-                  checked={Boolean(field.value)}
-                  onCheckedChange={field.onChange}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+      {/* L'interrupteur nomme un état, pas une action.
+          Il s'appelait « Publier l'article » — les mots mêmes du titre de
+          l'étape et du bouton d'étape — ce qui donnait à croire qu'il publiait
+          au moment du clic. Il ne fait que décrire ce que l'article deviendra
+          une fois enregistré, et c'est maintenant écrit. */}
+      <div className="space-y-2">
+        <div className="flex flex-row items-center gap-8">
+          <h2 className="section-title">{publishLabel}</h2>
+          <FormField
+            control={form.control}
+            name={"isPublished" as Path<T>}
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <Switch
+                    checked={Boolean(field.value)}
+                    onCheckedChange={field.onChange}
+                    aria-describedby="publishHint"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+        <p id="publishHint" className="text-sm text-muted-foreground">
+          {isPublished ? publishOnHint : publishOffHint}
+        </p>
       </div>
     </>
   );

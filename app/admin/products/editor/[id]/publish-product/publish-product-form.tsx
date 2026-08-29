@@ -61,16 +61,21 @@ const PublishProductForm: React.FC<PublishProductFormProps> = ({ product }) => {
           <PublishFields
             form={form}
             featureLabel={t.featureProduct}
-            publishLabel={t.publishProductTitle}
+            publishLabel={t.productVisibility}
+            publishOnHint={t.productVisibleHint}
+            publishOffHint={t.productHiddenHint}
           />
-          <Button
-            type="submit"
-            size="lg"
-            disabled={form.formState.isSubmitting}
-            className="button w-fit"
-          >
-            {form.formState.isSubmitting ? common.submitting : common.save}
-          </Button>
+          <div className="space-y-2">
+            <Button
+              type="submit"
+              size="lg"
+              disabled={form.formState.isSubmitting}
+              className="button w-fit"
+            >
+              {form.formState.isSubmitting ? common.submitting : common.save}
+            </Button>
+            <p className="text-sm text-muted-foreground">{t.savingApplies}</p>
+          </div>
         </form>
       </Form>
 

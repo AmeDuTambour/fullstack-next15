@@ -74,7 +74,12 @@ export const admin = {
   createProductTitle: "Créer un produit",
   addSpecificationsTitle: "Ajouter les caractéristiques",
   publishProductTitle: "Publier le produit",
-  featureProduct: "Mettre en avant sur l'accueil",
+  productVisibility: "En ligne",
+  productVisibleHint:
+    "Le produit apparaîtra dans la boutique après enregistrement.",
+  productHiddenHint:
+    "Le produit restera un brouillon, visible de vous seul, après enregistrement.",
+  featureProduct: "Mise en avant sur l'accueil",
   returnToProducts: "Retour aux produits",
   productName: "Nom",
   productNamePlaceholder: "Nom du produit",
@@ -114,8 +119,15 @@ export const admin = {
   createArticleTitle: "Créer un article",
   addSectionsTitle: "Ajouter les sections",
   publishArticleTitle: "Publier l'article",
-  featureArticle: "Mettre en avant sur l'accueil",
+  articleVisibility: "En ligne",
+  articleVisibleHint:
+    "L'article apparaîtra dans le journal après enregistrement.",
+  articleHiddenHint:
+    "L'article restera un brouillon, visible de vous seul, après enregistrement.",
+  featureArticle: "Mise en avant sur l'accueil",
   returnToArticles: "Retour aux articles",
+  savingApplies:
+    "Les changements ne prennent effet qu'une fois enregistrés.",
   articleTitle: "Titre",
   articleTitlePlaceholder: "Titre de l'article",
   thumbnail: "Vignette",

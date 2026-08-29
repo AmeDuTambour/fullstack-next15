@@ -13,7 +13,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useToast } from "@/hooks/use-toast";
 import { Article } from "@/types";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { updateArticle } from "@/lib/actions/article.actions";
 
@@ -52,23 +51,25 @@ const PublishArticleForm: React.FC<PublishArticleFormProps> = ({ article }) => {
           <PublishFields
             form={form}
             featureLabel={t.featureArticle}
-            publishLabel={t.publishArticleTitle}
+            publishLabel={t.articleVisibility}
+            publishOnHint={t.articleVisibleHint}
+            publishOffHint={t.articleHiddenHint}
           />
-          <Button
-            type="submit"
-            size="lg"
-            disabled={form.formState.isSubmitting}
-            className="button w-fit"
-          >
-            {form.formState.isSubmitting ? common.submitting : common.save}
-          </Button>
+          <div className="space-y-2">
+            <Button
+              type="submit"
+              size="lg"
+              disabled={form.formState.isSubmitting}
+              className="button w-fit"
+            >
+              {form.formState.isSubmitting ? common.submitting : common.save}
+            </Button>
+            {/* Répond à la question que l'écran posait sans y répondre : non,
+                rien n'est appliqué avant d'avoir enregistré. */}
+            <p className="text-sm text-muted-foreground">{t.savingApplies}</p>
+          </div>
         </form>
       </Form>
-      <div className="flex justify-between">
-        <Button asChild type="button" variant="outline">
-          <Link href={`/admin/articles`}>{t.returnToArticles}</Link>
-        </Button>
-      </div>
     </>
   );
 };
