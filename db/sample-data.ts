@@ -46,7 +46,7 @@ const sampleData: {
 } = {
   users: [
     {
-      name: "Julien Ribeiro",
+      name: "Julien",
       email: "amedutambour@gmail.com",
       password: hashSync("123456", 10),
       role: "admin",
