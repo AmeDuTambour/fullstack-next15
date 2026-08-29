@@ -77,6 +77,10 @@ export async function getAllArticles({
         comments: true,
         category: true,
       },
+      // Du plus récent au plus ancien. Il n'y avait aucun tri : les articles
+      // remontaient dans l'ordre où la base voulait bien les rendre, qui n'est
+      // garanti par rien et change avec les mises à jour.
+      orderBy: { createdAt: "desc" },
       skip: (page - 1) * limit,
       take: limit,
     });
