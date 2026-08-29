@@ -49,9 +49,6 @@ const ProductDetailPage = async (props: {
                 <p className="text-2xl font-semibold">
                   {formatCurrency(product.price)}
                 </p>
-                {nature === "unique" ? (
-                  <Badge variant="secondary">{t.uniquePiece}</Badge>
-                ) : null}
               </div>
             </div>
             {category.name === "Drum" ? (

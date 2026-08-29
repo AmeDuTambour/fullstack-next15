@@ -45,3 +45,10 @@ sont visuelles et ne se testent pas unitairement. Trois règles sont isolées en
 — format de prix, nature, disponibilité — et testées ; le reste passe par le guide de
 validation, dont la section 7 couvre le défaut qu'une revue statique avait manqué et qu'une
 mesure au navigateur avait révélé.
+
+**Décision du propriétaire, 2026-08-29.** Le caractère unique n'est plus signalé par une
+mention dédiée. La distinction repose sur ce qui est fonctionnel — « Vendu » plutôt que
+« épuisé », et pas de commande de quantité. Une première mise en œuvre ajoutait un badge et
+une phrase explicative ; la phrase était de la copie éditoriale écrite à la place de
+l'artisan, le badge a été jugé superflu. Le scénario d'acceptation 1 de US2 a été réécrit en
+conséquence.

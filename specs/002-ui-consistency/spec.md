@@ -60,8 +60,10 @@ laissant commander plusieurs accessoires.
 
 **Acceptance Scenarios**:
 
-1. **Given** un tambour disponible, **When** l'acheteur consulte sa fiche, **Then** son
-   caractère unique lui est signalé explicitement.
+1. **Given** un tambour disponible, **When** l'acheteur consulte sa fiche, **Then** rien ne
+   suggère qu'un second exemplaire pourrait être obtenu. Le propriétaire a tranché le
+   2026-08-29 : la distinction passe par la disponibilité et par l'absence de commande de
+   quantité, pas par une mention supplémentaire.
 2. **Given** un tambour dans le panier, **When** l'acheteur regarde la ligne correspondante,
    **Then** aucune commande ne lui propose d'en ajouter un second exemplaire.
 3. **Given** un tambour déjà vendu, **When** un visiteur atteint sa fiche, **Then** il apprend

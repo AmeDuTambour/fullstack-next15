@@ -10,7 +10,6 @@ export const catalog = {
   available: "Disponible",
   sold: "Vendu",
   outOfStock: "Momentanément épuisé",
-  uniquePiece: "Pièce unique",
   seeAvailable: "Voir les pièces disponibles",
   inStockCount: (n: number) =>
     n > 1 ? `${n} exemplaires disponibles` : "Dernier exemplaire",
