@@ -23,7 +23,7 @@ export const catalog = {
   shippingDelay: (delay: string) => `Expédié sous ${delay}`,
 
   // États vides
-  shopTitle: "La boutique",
+  shopTitle: "Boutique",
   categories: "Catégories",
   skinType: "Type de peau",
   dimensions: "Dimensions",
@@ -35,10 +35,10 @@ export const catalog = {
   searchResultsFor: (query: string) => `Recherche : « ${query} »`,
   resultCount: (n: number) =>
     n === 0
-      ? "Aucun instrument ne correspond."
+      ? "Aucun produit ne correspond."
       : n === 1
-        ? "1 instrument trouvé."
-        : `${n} instruments trouvés.`,
+        ? "1 produit trouvé."
+        : `${n} produits trouvés.`,
   clearSearch: "Voir tout le catalogue",
   showImage: (n: number) => `Afficher la photo ${n}`,
   searchLabel: "Rechercher dans la boutique",

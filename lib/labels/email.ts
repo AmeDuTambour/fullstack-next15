@@ -5,7 +5,7 @@ export const email = {
   shipmentSubject: (reference: string) => `Votre commande ${reference} est partie`,
   shipmentTitle: "Votre commande est en route",
   shipmentBody: (name: string) =>
-    `Bonjour ${name}, votre commande a quitté l'atelier.`,
+    `Bonjour ${name}, votre commande a été expédiée.`,
   carrierLine: "Transporteur :",
   trackingLine: "Numéro de suivi :",
   followParcel: "Suivre mon colis",

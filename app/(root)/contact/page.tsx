@@ -4,10 +4,11 @@ import { Clock, Mail, MapPin, Phone } from "lucide-react";
 import ContactForm from "./contact-form";
 import { WORKSHOP } from "@/lib/content/workshop";
 import { contact as t } from "@/lib/labels";
+import { APP_DESCRIPTION } from "@/lib/constants";
 
 export const metadata: Metadata = {
   title: t.title,
-  description: t.metaDescription,
+  description: t.metaDescription || APP_DESCRIPTION,
 };
 
 const ContactPage = () => {

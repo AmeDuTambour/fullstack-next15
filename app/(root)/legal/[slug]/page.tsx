@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
+import { APP_DESCRIPTION } from "@/lib/constants";
 import {
   LEGAL_PAGES,
   getLegalPage,
@@ -22,7 +23,7 @@ export async function generateMetadata(props: {
 
   return {
     title: page.title,
-    description: page.description,
+    description: page.description || APP_DESCRIPTION,
     // Une page dont le texte n'est pas écrit n'a rien à faire dans un index.
     robots: isLegalPageWritten(page) ? undefined : { index: false },
   };

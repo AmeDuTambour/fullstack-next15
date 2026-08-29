@@ -8,7 +8,7 @@ import { getAllArticles } from "@/lib/actions/article.actions";
 import { blog as t } from "@/lib/labels";
 import { Article } from "@/types";
 
-export const metadata: Metadata = { title: "Le journal de l'atelier" };
+export const metadata: Metadata = { title: t.title };
 
 /**
  * Rendu à la demande, jamais au build : cette page lit la base.

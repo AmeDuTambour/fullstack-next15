@@ -7,8 +7,7 @@ export const feedback = {
   contactUs: "Nous écrire",
 
   notFoundTitle: "Cette page n'existe pas",
-  notFoundBody:
-    "Le lien est peut-être ancien, ou l'instrument a trouvé preneur.",
+  notFoundBody: "Le lien est peut-être ancien.",
   seeShop: "Voir la boutique",
 
   forbiddenTitle: "Cette page ne vous est pas accessible",

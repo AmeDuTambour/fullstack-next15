@@ -20,6 +20,11 @@ export type LegalPage = {
   /** Segment d'adresse, en anglais comme le reste des routes. */
   slug: string;
   title: string;
+  /**
+   * Description pour les moteurs et les partages. Vide par défaut : elle se
+   * rédige avec le contenu, par celui qui l'écrit. Tant qu'elle l'est, c'est
+   * la description du site qui sert.
+   */
   description: string;
   /** Date de dernière mise à jour, au format ISO. Absente tant que vide. */
   updatedAt?: string;
@@ -30,29 +35,25 @@ export const LEGAL_PAGES: LegalPage[] = [
   {
     slug: "notice",
     title: "Mentions légales",
-    description:
-      "Identité du vendeur, hébergeur du site et informations légales de L'Âme Du Tambour.",
+    description: "",
     sections: [],
   },
   {
     slug: "terms",
     title: "Conditions générales de vente",
-    description:
-      "Commande, prix, paiement, livraison et garanties applicables aux instruments de L'Âme Du Tambour.",
+    description: "",
     sections: [],
   },
   {
     slug: "shipping-returns",
     title: "Livraison et retours",
-    description:
-      "Délais d'expédition, modalités de livraison et droit de rétractation pour les commandes passées sur L'Âme Du Tambour.",
+    description: "",
     sections: [],
   },
   {
     slug: "privacy",
     title: "Politique de confidentialité",
-    description:
-      "Données personnelles collectées par L'Âme Du Tambour, usage qui en est fait et droits des visiteurs.",
+    description: "",
     sections: [],
   },
 ];

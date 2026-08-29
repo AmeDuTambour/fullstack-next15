@@ -1,11 +1,15 @@
 import type { Metadata } from "next";
 
+import { APP_DESCRIPTION } from "@/lib/constants";
+import { common } from "@/lib/labels";
+
 import Image from "next/image";
 
 export const metadata: Metadata = {
-  title: "L'atelier",
-  description:
-    "Julien Ribeiro fabrique des tambours chamaniques à Mirepoix, en Ariège. Chaque instrument est une pièce unique, montée à la main.",
+  // Le titre reprend le mot du menu, et la description celle du site déclarée
+  // en configuration. Décrire l'activité de Julien ne relève pas du code.
+  title: common.navAbout,
+  description: APP_DESCRIPTION,
   alternates: { canonical: "/about" },
 };
 
