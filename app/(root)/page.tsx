@@ -2,6 +2,8 @@ import FeaturedCarousel from "@/components/shared/product/featured-carousel";
 import ProductList from "@/components/shared/product/product-list";
 import ViewAllProductsButton from "@/components/view-all-products";
 import { getFeaturedArticles } from "@/lib/actions/article.actions";
+import { APP_DESCRIPTION } from "@/lib/constants";
+import { catalog as t } from "@/lib/labels";
 import {
   getFeaturedProducts,
   getLatestProducts,
@@ -45,10 +47,18 @@ const HomePage = async () => {
 
   return (
     <>
+      {/* La page d'accueil ne portait aucun texte : ni titre, ni indication de
+          ce que vend l'atelier. Le titre reprend la description que le site
+          porte déjà sur lui-même — ce n'est pas une accroche écrite ici, et
+          elle se change dans la configuration. */}
+      <h1 className="page-title mb-8 max-w-2xl text-balance">
+        {APP_DESCRIPTION}
+      </h1>
+
       {featuredContent.length > 0 && (
         <FeaturedCarousel data={featuredContent} />
       )}
-      <ProductList data={latestProducts} title="Nouvel arrivage" limit={4} />
+      <ProductList data={latestProducts} title={t.latestArrivals} limit={4} />
       <ViewAllProductsButton />
     </>
   );

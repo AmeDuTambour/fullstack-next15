@@ -23,6 +23,11 @@ export const catalog = {
   shippingDelay: (delay: string) => `Expédié sous ${delay}`,
 
   // États vides
+  shopTitle: "La boutique",
+  latestArrivals: "Derniers instruments",
+  browseShop: "Voir toute la boutique",
+  productCount: (n: number) =>
+    n > 1 ? `${n} tambours et accessoires` : `${n} pièce`,
   noProducts: "Aucun produit ne correspond à votre recherche.",
   clearFilters: "Effacer les filtres",
   emptyCart: "Votre panier est vide.",

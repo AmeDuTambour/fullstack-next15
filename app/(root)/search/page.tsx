@@ -7,6 +7,8 @@ import {
   getAllDrumDimensions,
 } from "@/lib/actions/product.actions";
 import Link from "next/link";
+import EmptyState from "@/components/shared/empty-state";
+import { catalog as t } from "@/lib/labels";
 
 const sortOrders = [
   { query: "newest", label: "Récent" },
@@ -121,7 +123,10 @@ const SearchPage = async (props: {
   const dimensions = await getAllDrumDimensions();
 
   return (
-    <div className="grid md:grid-cols-5 md:gap-5">
+    <div className="space-y-6">
+      <h1 className="page-title">{t.shopTitle}</h1>
+
+      <div className="grid md:grid-cols-5 md:gap-5">
       <div className="filter-links hidden md:block">
         <div className="text-xl mb-4 mt-3">Catégories</div>
         <ul className="space-y-1">
@@ -277,10 +282,8 @@ const SearchPage = async (props: {
       <div className="md:col-span-4 space-y-4">
         <div className="flex-between flex-col md:flex-row my-4">
           <div className="flex items-center space-x-4">
-            <div>
-              {products.data.length > 0
-                ? `${products.totalCount} produit${products.totalCount > 1 ? "s" : ""} trouvé${products.totalCount > 1 ? "s" : ""}`
-                : "Aucun produit trouvé"}
+            <div className="text-muted-foreground">
+              {products.data.length > 0 ? t.productCount(products.totalCount) : null}
             </div>
 
             {(category !== "all" && category !== "") ||
@@ -307,15 +310,18 @@ const SearchPage = async (props: {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-          {products.data.length === 0 ? (
-            <div>Aucun produit</div>
-          ) : (
-            products.data.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))
-          )}
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+          {products.data.map((product) => (
+            <ProductCard key={product.id} product={product} />
+          ))}
         </div>
+
+        {products.data.length === 0 ? (
+          <EmptyState
+            message={t.noProducts}
+            action={{ label: t.clearFilters, href: "/search" }}
+          />
+        ) : null}
         <div className="w-full flex justify-end">
           {products.totalPages > 1 ? (
             <Pagination
@@ -324,6 +330,7 @@ const SearchPage = async (props: {
             />
           ) : null}
         </div>
+      </div>
       </div>
     </div>
   );

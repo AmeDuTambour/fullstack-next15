@@ -52,15 +52,15 @@ disponible et un accessoire épuisé. Les quatre se distinguent sans explication
 **Test indépendant** : relever le titre principal, le prix et l'état sur toutes les pages ; un
 même rôle reçoit partout le même traitement.
 
-- [ ] T013 [US3] Appliquer `.page-title` aux titres principaux existants et en ajouter un aux six pages qui n'en ont pas — `/`, `/search`, `/blog`, `/about`, `/user/orders`, `/user/profile`
+- [X] T013 [US3] Appliquer `.page-title` aux titres principaux existants et en ajouter un aux six pages qui n'en ont pas — `/`, `/search`, `/blog`, `/about`, `/user/orders`, `/user/profile`
 - [X] T014 [US3] Corriger le titre de `app/(root)/product/[slug]/page.tsx`, aujourd'hui plus petit qu'un titre de section
 - [X] T015 [US3] Supprimer `components/shared/product/product-price.tsx` et router les dix fichiers affichant un prix par le formatage monétaire
 - [ ] T016 [US3] Créer `components/shared/status-badge.tsx` — présentation unique, mention textuelle toujours présente
 - [ ] T017 [US3] Appliquer l'indicateur d'état aux six écrans concernés, dont `app/admin/products/page.tsx` où l'état publié n'est aujourd'hui qu'une icône sans légende
-- [ ] T018 [P] [US3] Aligner les trois grilles de produits sur une configuration unique
-- [ ] T019 [P] [US3] Harmoniser les états vides, dont les deux formulations différentes de `app/(root)/search/page.tsx`
+- [X] T018 [P] [US3] Aligner les trois grilles de produits sur une configuration unique
+- [X] T019 [P] [US3] Harmoniser les états vides, dont les deux formulations différentes de `app/(root)/search/page.tsx`
 - [X] T020 [P] [US3] Ajouter un état de survol aux cartes produit, absent alors que les cartes d'articles en ont un
-- [ ] T021 [US3] Remplacer `h-screen` par `min-h-screen` dans `app/(root)/layout.tsx`
+- [X] T021 [US3] Remplacer `h-screen` par `min-h-screen` dans `app/(root)/layout.tsx`
 
 ---
 
