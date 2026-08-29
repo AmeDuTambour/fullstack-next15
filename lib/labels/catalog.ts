@@ -32,4 +32,5 @@ export const catalog = {
   clearFilters: "Effacer les filtres",
   emptyCart: "Votre panier est vide.",
   backToShop: "Découvrir les tambours",
+  proceedToCheckout: "Passer au paiement",
 } as const;

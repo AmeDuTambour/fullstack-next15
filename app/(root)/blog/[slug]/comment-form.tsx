@@ -1,11 +1,12 @@
 "use client";
 
+import { PendingButton } from "@/components/ui/pending-button";
+import { common } from "@/lib/labels";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useTransition } from "react";
 import { z } from "zod";
 
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -19,7 +20,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { createArticleComment } from "@/lib/actions/article.actions";
 import { insertArticleCommentSchema } from "@/lib/validators";
-import { Loader, SendIcon } from "lucide-react";
+import { SendIcon } from "lucide-react";
 
 type CommentFormProps = {
   articleId: string;
@@ -87,14 +88,13 @@ const CommentForm = ({ articleId }: CommentFormProps) => {
         />
 
         <div className="flex justify-end">
-          <Button type="submit" disabled={isPending}>
-            {isPending ? (
-              <Loader className="h-4 w-4 animate-spin" />
-            ) : (
-              <SendIcon className="h-4 w-4" />
-            )}
-            Publier
-          </Button>
+          <PendingButton
+            type="submit"
+            pending={isPending}
+            icon={<SendIcon className="h-4 w-4" />}
+          >
+            {common.publish}
+          </PendingButton>
         </div>
       </form>
     </Form>

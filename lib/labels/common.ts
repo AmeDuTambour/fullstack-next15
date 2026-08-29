@@ -40,4 +40,8 @@ export const common = {
 
   // États vides
   none: "Aucun élément",
+  deleteComment: "Supprimer ce commentaire",
+  send: "Envoyer",
+  publish: "Publier",
+  placeOrder: "Passer la commande",
 } as const;

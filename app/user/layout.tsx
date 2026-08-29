@@ -1,6 +1,5 @@
+import BrandLogo from "@/components/shared/brand-logo";
 import Menu from "@/components/shared/header/menu";
-import { APP_NAME } from "@/lib/constants";
-import Image from "next/image";
 import Link from "next/link";
 import MainNav from "./main-nav";
 
@@ -15,20 +14,7 @@ export default function UserLayout({
         <div className="border-b container mx-auto">
           <div className="flex items-center h-16 px-4">
             <Link href="/" className="w-22">
-              <Image
-                src="/images/brand/logo-square-light.png"
-                alt={`${APP_NAME} logo`}
-                className="object-contain dark:hidden"
-                height={48}
-                width={48}
-              />
-              <Image
-                src="/images/brand/logo-square-dark.png"
-                alt={`${APP_NAME} logo`}
-                className="object-contain hidden dark:block"
-                height={48}
-                width={48}
-              />
+              <BrandLogo variant="square" size={48} />
             </Link>
             <MainNav className="mx-6" />
             <div className="ml-auto items-center flex space-x-4">

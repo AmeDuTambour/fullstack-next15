@@ -1,5 +1,7 @@
 "use client";
 
+import { PendingButton } from "@/components/ui/pending-button";
+import { common } from "@/lib/labels";
 import { useToast } from "@/hooks/use-toast";
 import { shippingAddressSchema } from "@/lib/validators";
 import { ShippingAddress } from "@/types";
@@ -18,8 +20,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { ArrowRight, Loader } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { updateUserAddress } from "@/lib/actions/user.actions";
 
 type ShippingAddressFormProps = {
@@ -185,14 +186,13 @@ const ShippingAddressForm: React.FC<ShippingAddressFormProps> = ({
               />
             </div>
             <div className="flex gap-2">
-              <Button type="submit" disabled={isPending}>
-                {isPending ? (
-                  <Loader className="w-4 h-4 animate-spin" />
-                ) : (
-                  <ArrowRight className="w-4 h-4" />
-                )}{" "}
-                Continuer
-              </Button>
+              <PendingButton
+                type="submit"
+                pending={isPending}
+                icon={<ArrowRight className="h-4 w-4" />}
+              >
+                {common.next}
+              </PendingButton>
             </div>
           </form>
         </Form>

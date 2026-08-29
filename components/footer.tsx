@@ -1,7 +1,7 @@
 import { APP_NAME } from "@/lib/constants";
 import Link from "next/link";
 import { Instagram, Facebook } from "lucide-react";
-import Image from "next/image";
+import BrandLogo from "@/components/shared/brand-logo";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -11,22 +11,7 @@ const Footer = () => {
       <div className="container mx-auto py-6 px-5 grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-left">
         {/* ✅ Première colonne : Logo */}
         <div className="flex flex-col items-center justify-center">
-          <Image
-            src="/images/brand/logo-no-bg-light.png"
-            alt={`${APP_NAME} logo`}
-            className="object-contain dark:hidden"
-            priority={true}
-            height={100}
-            width={100}
-          />
-          <Image
-            src="/images/brand/logo-no-bg-dark.png"
-            alt={`${APP_NAME} logo`}
-            className="object-contain hidden dark:block"
-            priority={true}
-            height={100}
-            width={100}
-          />
+          <BrandLogo variant="plain" size={100} priority />
           <p className="text-sm text-gray-600 dark:text-gray-300 mt-2">
             {currentYear} {APP_NAME}. Tous droits réservés.
           </p>

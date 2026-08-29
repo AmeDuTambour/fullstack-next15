@@ -6,8 +6,8 @@ import {
 } from "@/components/ui/card";
 import { getAllArticles } from "@/lib/actions/article.actions";
 import Link from "next/link";
-import Image from "next/image";
-import { EyeClosed, EyeIcon, ImageOff, PenIcon } from "lucide-react";
+import ContentImage from "@/components/ui/content-image";
+import { EyeClosed, EyeIcon, PenIcon } from "lucide-react";
 import { formatDateTime } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { admin as t } from "@/lib/labels";
@@ -36,19 +36,14 @@ const AdminArticlesPage = async () => {
             <Card key={article.id}>
               <CardHeader className="flex items-center content-center">
                 <Link href={`/admin/articles/editor/${article.id}/enter-title`}>
-                  {article.thumbnail ? (
-                    <Image
-                      src={article.thumbnail}
-                      alt={article.title}
-                      height={300}
-                      width={300}
-                      objectFit="cover"
-                    />
-                  ) : (
-                    <div className="flex justify-center items-center h-60">
-                      <ImageOff />
-                    </div>
-                  )}
+                  <ContentImage
+                    src={article.thumbnail}
+                    alt={article.title}
+                    width={300}
+                    height={300}
+                    sizes="(min-width: 1024px) 20vw, 33vw"
+                    className="h-auto w-full object-cover"
+                  />
                 </Link>
               </CardHeader>
               <CardContent className="p-4 grid gap-4">

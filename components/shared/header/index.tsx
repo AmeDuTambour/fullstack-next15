@@ -1,5 +1,4 @@
-import { APP_NAME } from "@/lib/constants";
-import Image from "next/image";
+import BrandLogo from "@/components/shared/brand-logo";
 import Link from "next/link";
 import Menu from "./menu";
 import NavigationLinks from "./navigation-links";
@@ -18,36 +17,10 @@ const Header = () => {
             className="flex flex-1 justify-center md:flex-none md:justify-start"
           >
             <div className="relative h-16 w-16">
-              <Image
-                src="/images/brand/logo-square-light.png"
-                alt={`${APP_NAME} logo`}
-                fill
-                className="object-contain dark:hidden"
-                priority={true}
-              />
-              <Image
-                src="/images/brand/logo-square-dark.png"
-                alt={`${APP_NAME} logo`}
-                fill
-                className="object-contain hidden dark:block"
-                priority={true}
-              />
+              <BrandLogo variant="square" size={64} priority className="h-full w-full" />
             </div>
             <div className="relative h-16 aspect-[3/1] ml-4 hidden md:block">
-              <Image
-                src="/images/brand/logo-banner-light.png"
-                alt={`${APP_NAME} logo`}
-                fill
-                className="object-contain dark:hidden"
-                priority={true}
-              />
-              <Image
-                src="/images/brand/logo-banner-dark.png"
-                alt={`${APP_NAME} logo`}
-                fill
-                className="object-contain hidden dark:block"
-                priority={true}
-              />
+              <BrandLogo variant="banner" size={64} priority className="h-full w-auto" />
             </div>
           </Link>
         </div>

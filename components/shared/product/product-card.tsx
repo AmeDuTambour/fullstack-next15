@@ -1,9 +1,8 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import Link from "next/link";
-import Image from "next/image";
 import { Product } from "@/types";
-import { CameraOff } from "lucide-react";
-import { formatCurrency, isValidUrl } from "@/lib/utils";
+import { formatCurrency } from "@/lib/utils";
+import ContentImage from "@/components/ui/content-image";
 import { getAvailability, getProductNature } from "@/lib/product";
 import { catalog as t } from "@/lib/labels";
 import { Badge } from "@/components/ui/badge";
@@ -21,19 +20,14 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     <Card className="transition-shadow duration-300 hover:shadow-md">
       <CardHeader className="flex items-center content-center">
         <Link href={`/product/${product.slug}`}>
-          {imageUrl && isValidUrl(imageUrl) ? (
-            <Image
-              src={product.images[0]}
-              alt={product.name}
-              height={300}
-              width={300}
-              objectFit="cover"
-            />
-          ) : (
-            <div className="flex items-center justify-center h-[300px] w-[300px]">
-              <CameraOff className="h-10 w-10" />
-            </div>
-          )}
+          <ContentImage
+            src={imageUrl}
+            alt={product.name}
+            width={300}
+            height={300}
+            sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 100vw"
+            className="h-auto w-full object-cover"
+          />
         </Link>
       </CardHeader>
       <CardContent className="p-4 grid gap-4">

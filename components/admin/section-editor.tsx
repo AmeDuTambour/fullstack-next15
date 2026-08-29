@@ -1,5 +1,6 @@
 "use client";
-import { admin as t } from "@/lib/labels";
+import { PendingButton } from "@/components/ui/pending-button";
+import { admin as t, common } from "@/lib/labels";
 
 import {
   Form,
@@ -29,7 +30,6 @@ import {
   updateArticleSection,
 } from "@/lib/actions/article.actions";
 import { Loader, TrashIcon } from "lucide-react";
-import { Button } from "../ui/button";
 
 type SectionEditorProps = {
   index: number;
@@ -271,19 +271,16 @@ export const SectionEditor = ({
         )}
       </div>
       <div className="flex w-full justify-end">
-        <Button
-          disabled={isDeleting}
+        <PendingButton
+          pending={isDeleting}
+          pendingLabel=""
           type="button"
           variant="destructive"
+          icon={<TrashIcon className="h-4 w-4" />}
           onClick={handleDeleteSection}
           className="mt-2"
-        >
-          {isDeleting ? (
-            <Loader className="w-4 h-4 animate-spin" />
-          ) : (
-            <TrashIcon className="w-4 h-4" />
-          )}
-        </Button>
+          aria-label={common.delete}
+        />
       </div>
     </Form>
   );

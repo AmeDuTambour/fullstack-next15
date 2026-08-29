@@ -1,5 +1,6 @@
 "use client";
 
+import { PendingButton } from "@/components/ui/pending-button";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -14,9 +15,9 @@ import { useToast } from "@/hooks/use-toast";
 import { addItemToCart, removeItemFromCart } from "@/lib/actions/cart.actions";
 import { formatCurrency } from "@/lib/utils";
 import { Cart, CartItem } from "@/types";
-import { ArrowRight, CameraOff, Loader, Minus, Plus, Trash2 } from "lucide-react";
+import { ArrowRight, Loader, Minus, Plus, Trash2 } from "lucide-react";
 import { catalog as t } from "@/lib/labels";
-import Image from "next/image";
+import ContentImage from "@/components/ui/content-image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
@@ -91,16 +92,13 @@ const CartTable: React.FC<CartTableProps> = ({ cart, quantityAllowed = {} }) => 
                         href={`/product/${item.slug}`}
                         className="flex items-center"
                       >
-                        {item.image ? (
-                          <Image
-                            src={item.image}
-                            alt={item.name}
-                            width={50}
-                            height={50}
-                          />
-                        ) : (
-                          <CameraOff />
-                        )}
+                        <ContentImage
+                          src={item.image}
+                          alt={item.name}
+                          width={50}
+                          height={50}
+                          sizes="50px"
+                        />
                         <span className="px-2">{item.name}</span>
                       </Link>
                     </TableCell>
@@ -177,18 +175,14 @@ const CartTable: React.FC<CartTableProps> = ({ cart, quantityAllowed = {} }) => 
                   {formatCurrency(cart.itemsPrice.toString())}
                 </span>
               </div>
-              <Button
+              <PendingButton
                 className="w-full"
-                disabled={isPending}
+                pending={isPending}
+                icon={<ArrowRight className="h-4 w-4" />}
                 onClick={handleProceedCheckout}
               >
-                {isPending ? (
-                  <Loader className="w-4 h-4 animate-spin" />
-                ) : (
-                  <ArrowRight className="h-4 w-4" />
-                )}{" "}
-                Passer au paiement
-              </Button>
+                {t.proceedToCheckout}
+              </PendingButton>
             </CardContent>
           </Card>
         </div>
