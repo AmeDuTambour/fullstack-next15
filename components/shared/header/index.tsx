@@ -17,10 +17,10 @@ const Header = () => {
             className="flex flex-1 justify-center md:flex-none md:justify-start"
           >
             <div className="relative h-16 w-16">
-              <BrandLogo variant="square" size={64} priority className="h-full w-full" />
+              <BrandLogo variant="square" fill priority sizes="64px" />
             </div>
             <div className="relative h-16 aspect-[3/1] ml-4 hidden md:block">
-              <BrandLogo variant="banner" size={64} priority className="h-full w-auto" />
+              <BrandLogo variant="banner" fill priority sizes="192px" />
             </div>
           </Link>
         </div>

@@ -18,15 +18,18 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
   return (
     <Card className="transition-shadow duration-300 hover:shadow-md">
-      <CardHeader className="flex items-center content-center">
+      <CardHeader className="p-4">
         <Link href={`/product/${product.slug}`}>
+          {/* Ratio imposé : les photos de l'atelier sont en portrait, d'autres
+              produits n'ont pas d'image du tout. Sans cadre commun, les cartes
+              d'une même grille n'ont pas la même hauteur. */}
           <ContentImage
             src={imageUrl}
             alt={product.name}
             width={300}
             height={300}
             sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 100vw"
-            className="h-auto w-full object-cover"
+            className="aspect-square w-full rounded-md object-cover"
           />
         </Link>
       </CardHeader>

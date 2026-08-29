@@ -35,7 +35,7 @@ const SignUpPage = async (props: {
       <Card>
         <CardHeader className="space-y-4">
           <Link href="/" className="flex-center">
-            <BrandLogo variant="square" size={100} priority />
+            <BrandLogo variant="square" height={100} priority />
           </Link>
           <CardTitle className="text-center">{t.signUpTitle}</CardTitle>
           <CardDescription className="text-center">

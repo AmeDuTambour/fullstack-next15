@@ -14,7 +14,7 @@ export default function UserLayout({
         <div className="border-b container mx-auto">
           <div className="flex items-center h-16 px-4">
             <Link href="/" className="w-22">
-              <BrandLogo variant="square" size={48} />
+              <BrandLogo variant="square" height={48} />
             </Link>
             <MainNav className="mx-6" />
             <div className="ml-auto items-center flex space-x-4">

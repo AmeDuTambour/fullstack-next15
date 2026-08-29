@@ -11,7 +11,7 @@ const Footer = () => {
       <div className="container mx-auto py-6 px-5 grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-left">
         {/* ✅ Première colonne : Logo */}
         <div className="flex flex-col items-center justify-center">
-          <BrandLogo variant="plain" size={100} priority />
+          <BrandLogo variant="plain" height={100} priority />
           <p className="text-sm text-gray-600 dark:text-gray-300 mt-2">
             {currentYear} {APP_NAME}. Tous droits réservés.
           </p>
@@ -61,14 +61,14 @@ const Footer = () => {
               target="_blank"
               className="text-gray-700 dark:text-gray-400 hover:text-primary"
             >
-              <Instagram size={24} />
+              <Instagram height={24} />
             </Link>
             <Link
               href="https://www.facebook.com/p/L%C3%A2me-du-Tambour-100075977844059/"
               target="_blank"
               className="text-gray-700 dark:text-gray-400 hover:text-primary"
             >
-              <Facebook size={24} />
+              <Facebook height={24} />
             </Link>
           </div>
         </div>
