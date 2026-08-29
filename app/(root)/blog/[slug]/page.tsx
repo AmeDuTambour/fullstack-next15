@@ -83,14 +83,13 @@ const ArticlePage = async (props: {
           <ArticleSectionBlock section={section} />
         </div>
       ))}
-      {/* Un article se terminait sur rien : ni retour, ni suite, ni lien vers
-          les instruments dont il parle. */}
+      {/* Un article se terminait sur rien, pas même un moyen de revenir à la
+          liste. Le retour est de la navigation ; renvoyer un lecteur vers la
+          boutique en fin d'article serait une décision commerciale, et elle
+          appartient à Julien. */}
       <div className="flex flex-wrap gap-3 pt-16">
         <Button asChild variant="outline">
           <Link href="/blog">{t.backToBlog}</Link>
-        </Button>
-        <Button asChild>
-          <Link href="/search">{t.seeDrums}</Link>
         </Button>
       </div>
 

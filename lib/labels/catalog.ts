@@ -43,12 +43,11 @@ export const catalog = {
   showImage: (n: number) => `Afficher la photo ${n}`,
   searchLabel: "Rechercher dans la boutique",
   latestArrivals: "Nouvel arrivage",
-  browseShop: "Voir toute la boutique",
+  browseShop: "Découvrir tous les produits",
   productCount: (n: number) =>
     n > 1 ? `${n} tambours et accessoires` : `${n} pièce`,
   noProducts: "Aucun produit ne correspond à votre recherche.",
   clearFilters: "Effacer les filtres",
   emptyCart: "Votre panier est vide.",
-  backToShop: "Découvrir les tambours",
   proceedToCheckout: "Passer au paiement",
 } as const;
