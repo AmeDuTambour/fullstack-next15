@@ -41,7 +41,7 @@ export const catalog = {
         : `${n} instruments trouvés.`,
   clearSearch: "Voir tout le catalogue",
   searchLabel: "Rechercher dans la boutique",
-  latestArrivals: "Derniers instruments",
+  latestArrivals: "Nouvel arrivage",
   browseShop: "Voir toute la boutique",
   productCount: (n: number) =>
     n > 1 ? `${n} tambours et accessoires` : `${n} pièce`,
