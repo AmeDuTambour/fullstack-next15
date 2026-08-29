@@ -53,11 +53,6 @@ const ProductDetailPage = async (props: {
                   <Badge variant="secondary">{t.uniquePiece}</Badge>
                 ) : null}
               </div>
-              {nature === "unique" ? (
-                <p className="text-sm text-muted-foreground max-w-prose">
-                  {t.uniquePieceNote}
-                </p>
-              ) : null}
             </div>
             {category.name === "Drum" ? (
               <div className="flex flex-row gap-8">
@@ -119,9 +114,6 @@ const ProductDetailPage = async (props: {
                   </div>
                 ) : (
                   <div className="space-y-3">
-                    <p className="text-sm text-muted-foreground">
-                      {availability === "sold" ? t.soldNote : t.outOfStock}
-                    </p>
                     <Button asChild variant="outline" className="w-full">
                       <Link href="/search">{t.seeAvailable}</Link>
                     </Button>

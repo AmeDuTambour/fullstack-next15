@@ -11,16 +11,13 @@ export const catalog = {
   sold: "Vendu",
   outOfStock: "Momentanément épuisé",
   uniquePiece: "Pièce unique",
-  uniquePieceNote:
-    "Cet instrument existe en un seul exemplaire. Une fois vendu, il ne sera pas refait à l'identique.",
-  soldNote: "Cette pièce a trouvé son propriétaire.",
   seeAvailable: "Voir les pièces disponibles",
   inStockCount: (n: number) =>
     n > 1 ? `${n} exemplaires disponibles` : "Dernier exemplaire",
 
   // Fiche produit
   addToCart: "Ajouter au panier",
-  inCart: "Dans votre panier — voir le panier",
+  removeFromCart: "Retirer du panier",
   removeItem: "Retirer cet article du panier",
   decreaseQuantity: "Diminuer la quantité",
   increaseQuantity: "Augmenter la quantité",

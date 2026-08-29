@@ -8,7 +8,6 @@ import { Cart, CartItem } from "@/types";
 import { Plus, Minus, Loader } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
-import Link from "next/link";
 import { catalog as t } from "@/lib/labels";
 
 type AddToCartProps = {
@@ -67,11 +66,23 @@ const AddToCart: React.FC<AddToCartProps> = ({
   const existItem =
     cart && cart.items.find((el) => el.productId === item.productId);
 
-  // Déjà au panier, et pas de quantité à choisir : plus rien à proposer ici.
+  // Pièce unique déjà au panier : une seule action possible, présentée avec le
+  // même poids visuel que « Ajouter au panier ».
   if (existItem && !allowsQuantity) {
     return (
-      <Button asChild variant="outline" className="w-full">
-        <Link href="/cart">{t.inCart}</Link>
+      <Button
+        disabled={isPending}
+        type="button"
+        variant="outline"
+        className="w-full"
+        onClick={handleRemoveFromCart}
+      >
+        {isPending ? (
+          <Loader className="h-4 w-4 animate-spin" />
+        ) : (
+          <Minus className="h-4 w-4" />
+        )}
+        {t.removeFromCart}
       </Button>
     );
   }
