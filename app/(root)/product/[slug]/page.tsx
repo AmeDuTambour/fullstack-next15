@@ -65,9 +65,10 @@ const ProductDetailPage = async (props: {
   const { slug } = await props.params;
 
   const product = await getProductBySlug(slug);
+  if (!product) notFound();
+
   const categories = await getAllProductCategories();
   const category = getProductCategory(product.categoryId, categories);
-  if (!product) notFound();
 
   const cart = await getUserCart();
 

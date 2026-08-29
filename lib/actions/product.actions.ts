@@ -102,7 +102,9 @@ export async function getLatestProducts(): Promise<Product[]> {
   return convertToPlainObject(productsWithSpecs) as Product[];
 }
 
-export async function getProductBySlug(slug: string): Promise<Product> {
+export async function getProductBySlug(
+  slug: string
+): Promise<Product | null> {
   const product = await prisma.product.findUnique({
     where: { slug },
     include: {
@@ -110,15 +112,15 @@ export async function getProductBySlug(slug: string): Promise<Product> {
     },
   });
 
-  if (!product) {
-    throw new Error(`Product with slug "${slug}" not found.`);
-  }
+  // Renvoyer `null` plutôt que lever : une adresse qui ne correspond à rien
+  // relève du 404, pas de l'écran d'erreur. L'appelant décide — la page appelle
+  // déjà `notFound()`. Cette fonction n'est pas utilisée par l'API mobile.
+  if (!product) return null;
 
   // Un brouillon reste visible pour un administrateur qui prévisualise, mais
-  // pas pour un visiteur qui devinerait l'URL.
-  if (!product.isPublished && !(await isAdmin())) {
-    throw new Error(`Product with slug "${slug}" not found.`);
-  }
+  // n'existe pas pour un visiteur qui devinerait l'URL — d'où la même réponse
+  // que pour un produit absent, et non un refus qui confirmerait son existence.
+  if (!product.isPublished && !(await isAdmin())) return null;
 
   const categories = await getAllProductCategories();
   const { name } = getProductCategory(product.categoryId, categories);

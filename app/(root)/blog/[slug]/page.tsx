@@ -31,7 +31,7 @@ export async function generateMetadata(props: {
       title: article.title,
       description,
       url: `/blog/${slug}`,
-      publishedTime: article.createdAt.toISOString(),
+      publishedTime: new Date(article.createdAt).toISOString(),
       images: article.banner ? [{ url: article.banner }] : undefined,
     },
     twitter: {

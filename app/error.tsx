@@ -37,7 +37,7 @@ export default function ErrorBoundary({
           <Link href="/">{t.backHome}</Link>
         </Button>
         <Button asChild variant="outline">
-          <Link href="/contact">{t.contactWorkshop}</Link>
+          <Link href="/contact">{t.contactUs}</Link>
         </Button>
       </div>
     </div>
