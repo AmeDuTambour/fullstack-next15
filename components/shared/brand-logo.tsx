@@ -59,12 +59,25 @@ export const BrandLogo = ({
     ? { fill: true as const }
     : { width: Math.round(height * source.ratio), height };
 
+  /**
+   * Hauteur imposée en CSS, et pas seulement par les attributs.
+   *
+   * La réinitialisation de Tailwind pose `height: auto` sur toute image. Tant
+   * qu'elle n'est pas chargée, sa boîte mesure donc zéro — et une image de zéro
+   * pixel n'entre jamais dans la zone visible, donc son chargement différé ne se
+   * déclenche jamais. Le logo restait invisible indéfiniment.
+   */
+  const style = fill
+    ? undefined
+    : { height: `${height}px`, width: "auto" as const };
+
   return (
     <>
       <Image
         src={source.light}
         alt={alt}
         {...dimensions}
+        style={style}
         sizes={sizes}
         priority={priority}
         className={cn("object-contain dark:hidden", className)}
@@ -74,6 +87,7 @@ export const BrandLogo = ({
         alt=""
         aria-hidden="true"
         {...dimensions}
+        style={style}
         sizes={sizes}
         priority={priority}
         className={cn("object-contain hidden dark:block", className)}

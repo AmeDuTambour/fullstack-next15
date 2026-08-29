@@ -25,7 +25,7 @@ import { useEffect, useState, useTransition } from "react";
 import { useDebounce } from "@uidotdev/usehooks";
 import Link from "next/link";
 import Image from "next/image";
-import { UploadButton } from "@/lib/uploadthing";
+import ImageUpload from "@/components/shared/image-upload";
 import {
   Select,
   SelectContent,
@@ -237,20 +237,13 @@ const ArticleTitleForm: React.FC<ArticleTitleFormProps> = ({
                     />
                   )}
                   <FormControl>
-                    <UploadButton
-                      endpoint="imageUploader"
-                      onClientUploadComplete={(res: { ufsUrl: string }[]) => {
-                        form.setValue("thumbnail", res[0].ufsUrl, {
+                    <ImageUpload
+  onUploaded={(url) => {
+    form.setValue("thumbnail", url, {
                           shouldValidate: true,
                         });
-                      }}
-                      onUploadError={(error: Error) => {
-                        toast({
-                          variant: "destructive",
-                          description: `Error: ${error.message}`,
-                        });
-                      }}
-                    />
+  }}
+/>
                   </FormControl>
                 </div>
                 <FormMessage />

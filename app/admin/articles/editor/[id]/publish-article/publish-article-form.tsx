@@ -16,7 +16,7 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import Image from "next/image";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { UploadButton } from "@/lib/uploadthing";
+import ImageUpload from "@/components/shared/image-upload";
 import { useToast } from "@/hooks/use-toast";
 import { Article } from "@/types";
 import { Button } from "@/components/ui/button";
@@ -93,18 +93,11 @@ const PublishArticleForm: React.FC<PublishArticleFormProps> = ({ article }) => {
                     )}
                   </CardContent>
                 </Card>
-                <UploadButton
-                  endpoint="imageUploader"
-                  onClientUploadComplete={(res: { ufsUrl: string }[]) => {
-                    form.setValue("banner", res[0].ufsUrl);
-                  }}
-                  onUploadError={(error: Error) => {
-                    toast({
-                      variant: "destructive",
-                      description: `Error: ${error.message}`,
-                    });
-                  }}
-                />
+                <ImageUpload
+  onUploaded={(url) => {
+    form.setValue("banner", url);
+  }}
+/>
               </div>
             ) : null}
           </div>

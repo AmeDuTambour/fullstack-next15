@@ -11,7 +11,7 @@ import {
   FormMessage,
 } from "../ui/form";
 import { Textarea } from "../ui/textarea";
-import { UploadButton } from "@/lib/uploadthing";
+import ImageUpload from "@/components/shared/image-upload";
 import { ControllerRenderProps, useForm } from "react-hook-form";
 import Image from "next/image";
 import { useToast } from "@/hooks/use-toast";
@@ -220,20 +220,13 @@ export const SectionEditor = ({
                     />
                   )}
                   <FormControl>
-                    <UploadButton
-                      endpoint="imageUploader"
-                      onClientUploadComplete={(res: { ufsUrl: string }[]) => {
-                        form.setValue("image", res[0].ufsUrl, {
+                    <ImageUpload
+  onUploaded={(url) => {
+    form.setValue("image", url, {
                           shouldDirty: true,
                         });
-                      }}
-                      onUploadError={(error: Error) => {
-                        toast({
-                          variant: "destructive",
-                          description: `Error: ${error.message}`,
-                        });
-                      }}
-                    />
+  }}
+/>
                   </FormControl>
                 </div>
                 <FormMessage />

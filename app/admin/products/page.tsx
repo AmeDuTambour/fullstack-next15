@@ -14,7 +14,7 @@ import {
   getAllProductCategories,
   getAllProducts,
 } from "@/lib/actions/product.actions";
-import { formatId, getProductCategory } from "@/lib/utils";
+import { formatCurrency, formatId, getProductCategory } from "@/lib/utils";
 import { Eye, EyeClosed } from "lucide-react";
 import Link from "next/link";
 import { admin as t, common } from "@/lib/labels";
@@ -81,7 +81,7 @@ const AdminProductsPage = async (props: {
                 <TableCell>{formatId(product.id)}</TableCell>
                 <TableCell>{product.name}</TableCell>
                 <TableCell className="text-right">
-                  {Number(product.price).toFixed(2)} €
+                  {formatCurrency(product.price)}
                 </TableCell>
                 <TableCell>{category.name || "N/A"}</TableCell>
                 <TableCell>{product.stock}</TableCell>

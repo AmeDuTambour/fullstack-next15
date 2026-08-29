@@ -44,4 +44,5 @@ export const common = {
   send: "Envoyer",
   publish: "Publier",
   placeOrder: "Passer la commande",
+  uploadFailed: "L'envoi de l'image a échoué :",
 } as const;

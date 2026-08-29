@@ -158,7 +158,7 @@ const CartTable: React.FC<CartTableProps> = ({ cart, quantityAllowed = {} }) => 
                       )}
                     </TableCell>
                     <TableCell className="text-right">
-                      €{item.price.toString()}
+                      {formatCurrency(item.price)}
                     </TableCell>
                   </TableRow>
                 ))}

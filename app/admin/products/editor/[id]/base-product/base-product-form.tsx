@@ -26,7 +26,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { UploadButton } from "@/lib/uploadthing";
+import ImageUpload from "@/components/shared/image-upload";
 import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -227,21 +227,14 @@ const BaseProductForm = ({ product, categories }: BaseProductFormProps) => {
                         />
                       ))}
                       <FormControl>
-                        <UploadButton
-                          endpoint="imageUploader"
-                          onClientUploadComplete={(res: { ufsUrl: string }[]) => {
-                            form.setValue("images", [
+                        <ImageUpload
+  onUploaded={(url) => {
+    form.setValue("images", [
                               ...(form.watch("images") || []),
-                              res[0].ufsUrl,
+                              url,
                             ]);
-                          }}
-                          onUploadError={(error: Error) => {
-                            toast({
-                              variant: "destructive",
-                              description: `Error: ${error.message}`,
-                            });
-                          }}
-                        />
+  }}
+/>
                       </FormControl>
                     </div>
                   </CardContent>
