@@ -7,6 +7,7 @@ import {
 import { getAllArticles } from "@/lib/actions/article.actions";
 import Link from "next/link";
 import ContentImage from "@/components/ui/content-image";
+import StatusBadge from "@/components/shared/status-badge";
 import { EyeClosed, EyeIcon, PenIcon } from "lucide-react";
 import { formatDateTime } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -60,15 +61,11 @@ const AdminArticlesPage = async () => {
                 </Link>
               </CardContent>
               <CardFooter className="w-full flex justify-end p-4">
-                {article.isPublished ? (
-                  <div className="flex flex-row">
-                    <EyeIcon /> <span>{t.published}</span>
-                  </div>
-                ) : (
-                  <div className="flex flex-row">
-                    <EyeClosed /> <span>{t.draft}</span>
-                  </div>
-                )}
+                <StatusBadge
+                  tone={article.isPublished ? "done" : "muted"}
+                  icon={article.isPublished ? <EyeIcon /> : <EyeClosed />}
+                  label={article.isPublished ? t.published : t.draft}
+                />
               </CardFooter>
             </Card>
           ))}

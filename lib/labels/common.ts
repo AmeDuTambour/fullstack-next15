@@ -45,4 +45,11 @@ export const common = {
   publish: "Publier",
   placeOrder: "Passer la commande",
   uploadFailed: "L'envoi de l'image a échoué :",
+  navHome: "Accueil",
+  navShop: "Boutique",
+  navBlog: "Blog",
+  navAbout: "À propos",
+  navContact: "Contact",
+  menu: "Menu",
+  openMenu: "Ouvrir le menu",
 } as const;

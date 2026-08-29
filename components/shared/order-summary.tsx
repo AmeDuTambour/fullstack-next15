@@ -60,7 +60,11 @@ const OrderSummary = async () => {
           </div>
           <div className="flex justify-between">
             <dt>{t.shipping}</dt>
-            <dd>{formatCurrency(cart.shippingPrice)}</dd>
+            <dd>
+              {Number(cart.shippingPrice) === 0
+                ? t.freeShipping
+                : formatCurrency(cart.shippingPrice)}
+            </dd>
           </div>
           <div className="flex justify-between font-semibold">
             <dt>{t.total}</dt>

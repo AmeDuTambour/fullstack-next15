@@ -9,6 +9,7 @@ import {
 } from "@/lib/actions/product.actions";
 import { admin as t, common } from "@/lib/labels";
 import { formatCurrency, formatId, getProductCategory } from "@/lib/utils";
+import StatusBadge from "@/components/shared/status-badge";
 import { Eye, EyeClosed } from "lucide-react";
 import { Metadata } from "next";
 import Link from "next/link";
@@ -67,14 +68,11 @@ const AdminProductsPage = async (props: {
             <TableCell>{productCategory?.name}</TableCell>
             <TableCell>{product.stock}</TableCell>
             <TableCell>
-              <span className="flex items-center gap-2">
-                {product.isPublished ? (
-                  <Eye className="h-4 w-4" aria-hidden="true" />
-                ) : (
-                  <EyeClosed className="h-4 w-4" aria-hidden="true" />
-                )}
-                {product.isPublished ? t.published : t.draft}
-              </span>
+              <StatusBadge
+                tone={product.isPublished ? "done" : "muted"}
+                icon={product.isPublished ? <Eye /> : <EyeClosed />}
+                label={product.isPublished ? t.published : t.draft}
+              />
             </TableCell>
             <TableCell className="flex gap-1">
               <Button asChild size="sm" variant="outline">

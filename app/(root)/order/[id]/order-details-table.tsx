@@ -1,6 +1,9 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
+import { useRouter } from "next/navigation";
+
+import StatusBadge from "@/components/shared/status-badge";
+import { CheckCircle2, Clock, PackageCheck } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Table,
@@ -59,6 +62,7 @@ const OrderDetailsTable: React.FC<OrderDetailsTableProps> = ({
     deliveredAt,
   } = order;
 
+  const router = useRouter();
   const { toast } = useToast();
 
   // Composée hors du balisage : une adresse est une donnée, pas un libellé.
@@ -95,10 +99,11 @@ const OrderDetailsTable: React.FC<OrderDetailsTableProps> = ({
   };
   const handleApprovePayPalOrder = async (data: { orderID: string }) => {
     const res = await approvePayPalOrder(order.id, data);
-    toast({
-      variant: res.success ? "default" : "destructive",
-      description: res.message,
-    });
+    if (!res.success) {
+      toast({ variant: "destructive", description: res.message });
+      return;
+    }
+    router.push(`/order/${order.id}/thank-you`);
   };
 
   const MarkAsPaidButton = () => {
@@ -159,11 +164,17 @@ const OrderDetailsTable: React.FC<OrderDetailsTableProps> = ({
               <h2 className="text-xl pb-4">{t.paymentMethod}</h2>
               <p className="mb-2">{paymentMethod}</p>
               {isPaid ? (
-                <Badge variant="secondary">
-                  {t.paidAt(formatDateTime(paidAt!).dateTime)}
-                </Badge>
+                <StatusBadge
+                  tone="done"
+                  icon={<CheckCircle2 />}
+                  label={t.paidAt(formatDateTime(paidAt!).dateTime)}
+                />
               ) : (
-                <Badge variant="outline">{t.awaitingPayment}</Badge>
+                <StatusBadge
+                  tone="pending"
+                  icon={<Clock />}
+                  label={t.awaitingPayment}
+                />
               )}
             </CardContent>
           </Card>
@@ -173,11 +184,17 @@ const OrderDetailsTable: React.FC<OrderDetailsTableProps> = ({
               <p>{shippingAddress.fullName}</p>
               <p className="mb-2">{formattedAddress}</p>
               {isDelivered ? (
-                <Badge variant="secondary">
-                  {t.deliveredAt(formatDateTime(deliveredAt!).dateTime)}
-                </Badge>
+                <StatusBadge
+                  tone="done"
+                  icon={<PackageCheck />}
+                  label={t.deliveredAt(formatDateTime(deliveredAt!).dateTime)}
+                />
               ) : (
-                <Badge variant="outline">{t.notDelivered}</Badge>
+                <StatusBadge
+                  tone="pending"
+                  icon={<Clock />}
+                  label={t.notDelivered}
+                />
               )}
             </CardContent>
           </Card>

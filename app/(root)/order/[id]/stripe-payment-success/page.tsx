@@ -1,7 +1,4 @@
-import { Button } from "@/components/ui/button";
 import { getOrderById } from "@/lib/actions/order.actions";
-import Link from "next/link";
-import { order as t } from "@/lib/labels";
 import { notFound, redirect } from "next/navigation";
 import Stripe from "stripe";
 
@@ -41,17 +38,9 @@ const SuccessPage = async (props: {
 
   if (!isSuccess) return redirect(`/order/${id}`);
 
-  return (
-    <div className="max-w-4xl w-full mx-auto space-y-8">
-      <div className="flex flex-col gap-6 items-center">
-        <h1 className="h1-bold">{t.thanksTitle}</h1>
-        <div>{t.thanksBody}</div>
-        <Button asChild>
-          <Link href={`/order/${id}`}>{t.viewOrder}</Link>
-        </Button>
-      </div>
-    </div>
-  );
+  // La confirmation est la même pour les trois moyens de paiement. Cette route
+  // ne garde que ce qui lui est propre : la vérification de l'intention Stripe.
+  redirect(`/order/${id}/thank-you`);
 };
 
 export default SuccessPage;

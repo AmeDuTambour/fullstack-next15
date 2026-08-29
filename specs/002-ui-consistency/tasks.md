@@ -55,8 +55,8 @@ même rôle reçoit partout le même traitement.
 - [X] T013 [US3] Appliquer `.page-title` aux titres principaux existants et en ajouter un aux six pages qui n'en ont pas — `/`, `/search`, `/blog`, `/about`, `/user/orders`, `/user/profile`
 - [X] T014 [US3] Corriger le titre de `app/(root)/product/[slug]/page.tsx`, aujourd'hui plus petit qu'un titre de section
 - [X] T015 [US3] Supprimer `components/shared/product/product-price.tsx` et router les dix fichiers affichant un prix par le formatage monétaire
-- [ ] T016 [US3] Créer `components/shared/status-badge.tsx` — présentation unique, mention textuelle toujours présente
-- [ ] T017 [US3] Appliquer l'indicateur d'état aux six écrans concernés, dont `app/admin/products/page.tsx` où l'état publié n'est aujourd'hui qu'une icône sans légende
+- [X] T016 [US3] Créer `components/shared/status-badge.tsx` — présentation unique, mention textuelle toujours présente
+- [X] T017 [US3] Appliquer l'indicateur d'état aux six écrans concernés, dont `app/admin/products/page.tsx` où l'état publié n'est aujourd'hui qu'une icône sans légende
 - [X] T018 [P] [US3] Aligner les trois grilles de produits sur une configuration unique
 - [X] T019 [P] [US3] Harmoniser les états vides, dont les deux formulations différentes de `app/(root)/search/page.tsx`
 - [X] T020 [P] [US3] Ajouter un état de survol aux cartes produit, absent alors que les cartes d'articles en ont un
@@ -69,49 +69,49 @@ même rôle reçoit partout le même traitement.
 **Test indépendant** : dérouler le tunnel ; le récapitulatif et le montant restent visibles à
 chaque étape.
 
-- [ ] T022 [US1] Créer `components/shared/order-summary.tsx`, composant serveur résolvant lui-même le panier — articles, sous-total, frais de livraison, total, délai d'expédition
-- [ ] T023 [US1] Insérer le récapitulatif dans `app/(root)/cart/page.tsx`, `shipping-address/page.tsx`, `payment-method/page.tsx` et `place-order/page.tsx`
-- [ ] T024 [US1] Annoncer les frais de livraison dès le panier, avant toute saisie de données personnelles
-- [ ] T025 [US1] Afficher le délai d'expédition sur la fiche produit et dans le récapitulatif
-- [ ] T026 [US1] Unifier la fin de parcours : une seule page de remerciement pour les trois moyens de paiement, avec un message adapté à chacun
-- [ ] T027 [US1] Regrouper code postal et ville sur une ligne dans `app/(root)/shipping-address/shipping-address-form.tsx`, et remplacer le champ pays libre par une liste
+- [X] T022 [US1] Créer `components/shared/order-summary.tsx`, composant serveur résolvant lui-même le panier — articles, sous-total, frais de livraison, total, délai d'expédition
+- [X] T023 [US1] Insérer le récapitulatif dans `app/(root)/cart/page.tsx`, `shipping-address/page.tsx`, `payment-method/page.tsx` et `place-order/page.tsx`
+- [X] T024 [US1] Annoncer les frais de livraison dès le panier, avant toute saisie de données personnelles
+- [X] T025 [US1] Afficher le délai d'expédition sur la fiche produit et dans le récapitulatif
+- [X] T026 [US1] Unifier la fin de parcours : une seule page de remerciement pour les trois moyens de paiement, avec un message adapté à chacun
+- [X] T027 [US1] Regrouper code postal et ville sur une ligne dans `app/(root)/shipping-address/shipping-address-form.tsx`, et remplacer le champ pays libre par une liste
 
 ---
 
 ## Phase 5 : US4 — L'acheteur sait toujours où il en est (P2)
 
-- [ ] T028 [US4] Distinguer les trois états dans `components/shared/checkout-steps.tsx` : franchie, courante, à venir
-- [ ] T029 [US4] Rendre les étapes franchies atteignables depuis la barre
-- [ ] T030 [US4] Corriger le séparateur orphelin après la dernière étape — la comparaison de chaînes traduite est toujours vraie
+- [X] T028 [US4] Distinguer les trois états dans `components/shared/checkout-steps.tsx` : franchie, courante, à venir
+- [X] T029 [US4] Rendre les étapes franchies atteignables depuis la barre
+- [X] T030 [US4] Corriger le séparateur orphelin après la dernière étape — la comparaison de chaînes traduite est toujours vraie
 
 ---
 
 ## Phase 6 : US5 — Thomas lit un article jusqu'au bout (P2)
 
-- [ ] T031 [US5] Remplacer la file de carrousels de `app/(root)/blog/page.tsx` par une grille de cartes portant visuel, catégorie et date
-- [ ] T032 [US5] Afficher la bannière de l'article dans `app/(root)/blog/[slug]/page.tsx`, aujourd'hui promise par l'accueil et jamais rendue
-- [ ] T033 [US5] Retirer l'italique et la justification intégrales du corps d'article et limiter la mesure de lecture, dans `app/(root)/blog/[slug]/article-section-block.tsx`
-- [ ] T034 [US5] Proposer une continuation en fin d'article — retour au blog et lien vers le catalogue
-- [ ] T035 [US5] Trier les commentaires par ordre de rédaction dans `lib/actions/article.actions.ts`, aujourd'hui affichés du plus récent au plus ancien
-- [ ] T036 [US5] Ramener les commandes de carrousel à l'intérieur du cadre dans `components/ui/carousel.tsx`, et ajouter une pause au survol du carrousel de l'accueil
+- [X] T031 [US5] Remplacer la file de carrousels de `app/(root)/blog/page.tsx` par une grille de cartes portant visuel, catégorie et date
+- [X] T032 [US5] Afficher la bannière de l'article dans `app/(root)/blog/[slug]/page.tsx`, aujourd'hui promise par l'accueil et jamais rendue
+- [X] T033 [US5] Retirer l'italique et la justification intégrales du corps d'article et limiter la mesure de lecture, dans `app/(root)/blog/[slug]/article-section-block.tsx`
+- [X] T034 [US5] Proposer une continuation en fin d'article — retour au blog et lien vers le catalogue
+- [X] T035 [US5] Trier les commentaires par ordre de rédaction dans `lib/actions/article.actions.ts`, aujourd'hui affichés du plus récent au plus ancien
+- [X] T036 [US5] Ramener les commandes de carrousel à l'intérieur du cadre dans `components/ui/carousel.tsx`, et ajouter une pause au survol du carrousel de l'accueil
 
 ---
 
 ## Phase 7 : US6 — Marie comprend et utilise les filtres (P2)
 
-- [ ] T037 [US6] Donner aux filtres de `app/(root)/search/page.tsx` une apparence de commande actionnable, et signaler l'état actif autrement que par la graisse du texte
-- [ ] T038 [US6] Permettre de retirer un filtre actif en une action
-- [ ] T039 [US6] Prévoir l'emplacement de l'explication du jargon — dimensions et types de peau — le texte devant venir de l'artisan
-- [ ] T040 [US6] Réactiver la recherche par texte dans `components/shared/header/index.tsx`, aujourd'hui commentée, et la brancher sur la boutique
+- [X] T037 [US6] Donner aux filtres de `app/(root)/search/page.tsx` une apparence de commande actionnable, et signaler l'état actif autrement que par la graisse du texte
+- [X] T038 [US6] Permettre de retirer un filtre actif en une action
+- [X] T039 [US6] Prévoir l'emplacement de l'explication du jargon — dimensions et types de peau — le texte devant venir de l'artisan
+- [X] T040 [US6] Réactiver la recherche par texte dans `components/shared/header/index.tsx`, aujourd'hui commentée, et la brancher sur la boutique
 
 ---
 
 ## Phase 8 : Vérifications transverses
 
-- [ ] T041 ✅ Vérifier l'absence de débordement horizontal entre 320 et 1920 pixels sur l'accueil, la boutique, le blog et une fiche produit — le contrôle qu'une revue statique avait manqué
-- [ ] T042 Exécuter les quatre vérifications constitutionnelles : `tsc`, `lint`, `test`, et `build` sans `.env` — serveur de développement arrêté au préalable
-- [ ] T043 Dérouler [quickstart.md](./quickstart.md) de bout en bout
-- [ ] T044 Mettre à jour `CLAUDE.md` : rôles typographiques, nature de produit, indicateur d'état
+- [X] T041 ✅ Vérifier l'absence de débordement horizontal entre 320 et 1920 pixels sur l'accueil, la boutique, le blog et une fiche produit — le contrôle qu'une revue statique avait manqué
+- [X] T042 Exécuter les quatre vérifications constitutionnelles : `tsc`, `lint`, `test`, et `build` sans `.env` — serveur de développement arrêté au préalable
+- [X] T043 Dérouler [quickstart.md](./quickstart.md) de bout en bout
+- [X] T044 Mettre à jour `CLAUDE.md` : rôles typographiques, nature de produit, indicateur d'état
 
 ---
 

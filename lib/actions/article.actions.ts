@@ -1,5 +1,7 @@
 "use server";
 
+import { isDynamicServerError } from "next/dist/client/components/hooks-server-context";
+
 import { prisma } from "@/db/prisma";
 import { convertToPlainObject, formatError } from "../utils";
 import {
@@ -89,6 +91,9 @@ export async function getAllArticles({
       totalPages: Math.ceil(dataCount / limit),
     };
   } catch (error) {
+    // Next signale le passage en rendu dynamique par une exception : l'avaler
+    // ferait rendre une page vide au lieu de la marquer dynamique.
+    if (isDynamicServerError(error)) throw error;
     console.error("Error fetching articles:", error);
     return {
       success: false,

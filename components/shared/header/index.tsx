@@ -9,25 +9,25 @@ const Header = () => {
   return (
     <header className="w-full border-b">
       <div className="flex-between px-6 py-4">
-        <div className="flex items-center w-full md:w-auto">
-          <div className="md:hidden">
+        <div className="flex w-full items-center lg:w-auto">
+          <div className="lg:hidden">
             <NavigationDrawer />
           </div>
           <Link
             href="/"
-            className="flex flex-1 justify-center md:flex-none md:justify-start"
+            className="flex flex-1 justify-center lg:flex-none lg:justify-start"
           >
             <div className="relative h-16 w-16">
               <BrandLogo variant="square" fill priority sizes="64px" />
             </div>
-            <div className="relative h-16 aspect-[3/1] ml-4 hidden md:block">
+            <div className="relative ml-4 hidden aspect-[3/1] h-16 lg:block">
               <BrandLogo variant="banner" fill priority sizes="192px" />
             </div>
           </Link>
         </div>
-        <div className="hidden flex-1 items-center gap-4 md:flex">
+        <div className="hidden min-w-0 flex-1 items-center gap-4 lg:flex">
           <NavigationLinks />
-          <div className="ml-auto hidden lg:block">
+          <div className="ml-auto hidden xl:block">
             <Search />
           </div>
         </div>

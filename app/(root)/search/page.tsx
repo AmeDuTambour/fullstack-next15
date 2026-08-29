@@ -1,3 +1,4 @@
+import { getGlossaryEntry } from "@/lib/content/glossary";
 import Pagination from "@/components/shared/pagination";
 import ProductCard from "@/components/shared/product/product-card";
 import { Button } from "@/components/ui/button";
@@ -115,7 +116,16 @@ const SearchPage = async (props: {
    * état de survol : rien n'indiquait qu'ils étaient cliquables, et seule la
    * graisse du texte signalait l'actif.
    */
-  const FilterLink = ({
+  /**
+ * Explication d'un groupe de filtres. Ne rend rien tant que le texte n'a pas
+ * été écrit : mieux vaut pas d'explication qu'une explication inventée.
+ */
+const FilterHelp = ({ entry }: { entry?: string }) =>
+  entry ? (
+    <p className="mb-3 max-w-prose text-sm text-muted-foreground">{entry}</p>
+  ) : null;
+
+const FilterLink = ({
     href,
     active,
     children,
@@ -171,6 +181,7 @@ const SearchPage = async (props: {
         {category === "Drum" && (
           <>
             <h2 className="section-title mb-3 mt-8">{t.skinType}</h2>
+              <FilterHelp entry={getGlossaryEntry("skinType")} />
             <ul className="flex flex-col items-start gap-2">
               <li>
                 <FilterLink active={skin === "all"} href={getFilterUrl({ sk: "all" })}>{t.allFilter}</FilterLink>
@@ -183,6 +194,7 @@ const SearchPage = async (props: {
             </ul>
 
             <h2 className="section-title mb-3 mt-8">{t.dimensions}</h2>
+              <FilterHelp entry={getGlossaryEntry("dimensions")} />
             <ul className="flex flex-col items-start gap-2">
               <li>
                 <FilterLink active={dimension === "all"} href={getFilterUrl({ d: "all" })}>{t.allFilter}</FilterLink>

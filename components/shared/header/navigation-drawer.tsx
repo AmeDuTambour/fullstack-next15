@@ -6,57 +6,25 @@ import {
   DrawerHeader,
   DrawerTrigger,
 } from "@/components/ui/drawer";
-import {
-  BookOpenText,
-  HomeIcon,
-  Mail,
-  MenuIcon,
-  NewspaperIcon,
-  ShoppingBag,
-} from "lucide-react";
+import { MenuIcon } from "lucide-react";
 import Link from "next/link";
 
-const NavigationDrawer = () => {
-  const sections = [
-    {
-      title: "Accueil",
-      path: "/",
-      icon: HomeIcon,
-    },
-    {
-      title: "Boutique",
-      path: "/search",
-      icon: ShoppingBag,
-    },
-    {
-      title: "Blog",
-      path: "/blog",
-      icon: NewspaperIcon,
-    },
-    {
-      title: "À propos",
-      path: "/about",
-      icon: BookOpenText,
-    },
-    {
-      title: "Contact",
-      path: "/contact",
-      icon: Mail,
-    },
-  ];
+import { common } from "@/lib/labels";
+import { NAVIGATION } from "./navigation";
 
+const NavigationDrawer = () => {
   return (
     <Drawer direction="left">
       <DrawerTrigger asChild>
-        <Button variant="outline">
+        <Button variant="outline" aria-label={common.openMenu}>
           <MenuIcon />
         </Button>
       </DrawerTrigger>
       <DrawerContent className="h-full max-w-sm">
-        <DrawerHeader>Menu</DrawerHeader>
+        <DrawerHeader>{common.menu}</DrawerHeader>
         <div className="space-y-1">
-          {sections.map((section) => (
-            <DrawerClose asChild key={section.title}>
+          {NAVIGATION.map((section) => (
+            <DrawerClose asChild key={section.path}>
               <Link href={section.path}>
                 <Button
                   variant="ghost"

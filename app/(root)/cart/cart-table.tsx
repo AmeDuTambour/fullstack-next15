@@ -1,5 +1,6 @@
 "use client";
 
+import { FREE_SHIPPING_THRESHOLD } from "@/lib/constants";
 import { PendingButton } from "@/components/ui/pending-button";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -16,7 +17,7 @@ import { addItemToCart, removeItemFromCart } from "@/lib/actions/cart.actions";
 import { formatCurrency } from "@/lib/utils";
 import { Cart, CartItem } from "@/types";
 import { ArrowRight, Loader, Minus, Plus, Trash2 } from "lucide-react";
-import { catalog as t } from "@/lib/labels";
+import { catalog as t, order } from "@/lib/labels";
 import ContentImage from "@/components/ui/content-image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -166,15 +167,37 @@ const CartTable: React.FC<CartTableProps> = ({ cart, quantityAllowed = {} }) => 
             </Table>
           </div>
           <Card>
-            <CardContent className="p-4 gap-4">
-              <div className="pb-3 text-xl">
-                Sous-total (
-                {cart.items.reduce((acc, curr) => acc + curr.qty, 0)}
-                ):
-                <span className="font-bold">
-                  {formatCurrency(cart.itemsPrice.toString())}
-                </span>
-              </div>
+            <CardContent className="space-y-4 p-4">
+              <dl className="space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <dt>
+                    {order.subtotalWithCount(
+                      cart.items.reduce((acc, curr) => acc + curr.qty, 0)
+                    )}
+                  </dt>
+                  <dd>{formatCurrency(cart.itemsPrice.toString())}</dd>
+                </div>
+                <div className="flex justify-between">
+                  <dt>{order.shipping}</dt>
+                  <dd>
+                    {Number(cart.shippingPrice) === 0
+                      ? order.freeShipping
+                      : formatCurrency(cart.shippingPrice.toString())}
+                  </dd>
+                </div>
+                <div className="flex justify-between border-t pt-2 text-base font-semibold">
+                  <dt>{order.total}</dt>
+                  <dd>{formatCurrency(cart.totalPrice.toString())}</dd>
+                </div>
+              </dl>
+
+              {Number(cart.shippingPrice) > 0 ? (
+                <p className="text-sm text-muted-foreground">
+                  {order.freeShippingFrom(
+                    formatCurrency(FREE_SHIPPING_THRESHOLD.toString())
+                  )}
+                </p>
+              ) : null}
               <PendingButton
                 className="w-full"
                 pending={isPending}

@@ -93,10 +93,16 @@ export async function createOrder() {
 
     if (!insertedOrderId) throw new Error("Order not created");
 
+    // Le virement n'a pas d'étape de paiement en ligne : la commande est
+    // complète dès sa création, l'acheteur va directement à la confirmation.
+    // Carte et PayPal passent d'abord par le détail de commande, où ils paient.
     return {
       success: true,
       message: "Order created",
-      redirectTo: `/order/${insertedOrderId}`,
+      redirectTo:
+        user.paymentMethod === "Transfer"
+          ? `/order/${insertedOrderId}/thank-you`
+          : `/order/${insertedOrderId}`,
     };
   } catch (error) {
     if (isRedirectError(error)) throw error;

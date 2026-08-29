@@ -1,3 +1,5 @@
+import StatusBadge from "@/components/shared/status-badge";
+import { CheckCircle2, Clock, PackageCheck } from "lucide-react";
 import Pagination from "@/components/shared/pagination";
 import {
   Table,
@@ -50,14 +52,26 @@ const OrdersPage = async (props: {
                 </TableCell>
                 <TableCell>{formatCurrency(order.totalPrice)}</TableCell>
                 <TableCell>
-                  {order.isPaid && order.paidAt
-                    ? formatDateTime(order.paidAt).dateTime
-                    : t.notPaidShort}
+                  {order.isPaid && order.paidAt ? (
+                    <StatusBadge
+                      tone="done"
+                      icon={<CheckCircle2 />}
+                      label={formatDateTime(order.paidAt).dateTime}
+                    />
+                  ) : (
+                    <StatusBadge tone="pending" icon={<Clock />} label={t.notPaidShort} />
+                  )}
                 </TableCell>
                 <TableCell>
-                  {order.isDelivered && order.deliveredAt
-                    ? formatDateTime(order.deliveredAt).dateTime
-                    : t.notDeliveredShort}
+                  {order.isDelivered && order.deliveredAt ? (
+                    <StatusBadge
+                      tone="done"
+                      icon={<PackageCheck />}
+                      label={formatDateTime(order.deliveredAt).dateTime}
+                    />
+                  ) : (
+                    <StatusBadge tone="pending" icon={<Clock />} label={t.notDeliveredShort} />
+                  )}
                 </TableCell>
                 <TableCell>
                   <Link href={`/order/${order.id}`}>

@@ -24,7 +24,9 @@ export const shippingAddressDefaultValues = {
   streetAddress: "",
   city: "",
   postalCode: "",
-  country: "",
+  // La quasi-totalité des envois part en France : le pré-remplir épargne un
+  // choix à presque tout le monde sans en interdire aucun.
+  country: "France",
 };
 
 // Le parsing est `split(", ")` : dans .env, la virgule doit être suivie
@@ -90,5 +92,32 @@ export const articleSectionFormDefaultValues = {
  * En configuration et non dans un composant : la corriger ne doit demander ni
  * recherche dans le code, ni redéploiement.
  */
+/**
+ * Frais de port. Le seuil de franco est annoncé à l'acheteur dès le panier :
+ * une somme qui n'apparaît qu'après la saisie de l'adresse est une mauvaise
+ * surprise, et la première cause d'abandon d'un tunnel de commande.
+ */
+export const SHIPPING_FLAT_RATE = 10;
+export const FREE_SHIPPING_THRESHOLD = 150;
+
+/**
+ * Destinations proposées à la livraison.
+ *
+ * Le champ « Pays » était libre : « Fr », « france », « Frnace » désignaient
+ * trois pays différents pour qui édite une étiquette. La liste reste courte et
+ * volontairement modeste — c'est à Julien de dire jusqu'où il expédie.
+ */
+export const SHIPPING_COUNTRIES = [
+  "France",
+  "Belgique",
+  "Suisse",
+  "Luxembourg",
+  "Allemagne",
+  "Espagne",
+  "Italie",
+  "Pays-Bas",
+  "Portugal",
+] as const;
+
 export const SHIPPING_DELAY =
   process.env.NEXT_PUBLIC_SHIPPING_DELAY || "2 à 4 jours ouvrés";

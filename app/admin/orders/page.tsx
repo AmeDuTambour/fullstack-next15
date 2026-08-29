@@ -1,3 +1,5 @@
+import StatusBadge from "@/components/shared/status-badge";
+import { CheckCircle2, Clock, PackageCheck } from "lucide-react";
 import { auth } from "@/auth";
 import AdminList from "@/components/admin/admin-list";
 import DeleteDialog from "@/components/shared/delete-dialog";
@@ -47,14 +49,26 @@ const AdminOrdersPage = async (props: {
           <TableCell>{order.user.name}</TableCell>
           <TableCell>{formatCurrency(order.totalPrice)}</TableCell>
           <TableCell>
-            {order.isPaid && order.paidAt
-              ? formatDateTime(order.paidAt).dateTime
-              : t.notPaid}
+            {order.isPaid && order.paidAt ? (
+              <StatusBadge
+                tone="done"
+                icon={<CheckCircle2 />}
+                label={formatDateTime(order.paidAt).dateTime}
+              />
+            ) : (
+              <StatusBadge tone="pending" icon={<Clock />} label={t.notPaid} />
+            )}
           </TableCell>
           <TableCell>
-            {order.isDelivered && order.deliveredAt
-              ? formatDateTime(order.deliveredAt).dateTime
-              : t.notDelivered}
+            {order.isDelivered && order.deliveredAt ? (
+              <StatusBadge
+                tone="done"
+                icon={<PackageCheck />}
+                label={formatDateTime(order.deliveredAt).dateTime}
+              />
+            ) : (
+              <StatusBadge tone="pending" icon={<Clock />} label={t.notDelivered} />
+            )}
           </TableCell>
           <TableCell className="flex gap-1">
             <Button asChild variant="outline" size="sm">

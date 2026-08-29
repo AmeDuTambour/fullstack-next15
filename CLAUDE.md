@@ -106,6 +106,39 @@ le site a un mode sombre et ces classes le cassent. L'existant en contient beauc
 (`/about`, le footer, `/contact/success`, `order-details-table.tsx`) — c'est de la dette à
 résorber, pas un exemple.
 
+### 6. La nature d'un produit décide de son comportement
+
+`lib/product.ts` porte la règle métier, une seule fois : un tambour est une **pièce
+unique** — un exemplaire, jamais refait à l'identique — un accessoire est
+**reproductible**. Il en découle le vocabulaire d'un stock à zéro (« Vendu » contre
+« Momentanément épuisé »), l'existence même du sélecteur de quantité, et le maximum
+commandable.
+
+Ne jamais tester `stock > 0` directement dans un écran : appeler `getAvailability`,
+`allowsQuantitySelection`, `getMaxOrderableQuantity`. La catégorie qui fait la pièce
+unique est déclarée dans `UNIQUE_PIECE_CATEGORIES`, pas dispersée dans le balisage.
+
+### 7. Les composants partagés avant la copie
+
+Avant d'écrire un écran, regarder ce qui existe : `components/shared/` et
+`components/ui/` portent les motifs déjà mutualisés. `PendingButton` (bouton et son
+état d'attente), `ContentImage` (image et son repli sans débordement), `BrandLogo`,
+`EmptyState`, `ImageUpload`, `StatusBadge` (tout état publié / payé / livré),
+`SectionNav`, `AppShell`, `OrderSummary`, `AdminList` (ossature des listes
+d'administration), `PublishFields`. Ajouter un dixième bouton d'attente à la main,
+c'est en ajouter un onzième qui n'aura pas le même comportement.
+
+**Un état n'est jamais signalé par la seule icône ni la seule couleur.** `StatusBadge`
+rend toujours sa mention textuelle ; l'icône est décorative et masquée aux
+technologies d'assistance.
+
+### 8. Rôles typographiques
+
+`.page-title` pour le titre unique de la page, `.section-title` pour les titres de
+section, définis dans `assets/styles/globals.css`. Ne pas composer un titre à coups de
+`text-2xl font-bold` : six écrans avaient six échelles différentes. Le corps de texte
+long est limité à `max-w-[68ch]` — une ligne plus longue se relit mal.
+
 ## Commandes
 
 ⚠️ **Ne jamais supprimer `.next` pendant qu'un serveur de développement tourne.** Le serveur
