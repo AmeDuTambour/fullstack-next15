@@ -4,7 +4,7 @@
 
 **Created**: 2026-08-28
 
-**Status**: Draft
+**Status**: Implemented
 
 **Input**: Audit Impeccable du 2026-08-28 — problème P0, rapport dans `.impeccable/critique/2026-08-28T17-12-55Z__app.md`
 

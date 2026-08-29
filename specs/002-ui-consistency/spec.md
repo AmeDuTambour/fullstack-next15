@@ -4,7 +4,7 @@
 
 **Created**: 2026-08-28
 
-**Status**: Draft
+**Status**: Implemented
 
 **Input**: Audit Impeccable du 2026-08-28 — problèmes P1 (cohérence) et P2 (tunnel, éditorial). Heuristique 4 « Cohérence et standards » notée 1/4.
 
