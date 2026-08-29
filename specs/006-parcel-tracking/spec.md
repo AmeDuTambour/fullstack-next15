@@ -4,7 +4,7 @@
 
 **Created**: 2026-08-28
 
-**Status**: Draft
+**Status**: Implemented
 
 **Input**: Demande du propriétaire le 2026-08-28, formulée en marge de la spécification 002 :
 « ce serait super de pouvoir renseigner le numéro de tracking avec le lien vers le site du

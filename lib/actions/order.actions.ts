@@ -7,6 +7,8 @@ import { getUserCart } from "./cart.actions";
 import { getUserById } from "./user.actions";
 import { insertOrderSchema } from "../validators";
 import { prisma } from "@/db/prisma";
+import { trackingSchema } from "@/lib/validators";
+import { sendShipmentNotice } from "@/email";
 import { CartItem, PaymentResult, ShippingAddress } from "@/types";
 import { paypal } from "../paypal";
 import { revalidatePath } from "next/cache";
@@ -413,7 +415,17 @@ export async function markOrderAsPaid(orderId: string) {
   }
 }
 
-export async function markOrderAsDelivered(orderId: string) {
+/**
+ * Marque l'expédition, avec le suivi du colis s'il est connu.
+ *
+ * Le suivi se renseigne dans le même geste que l'expédition : ce sont les deux
+ * moitiés d'un même moment à l'atelier. Il reste facultatif — un colis remis en
+ * main propre s'expédie sans numéro.
+ */
+export async function markOrderAsDelivered(
+  orderId: string,
+  tracking?: { carrier?: string; trackingNumber?: string }
+) {
   try {
     await requireAdmin();
     const order = await prisma.order.findFirst({
@@ -424,6 +436,13 @@ export async function markOrderAsDelivered(orderId: string) {
     if (!order) throw new Error("Order not found");
     if (!order.isPaid) throw new Error("Order is not paid");
 
+    const parsed = tracking?.trackingNumber?.trim()
+      ? trackingSchema.parse({
+          carrier: tracking.carrier,
+          trackingNumber: tracking.trackingNumber.trim(),
+        })
+      : null;
+
     await prisma.order.update({
       where: {
         id: orderId,
@@ -431,8 +450,44 @@ export async function markOrderAsDelivered(orderId: string) {
       data: {
         isDelivered: true,
         deliveredAt: new Date(),
+        carrier: parsed?.carrier ?? null,
+        trackingNumber: parsed?.trackingNumber ?? null,
       },
     });
+
+    // L'avis d'expédition ne conditionne pas l'expédition : le colis est parti,
+    // et un serveur de messagerie indisponible ne doit pas défaire ce fait.
+    if (parsed) {
+      try {
+        const shipped = await prisma.order.findFirst({
+          where: { id: orderId },
+          include: {
+            orderitems: true,
+            user: { select: { name: true, email: true } },
+          },
+        });
+
+        if (shipped) {
+          await sendShipmentNotice({
+            order: {
+              ...shipped,
+              itemsPrice: shipped.itemsPrice.toString(),
+              shippingPrice: shipped.shippingPrice.toString(),
+              taxPrice: shipped.taxPrice.toString(),
+              totalPrice: shipped.totalPrice.toString(),
+              orderitems: shipped.orderitems.map((item) => ({
+                ...item,
+                price: item.price.toString(),
+              })),
+              shippingAddress: shipped.shippingAddress as ShippingAddress,
+              paymentResult: shipped.paymentResult as PaymentResult,
+            },
+          });
+        }
+      } catch (error) {
+        console.error("Shipment notice not sent", error);
+      }
+    }
 
     revalidatePath(`/order/${orderId}`);
 

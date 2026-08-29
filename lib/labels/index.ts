@@ -15,6 +15,7 @@ import { blog } from "./blog";
 import { catalog } from "./catalog";
 import { common } from "./common";
 import { contact } from "./contact";
+import { email } from "./email";
 import { errors } from "./errors";
 import { feedback } from "./feedback";
 import { legal } from "./legal";
@@ -28,6 +29,7 @@ export const labels = {
   catalog,
   common,
   contact,
+  email,
   errors,
   feedback,
   legal,
@@ -42,6 +44,7 @@ export {
   catalog,
   common,
   contact,
+  email,
   errors,
   feedback,
   legal,

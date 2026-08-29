@@ -64,6 +64,13 @@ export const order = {
   thanksBody: "Nous préparons votre envoi et vous tenons informé par e-mail.",
   viewOrder: "Voir ma commande",
   orderReference: "Référence",
+  carrier: "Transporteur",
+  trackingNumber: "Numéro de suivi",
+  trackingOptional: "Facultatif",
+  trackingHint: (expected: string) =>
+    `Ce numéro ne ressemble pas à un numéro de ce transporteur — attendu : ${expected}.`,
+  trackingTitle: "Suivi du colis",
+  followParcel: "Suivre mon colis",
   acceptTermsPrefix: "En validant, vous acceptez les",
   termsLink: "conditions générales de vente",
   and: "et la politique de",

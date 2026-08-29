@@ -3,6 +3,8 @@
 import { useRouter } from "next/navigation";
 
 import StatusBadge from "@/components/shared/status-badge";
+import TrackingBlock from "@/components/shared/tracking-block";
+import MarkDeliveredForm from "./mark-delivered-form";
 import { CheckCircle2, Clock, PackageCheck } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -25,7 +27,6 @@ import {
 import {
   approvePayPalOrder,
   markOrderAsPaid,
-  markOrderAsDelivered,
   createPayPalOrder,
 } from "@/lib/actions/order.actions";
 import { useToast } from "@/hooks/use-toast";
@@ -130,30 +131,6 @@ const OrderDetailsTable: React.FC<OrderDetailsTableProps> = ({
     );
   };
 
-  const MarkAsDeliveredButton = () => {
-    const { toast } = useToast();
-
-    const [isPending, startTransition] = useTransition();
-
-    return (
-      <Button
-        type="button"
-        disabled={isPending}
-        onClick={() =>
-          startTransition(async () => {
-            const res = await markOrderAsDelivered(order.id);
-            toast({
-              variant: res.success ? "default" : "destructive",
-              description: res.message,
-            });
-          })
-        }
-      >
-        {isPending ? common.processing : t.markAsDelivered}
-      </Button>
-    );
-  };
-
   return (
     <>
       <h1 className="py-4 text-2xl">{t.title(formatId(id))}</h1>
@@ -196,6 +173,10 @@ const OrderDetailsTable: React.FC<OrderDetailsTableProps> = ({
                   label={t.notDelivered}
                 />
               )}
+              <TrackingBlock
+                carrier={order.carrier}
+                trackingNumber={order.trackingNumber}
+              />
             </CardContent>
           </Card>
           <Card className="my-2">
@@ -294,7 +275,9 @@ const OrderDetailsTable: React.FC<OrderDetailsTableProps> = ({
               {isAdmin && (!isPaid || !isDelivered) ? (
                 <div className="rounded-md border p-3">
                   {!isPaid ? <MarkAsPaidButton /> : null}
-                  {isPaid && !isDelivered ? <MarkAsDeliveredButton /> : null}
+                  {isPaid && !isDelivered ? (
+                    <MarkDeliveredForm orderId={order.id} />
+                  ) : null}
                 </div>
               ) : null}
             </CardContent>

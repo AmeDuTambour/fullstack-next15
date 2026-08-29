@@ -1,3 +1,4 @@
+import { CARRIERS } from "@/lib/carriers";
 import { z } from "zod";
 import { PAYMENT_METHODS } from "./constants";
 import { formatNumberWithDecimal } from "./utils";
@@ -226,4 +227,22 @@ export const contactFormSchema = z.object({
   email: z.string().email("Adresse e-mail invalide"),
   subject: z.string(),
   message: z.string().nonempty(),
+});
+
+/**
+ * Suivi de colis.
+ *
+ * Le transporteur doit exister dans le référentiel : un identifiant inventé
+ * produirait un lien de suivi qui ne mène nulle part.
+ */
+export const trackingSchema = z.object({
+  carrier: z
+    .string()
+    .refine((id) => CARRIERS.some((carrier) => carrier.id === id), {
+      message: "Choisissez un transporteur dans la liste.",
+    }),
+  trackingNumber: z
+    .string()
+    .min(4, "Le numéro de suivi est trop court.")
+    .max(40, "Le numéro de suivi est trop long."),
 });

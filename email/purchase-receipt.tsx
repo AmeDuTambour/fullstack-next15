@@ -50,6 +50,8 @@ PurchaseReceiptEmail.PreviewProps = {
     })),
     isDelivered: true,
     deliveredAt: new Date(),
+    carrier: "laposte",
+    trackingNumber: "6A123456789FR",
     isPaid: true,
     paidAt: new Date(),
     paymentResult: {

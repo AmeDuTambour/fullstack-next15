@@ -151,6 +151,17 @@ ou un délai. Le texte fonctionnel — « Ajouter au panier », « Vendu » — 
 ressort du code ; tout ce qui décrit l'instrument, l'atelier ou l'engagement
 commercial est le sien.
 
+### 10. Le suivi de colis se construit, il ne se saisit pas
+
+`lib/carriers.ts` tient le référentiel des transporteurs et fabrique l'adresse
+de suivi à partir de l'identifiant et du numéro. Aucun lien n'est saisi à la
+main, donc aucun ne peut être mal collé. Un transporteur sans adresse de suivi
+exploitable affiche le numéro sans lien — jamais un lien mort.
+
+Le numéro est toujours rendu en entier et sélectionnable : c'est lui que
+l'acheteur recopiera si le lien cesse de fonctionner. Ajouter un transporteur
+se fait dans ce seul fichier.
+
 ## Commandes
 
 ⚠️ **Ne jamais supprimer `.next` pendant qu'un serveur de développement tourne.** Le serveur

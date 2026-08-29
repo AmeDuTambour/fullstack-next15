@@ -220,7 +220,13 @@ async function main() {
   };
 
   const orderStates = [
-    { method: "Stripe", isPaid: true, isDelivered: true },
+    {
+      method: "Stripe",
+      isPaid: true,
+      isDelivered: true,
+      carrier: "laposte",
+      trackingNumber: "6A123456789FR",
+    },
     { method: "Stripe", isPaid: true, isDelivered: false },
     { method: "Transfer", isPaid: false, isDelivered: false },
   ];
@@ -245,6 +251,8 @@ async function main() {
         paidAt: state.isPaid ? new Date() : null,
         isDelivered: state.isDelivered,
         deliveredAt: state.isDelivered ? new Date() : null,
+        carrier: state.carrier ?? null,
+        trackingNumber: state.trackingNumber ?? null,
         orderitems: {
           create: {
             productId: product.id,

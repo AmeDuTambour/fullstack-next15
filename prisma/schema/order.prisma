@@ -12,6 +12,11 @@ model Order {
   paidAt          DateTime?   @db.Timestamp(6)
   isDelivered     Boolean     @default(false)
   deliveredAt     DateTime?   @db.Timestamp(6)
+  // Suivi du colis. Les deux champs vont ensemble : un numéro sans
+  // transporteur ne mène nulle part, un transporteur sans numéro ne dit rien.
+  // Tous deux facultatifs — une expédition peut être marquée sans suivi.
+  carrier         String?
+  trackingNumber  String?
   createdAt       DateTime    @default(now()) @db.Timestamp(6)
   user            User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   orderitems      OrderItem[]
