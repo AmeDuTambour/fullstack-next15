@@ -134,7 +134,7 @@ export const SectionEditor = ({
               <FormLabel className="h2-bold flex flex-row items-center gap-4">
                 {t.section(index + 1)}
                 {isPending ? (
-                  <Loader className="w-5 h-5 animate-spin text-green-600" />
+                  <Loader className="w-5 h-5 animate-spin text-primary" />
                 ) : null}
               </FormLabel>
               <FormControl>

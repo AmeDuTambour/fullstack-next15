@@ -97,7 +97,7 @@ export function CategoryForm({
         {...register("name", { required: t.requiredField })}
       />
       {errors.name && (
-        <p className="text-red-500 text-sm">{errors.name.message}</p>
+        <p className="text-destructive text-sm">{errors.name.message}</p>
       )}
 
       <Button type="submit" className="w-full">

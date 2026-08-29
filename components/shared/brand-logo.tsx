@@ -28,18 +28,15 @@ type BrandLogoProps = {
 
 const SOURCES = {
   square: {
-    light: "/images/brand/logo-square-light.png",
-    dark: "/images/brand/logo-square-dark.png",
+    src: "/images/brand/logo-square-light.png",
     ratio: 1,
   },
   banner: {
-    light: "/images/brand/logo-banner-light.png",
-    dark: "/images/brand/logo-banner-dark.png",
+    src: "/images/brand/logo-banner-light.png",
     ratio: 3,
   },
   plain: {
-    light: "/images/brand/logo-no-bg-light.png",
-    dark: "/images/brand/logo-no-bg-dark.png",
+    src: "/images/brand/logo-no-bg-light.png",
     ratio: 1,
   },
 } as const;
@@ -72,27 +69,15 @@ export const BrandLogo = ({
     : { height: `${height}px`, width: "auto" as const };
 
   return (
-    <>
-      <Image
-        src={source.light}
-        alt={alt}
-        {...dimensions}
-        style={style}
-        sizes={sizes}
-        priority={priority}
-        className={cn("object-contain dark:hidden", className)}
-      />
-      <Image
-        src={source.dark}
-        alt=""
-        aria-hidden="true"
-        {...dimensions}
-        style={style}
-        sizes={sizes}
-        priority={priority}
-        className={cn("object-contain hidden dark:block", className)}
-      />
-    </>
+    <Image
+      src={source.src}
+      alt={alt}
+      {...dimensions}
+      style={style}
+      sizes={sizes}
+      priority={priority}
+      className={cn("object-contain", className)}
+    />
   );
 };
 

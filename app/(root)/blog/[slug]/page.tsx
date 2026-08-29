@@ -36,7 +36,7 @@ const ArticlePage = async (props: {
       <h1 className="page-title">{article.title}</h1>{" "}
       <Separator className="my-2" />
       <div className="flex justify-between px-4">
-        <p className="text-gray-500 italic pb-4">
+        <p className="text-muted-foreground italic pb-4">
           {formatDateTime(article.createdAt).dateOnly}
         </p>
         <ShareButton

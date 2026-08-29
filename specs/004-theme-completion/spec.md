@@ -4,7 +4,7 @@
 
 **Created**: 2026-08-28
 
-**Status**: Draft
+**Status**: Implemented
 
 **Input**: Audit Impeccable du 2026-08-28 — problème P1. Contraste mesuré au navigateur le même jour : 1,84:1 sur le récit de l'artisan en mode sombre. Décision du propriétaire le 2026-08-28 : le mode sombre est supprimé.
 

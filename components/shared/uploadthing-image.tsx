@@ -11,7 +11,7 @@ const UploadThingImage = ({ src, onDelete }: UploadThingImageProps) => {
     <div className="relative inline-block">
       <button
         onClick={onDelete}
-        className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1 shadow-md hover:bg-red-600"
+        className="absolute top-0 right-0 bg-destructive text-destructive-foreground rounded-full p-1 shadow-md hover:bg-destructive/90"
       >
         <X size={14} />
       </button>

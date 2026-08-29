@@ -14,7 +14,7 @@ const AboutPage = () => {
           />
         </div>
 
-        <div className="md:col-span-2 relative bg-gray-100 p-6 rounded-lg shadow-md">
+        <div className="md:col-span-2 relative bg-card p-6 rounded-lg border shadow-sm">
           <Image
             height={50}
             width={50}
@@ -23,7 +23,7 @@ const AboutPage = () => {
             className="absolute top-[-30px] left-[-10px] opacity-20"
           />
 
-          <blockquote className="text-xl italic text-gray-700 relative z-10">
+          <blockquote className="text-xl italic text-foreground relative z-10">
             Le tambour chamanique a changé ma vie et je constate que ça fait
             évoluer la vie de certains [...] mon intention est de rendre cette
             pratique le plus accessible possible.
@@ -39,7 +39,7 @@ const AboutPage = () => {
         </div>
       </div>
 
-      <div className="mt-12 text-lg text-gray-700 leading-relaxed max-w-3xl mx-auto">
+      <div className="mt-12 text-lg leading-relaxed max-w-[68ch] mx-auto">
         <p>
           La musique a toujours été ma compagne de route. D&apos;abord à travers
           mon rôle de batteur, cette position unique où l&apos;on devient le
@@ -73,7 +73,7 @@ const AboutPage = () => {
           mais pour révéler son chant unique, sa voix singulière.
         </p>
 
-        <p className="mt-6 font-semibold text-gray-900">Tamboureusement.</p>
+        <p className="mt-6 font-semibold">Tamboureusement.</p>
       </div>
     </div>
   );

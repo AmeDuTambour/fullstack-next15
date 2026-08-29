@@ -25,7 +25,7 @@ const Header = () => {
             </div>
           </Link>
         </div>
-        <div className="hidden min-w-0 flex-1 items-center gap-4 lg:flex">
+        <div className="hidden min-w-0 flex-1 items-center gap-4 pl-6 lg:flex">
           <NavigationLinks />
           <div className="ml-auto hidden xl:block">
             <Search />

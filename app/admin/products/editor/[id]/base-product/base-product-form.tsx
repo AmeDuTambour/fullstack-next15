@@ -159,7 +159,7 @@ const BaseProductForm = ({ product, categories }: BaseProductFormProps) => {
                       <Input placeholder={t.slugPlaceholder} {...field} />
                       <Button
                         type="button"
-                        className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-1"
+                        className="bg-secondary text-secondary-foreground hover:bg-secondary/80 px-4 py-1"
                         onClick={() => {
                           form.setValue(
                             "slug",
@@ -309,7 +309,7 @@ const BaseProductForm = ({ product, categories }: BaseProductFormProps) => {
                 </FormItem>
 
                 {field.value && (
-                  <div className="p-4 bg-white rounded-lg shadow-md flex flex-col items-center">
+                  <div className="p-4 bg-card rounded-lg border shadow-sm flex flex-col items-center">
                     <QRCode
                       id="GeneratedQRCode"
                       size={128}

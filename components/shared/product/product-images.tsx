@@ -23,7 +23,7 @@ const ProductImages: React.FC<ProductImagesProps> = ({ images }) => {
           className="min-h-[300] object-cover object-center"
         />
       ) : (
-        <div className="h-[500px] w-full flex justify-center items-center border border-slate-700">
+        <div className="h-[500px] w-full flex justify-center items-center rounded-lg border">
           <CameraOff className="h-10 w-10" />
         </div>
       )}
@@ -46,7 +46,7 @@ const ProductImages: React.FC<ProductImagesProps> = ({ images }) => {
                   height={100}
                 />
               ) : (
-                <div className="w-[100px] h-[100px]  flex justify-center items-center border border-slate-700">
+                <div className="w-[100px] h-[100px] flex justify-center items-center rounded-md border">
                   <CameraOff />
                 </div>
               )}

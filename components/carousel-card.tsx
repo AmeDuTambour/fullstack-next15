@@ -16,10 +16,10 @@ const CarouselCard = ({
           className="absolute inset-0 bg-cover bg-center"
           style={{ backgroundImage: `url(${img})` }}
         >
-          <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent"></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 to-transparent"></div>
         </div>
         <div className="absolute bottom-0 p-2">
-          <h3 className="text-white h3-bold">{title}</h3>
+          <h3 className="text-background section-title">{title}</h3>
         </div>
       </div>
     </Link>

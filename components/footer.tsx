@@ -12,7 +12,7 @@ const Footer = () => {
         {/* ✅ Première colonne : Logo */}
         <div className="flex flex-col items-center justify-center">
           <BrandLogo variant="plain" height={100} priority />
-          <p className="text-sm text-gray-600 dark:text-gray-300 mt-2">
+          <p className="text-sm text-muted-foreground mt-2">
             {currentYear} {APP_NAME}. Tous droits réservés.
           </p>
         </div>
@@ -22,31 +22,31 @@ const Footer = () => {
           <h3 className="text-lg font-semibold text-primary">Navigation</h3>
           <Link
             href="/"
-            className="text-gray-700 dark:text-gray-400 hover:text-primary"
+            className="text-muted-foreground hover:text-primary"
           >
             Accueil
           </Link>
           <Link
             href="/search"
-            className="text-gray-700 dark:text-gray-400 hover:text-primary"
+            className="text-muted-foreground hover:text-primary"
           >
             Boutique
           </Link>
           <Link
             href="/blog"
-            className="text-gray-700 dark:text-gray-400 hover:text-primary"
+            className="text-muted-foreground hover:text-primary"
           >
             Blog
           </Link>
           <Link
             href="/about"
-            className="text-gray-700 dark:text-gray-400 hover:text-primary"
+            className="text-muted-foreground hover:text-primary"
           >
             À Propos
           </Link>
           <Link
             href="/contact"
-            className="text-gray-700 dark:text-gray-400 hover:text-primary"
+            className="text-muted-foreground hover:text-primary"
           >
             Contact
           </Link>
@@ -59,14 +59,14 @@ const Footer = () => {
             <Link
               href="https://www.instagram.com/l_ame_du_tambour/"
               target="_blank"
-              className="text-gray-700 dark:text-gray-400 hover:text-primary"
+              className="text-muted-foreground hover:text-primary"
             >
               <Instagram height={24} />
             </Link>
             <Link
               href="https://www.facebook.com/p/L%C3%A2me-du-Tambour-100075977844059/"
               target="_blank"
-              className="text-gray-700 dark:text-gray-400 hover:text-primary"
+              className="text-muted-foreground hover:text-primary"
             >
               <Facebook height={24} />
             </Link>

@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button";
-import ModeToggle from "./mode-toggle";
 import { EllipsisVertical, ShoppingCart } from "lucide-react";
 import Link from "next/link";
 import {
@@ -16,7 +15,6 @@ const Menu = () => {
   return (
     <div className="flex justify-end gap-3">
       <nav className="hidden lg:flex w-full max-w-xs gap-1">
-        <ModeToggle />
         <Button asChild variant="ghost">
           <Link href="/cart">
             <ShoppingCart />
