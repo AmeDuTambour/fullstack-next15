@@ -1,3 +1,5 @@
+import { Suspense } from "react";
+
 import BrandLogo from "@/components/shared/brand-logo";
 import Link from "next/link";
 import Menu from "./menu";
@@ -27,8 +29,15 @@ const Header = () => {
         </div>
         <div className="hidden min-w-0 flex-1 items-center gap-4 pl-6 lg:flex">
           <NavigationLinks />
+          {/* `useSearchParams` fait basculer tout l'arbre en rendu client si
+              rien ne l'isole : les seules pages prérendues du site — les pages
+              d'information, générées par `generateStaticParams` — cassaient le
+              build avec « useSearchParams should be wrapped in a suspense
+              boundary ». La frontière contient ce basculement à ce champ. */}
           <div className="ml-auto hidden xl:block">
-            <Search />
+            <Suspense fallback={<div className="h-10 w-full max-w-xs" />}>
+              <Search />
+            </Suspense>
           </div>
         </div>
         <Menu />

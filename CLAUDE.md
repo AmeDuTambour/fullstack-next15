@@ -193,6 +193,20 @@ curl -s -o /dev/null -w "%{http_code} %{size_download}\n" "http://localhost:3000
 
 Une feuille de 9 octets est un 404 déguisé.
 
+⚠️ **Juger `npm run build` sur son code de sortie, jamais sur un `grep` de sa sortie.**
+La compilation réussit avant le prérendu : « ✓ Compiled successfully » s'affiche puis le
+build échoue à `Error occurred prerendering page`. Une recherche de `error` en minuscule ne
+voit pas ce `Error` majuscule, et le build est annoncé bon alors qu'il est rouge.
+
+```bash
+npm run build > /dev/null 2>&1; echo $?   # 0 = succès, et rien d'autre ne le dit
+```
+
+Corollaire : les pages d'information sont les **seules pages prérendues** du site
+(`generateStaticParams` dans `app/(root)/legal/[slug]`). Elles sont donc les seules à
+révéler qu'un `useSearchParams` traîne sans frontière `Suspense` — ce qui a cassé le build
+une fois, très loin de la cause.
+
 ```bash
 npm run dev          # serveur de dev
 npm run build        # build de production
