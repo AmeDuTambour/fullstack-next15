@@ -1,47 +1,39 @@
-import Menu from "@/components/shared/header/menu";
-import { APP_NAME } from "@/lib/constants";
-import Image from "next/image";
-import Link from "next/link";
-import MainNav from "./main-nav";
-import AdminSearch from "@/components/admin/admin-search";
+import { redirect } from "next/navigation";
 
-export default function AdminLayout({
+import AppShell from "@/components/shared/app-shell";
+import { isAdmin } from "@/lib/auth-guards";
+import AdminSearch from "@/components/admin/admin-search";
+import { admin as t } from "@/lib/labels";
+
+const LINKS = [
+  { title: t.nav.overview, href: "/admin/overview" },
+  { title: t.nav.products, href: "/admin/products" },
+  { title: t.nav.orders, href: "/admin/orders" },
+  { title: t.nav.users, href: "/admin/users" },
+  { title: t.nav.articles, href: "/admin/articles" },
+];
+
+/**
+ * Refus d'accès présenté comme une information, pas comme une panne.
+ *
+ * Ce contrôle ne peut pas vivre dans le middleware : `auth.config.ts` est
+ * dépourvu de callback `session` — c'est ce qui le garde compatible Edge — donc
+ * le rôle n'y est jamais lisible. Ici, côté Node, la session est complète.
+ *
+ * Il ne remplace pas les gardes des pages et des actions : celles-ci restent
+ * seules responsables du contrôle d'accès. Il évite seulement de présenter une
+ * exception là où il n'y a qu'un manque de droits.
+ */
+export default async function AdminLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  if (!(await isAdmin())) redirect("/forbidden");
+
   return (
-    <>
-      <div className="flex flex-col">
-        <div className="border-b w-full  mx-auto">
-          <div className="flex items-center h-16 px-4">
-            <Link href="/" className="w-22">
-              <Image
-                src="/images/brand/logo-square-light.png"
-                alt={`${APP_NAME} logo`}
-                className="object-contain dark:hidden"
-                height={48}
-                width={48}
-              />
-              <Image
-                src="/images/brand/logo-square-dark.png"
-                alt={`${APP_NAME} logo`}
-                className="object-contain hidden dark:block"
-                height={48}
-                width={48}
-              />
-            </Link>
-            <MainNav className="mx-6" />
-            <div className="ml-auto items-center flex space-x-4">
-              <AdminSearch />
-              <Menu />
-            </div>
-          </div>
-        </div>
-        <div className="flex-1 space-y-4 p-8 pt-6 container mx-auto">
-          {children}
-        </div>
-      </div>
-    </>
+    <AppShell links={LINKS} actions={<AdminSearch />}>
+      {children}
+    </AppShell>
   );
 }

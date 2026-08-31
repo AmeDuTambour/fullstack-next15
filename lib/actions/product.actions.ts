@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, unstable_cache } from "next/cache";
 import { z } from "zod";
 import { LATEST_PRODUCTS_LIMIT } from "../constants";
 import { PAGE_SIZE } from "../constants/index";
@@ -15,10 +15,10 @@ import {
   UpdateProductSchema,
 } from "../validators";
 
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "@/db/prisma";
 import { DrumSpecs, OtherSpecs, Product } from "@/types";
-
-const prisma = new PrismaClient();
+import { isAdmin, requireAdmin } from "../auth-guards";
+import { getMaxOrderableQuantity, getProductNature } from "../product";
 
 async function getProductSpecifications(productId: string, category: string) {
   if (!productId) {
@@ -41,6 +41,32 @@ async function getProductSpecifications(productId: string, category: string) {
   }
 
   return {};
+}
+
+
+/**
+ * Une pièce unique ne peut pas exister en plusieurs exemplaires.
+ *
+ * La contrainte ne peut pas vivre dans le schéma de validation : celui-ci ne
+ * connaît que l'identifiant de la catégorie, pas son nom, et c'est le nom qui
+ * porte la nature. Elle vit donc ici, seul endroit où la catégorie est
+ * résolvable — et elle couvre la saisie depuis l'administration, sans quoi la
+ * règle tiendrait côté vitrine et se contournerait côté back-office.
+ */
+async function assertStockFitsNature(categoryId: string, stock: number) {
+  const category = await prisma.productCategory.findUnique({
+    where: { id: categoryId },
+    select: { name: true },
+  });
+
+  const nature = getProductNature(category?.name);
+  const max = getMaxOrderableQuantity(nature, stock);
+
+  if (nature === "unique" && stock > max) {
+    throw new Error(
+      "Un tambour est une pièce unique : son stock ne peut pas dépasser 1."
+    );
+  }
 }
 
 export async function getLatestProducts(): Promise<Product[]> {
@@ -76,7 +102,9 @@ export async function getLatestProducts(): Promise<Product[]> {
   return convertToPlainObject(productsWithSpecs) as Product[];
 }
 
-export async function getProductBySlug(slug: string): Promise<Product> {
+export async function getProductBySlug(
+  slug: string
+): Promise<Product | null> {
   const product = await prisma.product.findUnique({
     where: { slug },
     include: {
@@ -84,9 +112,15 @@ export async function getProductBySlug(slug: string): Promise<Product> {
     },
   });
 
-  if (!product) {
-    throw new Error(`Product with slug "${slug}" not found.`);
-  }
+  // Renvoyer `null` plutôt que lever : une adresse qui ne correspond à rien
+  // relève du 404, pas de l'écran d'erreur. L'appelant décide — la page appelle
+  // déjà `notFound()`. Cette fonction n'est pas utilisée par l'API mobile.
+  if (!product) return null;
+
+  // Un brouillon reste visible pour un administrateur qui prévisualise, mais
+  // n'existe pas pour un visiteur qui devinerait l'URL — d'où la même réponse
+  // que pour un produit absent, et non un refus qui confirmerait son existence.
+  if (!product.isPublished && !(await isAdmin())) return null;
 
   const categories = await getAllProductCategories();
   const { name } = getProductCategory(product.categoryId, categories);
@@ -159,6 +193,7 @@ export async function getProductById(
 
 export async function deleteProduct(id: string) {
   try {
+    await requireAdmin();
     const product = await prisma.product.findUnique({
       where: { id },
     });
@@ -178,7 +213,9 @@ export async function deleteProduct(id: string) {
 
 export async function createProduct(data: z.infer<typeof baseProductSchema>) {
   try {
+    await requireAdmin();
     const baseProduct = baseProductSchema.parse(data);
+    await assertStockFitsNature(baseProduct.categoryId, baseProduct.stock);
 
     const createdProduct = await prisma.product.create({
       data: {
@@ -211,8 +248,9 @@ export async function updateBaseProduct(
   data: z.infer<typeof updateBaseProductSchema>
 ) {
   try {
+    await requireAdmin();
     const product = UpdateProductSchema.parse(data);
-    console.log("Validating product: ", product);
+    await assertStockFitsNature(product.categoryId, product.stock);
 
     const existingProduct = await prisma.product.findUnique({
       where: { id: product.id },
@@ -256,6 +294,7 @@ export async function updateProductSpecifications(
   data: Record<string, string>
 ) {
   try {
+    await requireAdmin();
     const product = await prisma.product.findFirst({
       where: { id },
     });
@@ -331,11 +370,27 @@ export async function updateProductSpecifications(
   }
 }
 
+/**
+ * Les catégories, mises en cache.
+ *
+ * Il y en a deux, elles ne changent jamais, et chaque affichage de la boutique
+ * ou d'une fiche produit allait les redemander à la base — jusqu'à trois fois
+ * pour un seul rendu de la liste. Le cache est marqué d'une étiquette, pour
+ * qu'un ajout de catégorie puisse l'invalider explicitement.
+ */
+const loadProductCategories = unstable_cache(
+  async () => {
+    const categories = await prisma.productCategory.findMany({
+      orderBy: { name: "asc" },
+    });
+    return convertToPlainObject(categories);
+  },
+  ["product-categories"],
+  { tags: ["product-categories"], revalidate: 3600 }
+);
+
 export async function getAllProductCategories() {
-  const categories = await prisma.productCategory.findMany({
-    orderBy: { name: "asc" },
-  });
-  return convertToPlainObject(categories);
+  return loadProductCategories();
 }
 
 export async function getFeaturedProducts() {
@@ -396,10 +451,12 @@ export async function getAllProducts({
   const filters: any = {};
 
   if (query && query !== "all") {
-    filters.name = {
-      contains: query,
-      mode: "insensitive",
-    };
+    // Chercher aussi dans la description : l'acheteur tape « bison » ou
+    // « cerf », qui décrivent la peau et figurent rarement dans le nom.
+    filters.OR = [
+      { name: { contains: query, mode: "insensitive" } },
+      { description: { contains: query, mode: "insensitive" } },
+    ];
   }
 
   if (category && category !== "all") {
@@ -497,6 +554,12 @@ export async function getProductByCodeIdentifier(codeIdentifier: string) {
   return convertToPlainObject(product);
 }
 
+/**
+ * ⚠️ Les messages d'erreur de cette fonction et des deux suivantes sont renvoyés
+ * tels quels par les routes de `app/api/`, consommées par l'application mobile.
+ * Ils s'adressent à un client logiciel, pas à un humain : ils restent en anglais
+ * et sont figés par les tests de contrat. Ne pas les traduire.
+ */
 export async function blockProductUnit(id: string, quantity: number) {
   const product = await prisma.product.findUnique({
     where: { id },

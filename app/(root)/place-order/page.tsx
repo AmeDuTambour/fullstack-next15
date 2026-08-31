@@ -13,6 +13,7 @@ import {
 import { getUserCart } from "@/lib/actions/cart.actions";
 import { getUserById } from "@/lib/actions/user.actions";
 import { formatCurrency, isValidUrl } from "@/lib/utils";
+import { PAYMENT_METHOD_LABELS } from "@/lib/constants";
 import { ShippingAddress } from "@/types";
 import { Metadata } from "next";
 import Image from "next/image";
@@ -63,7 +64,10 @@ const PlaceOrderPage = async () => {
           <Card>
             <CardContent className="p-4 gap-4">
               <h2 className="text-xl pb-4">Méthode de paiement</h2>
-              <p>{user.paymentMethod}</p>
+              <p>
+                {PAYMENT_METHOD_LABELS[user.paymentMethod ?? ""] ??
+                  user.paymentMethod}
+              </p>
 
               <div className="mt-3">
                 <Link href="/payment-method">
@@ -110,7 +114,7 @@ const PlaceOrderPage = async () => {
                         <span className="px-2">{item.qty}</span>
                       </TableCell>
                       <TableCell className="text-right">
-                        €{item.price}
+                        {formatCurrency(item.price)}
                       </TableCell>
                     </TableRow>
                   ))}

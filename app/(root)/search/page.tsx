@@ -1,3 +1,4 @@
+import { getGlossaryEntry } from "@/lib/content/glossary";
 import Pagination from "@/components/shared/pagination";
 import ProductCard from "@/components/shared/product/product-card";
 import { Button } from "@/components/ui/button";
@@ -7,6 +8,8 @@ import {
   getAllDrumDimensions,
 } from "@/lib/actions/product.actions";
 import Link from "next/link";
+import EmptyState from "@/components/shared/empty-state";
+import { catalog as t } from "@/lib/labels";
 
 const sortOrders = [
   { query: "newest", label: "Récent" },
@@ -14,45 +17,43 @@ const sortOrders = [
   { query: "highest", label: "Prix + haut" },
 ];
 
+/**
+ * Titre de la page boutique.
+ *
+ * L'ancienne version construisait « Search : Category Drum » et s'appuyait sur
+ * des paramètres `price` et `rating` que la boutique n'expose pas — ils ne
+ * pouvaient donc jamais apparaître.
+ */
 export async function generateMetadata(props: {
   searchParams: Promise<{
-    q: string;
-    category: string;
-    price: string;
-    rating: string;
+    category?: string;
+    skin?: string;
+    dimension?: string;
   }>;
 }) {
-  const {
-    q = "all",
-    category = "all",
-    price = "all",
-    rating = "all",
-  } = await props.searchParams;
+  const { category = "all", skin = "all", dimension = "all" } =
+    await props.searchParams;
 
-  const isQuerySet = q && q !== "all" && q.trim() !== "";
-  const isCategorySet =
-    category && category !== "all" && category.trim() !== "";
-  const isPriceSet = price && price !== "all" && price.trim() !== "";
-  const isRatingSet = rating && rating !== "all" && rating.trim() !== "";
+  const precisions = [
+    category !== "all" && category !== ""
+      ? category === "Drum"
+        ? "Tambours"
+        : "Accessoires"
+      : null,
+    skin !== "all" ? `peau de ${skin.toLowerCase()}` : null,
+    dimension !== "all" ? dimension : null,
+  ].filter(Boolean);
 
-  if (isQuerySet || isCategorySet || isPriceSet || isRatingSet) {
-    return {
-      title: `
-        Search ${isQuerySet ? q : ""}
-        ${isCategorySet ? `: Category ${category}` : ""}
-        ${isPriceSet ? `: Price ${price}` : ""}
-        ${isRatingSet ? `: Rating ${rating}` : ""}
-      `,
-    };
-  } else {
-    return {
-      title: "Search Products",
-    };
-  }
+  return {
+    title: precisions.length
+      ? `Boutique — ${precisions.join(", ")}`
+      : "Boutique",
+  };
 }
 
 const SearchPage = async (props: {
   searchParams: Promise<{
+    query?: string;
     category?: string;
     skin?: string;
     dimension?: string;
@@ -61,6 +62,7 @@ const SearchPage = async (props: {
   }>;
 }) => {
   const {
+    query = "",
     category = "all",
     skin = "all",
     dimension = "all",
@@ -69,19 +71,26 @@ const SearchPage = async (props: {
   } = await props.searchParams;
 
   const getFilterUrl = ({
+    q,
     c,
     sk,
     d,
     s,
     pg,
   }: {
+    q?: string;
     c?: string;
     sk?: string;
     d?: string;
     s?: string;
     pg?: string;
   }) => {
-    const params = { category, skin, dimension, sort, page };
+    const params = { query, category, skin, dimension, sort, page };
+
+    if (q !== undefined) {
+      params.query = q;
+      params.page = "1";
+    }
 
     if (c) {
       params.category = c;
@@ -111,7 +120,44 @@ const SearchPage = async (props: {
 
     return `/search?${new URLSearchParams(params).toString()}`;
   };
+  /**
+   * Les vingt filtres étaient des liens sans soulignement, sans cadre et sans
+   * état de survol : rien n'indiquait qu'ils étaient cliquables, et seule la
+   * graisse du texte signalait l'actif.
+   */
+  /**
+ * Explication d'un groupe de filtres. Ne rend rien tant que le texte n'a pas
+ * été écrit : mieux vaut pas d'explication qu'une explication inventée.
+ */
+const FilterHelp = ({ entry }: { entry?: string }) =>
+  entry ? (
+    <p className="mb-3 max-w-prose text-sm text-muted-foreground">{entry}</p>
+  ) : null;
+
+const FilterLink = ({
+    href,
+    active,
+    children,
+  }: {
+    href: string;
+    active: boolean;
+    children: React.ReactNode;
+  }) => (
+    <Link
+      href={href}
+      aria-current={active ? "true" : undefined}
+      className={
+        active
+          ? "inline-flex rounded-full bg-secondary px-3 py-1 text-sm font-medium text-secondary-foreground"
+          : "inline-flex rounded-full border px-3 py-1 text-sm text-muted-foreground transition-colors hover:border-foreground hover:text-foreground"
+      }
+    >
+      {children}
+    </Link>
+  );
+
   const products = await getAllProducts({
+    query,
     category,
     skinType: skin,
     dimensions: dimension,
@@ -124,78 +170,60 @@ const SearchPage = async (props: {
   const dimensions = await getAllDrumDimensions();
 
   return (
-    <div className="grid md:grid-cols-5 md:gap-5">
+    <div className="space-y-6">
+      <div className="space-y-2">
+        <h1 className="page-title">
+          {query ? t.searchResultsFor(query) : t.shopTitle}
+        </h1>
+        {query ? (
+          <p className="text-sm text-muted-foreground">
+            {t.resultCount(products.totalCount ?? products.data.length)}{" "}
+            <Link href={getFilterUrl({ q: "" })} className="underline">
+              {t.clearSearch}
+            </Link>
+          </p>
+        ) : null}
+      </div>
+
+      <div className="grid md:grid-cols-5 md:gap-5">
       <div className="filter-links hidden md:block">
-        <div className="text-xl mb-4 mt-3">Catégories</div>
-        <ul className="space-y-1">
+        <h2 className="section-title mb-3">{t.categories}</h2>
+        <ul className="flex flex-col items-start gap-2">
           <li>
-            <Link
-              className={`${category === "all" && "font-bold"}`}
-              href={getFilterUrl({ c: "all" })}
-            >
-              Tous
-            </Link>
+            <FilterLink active={category === "all"} href={getFilterUrl({ c: "all" })}>{t.allFilter}</FilterLink>
           </li>
           <li>
-            <Link
-              className={`${category === "Drum" && "font-bold"}`}
-              href={getFilterUrl({ c: "Drum" })}
-            >
-              Tambours
-            </Link>
+            <FilterLink active={category === "Drum"} href={getFilterUrl({ c: "Drum" })}>{t.drums}</FilterLink>
           </li>
           <li>
-            <Link
-              className={`${category === "Other" && "font-bold"}`}
-              href={getFilterUrl({ c: "Other" })}
-            >
-              Autre
-            </Link>
+            <FilterLink active={category === "Other"} href={getFilterUrl({ c: "Other" })}>{t.accessories}</FilterLink>
           </li>
         </ul>
 
         {category === "Drum" && (
           <>
-            <div className="text-xl mb-2 mt-8">Type de peau</div>
-            <ul className="space-y-1">
+            <h2 className="section-title mb-3 mt-8">{t.skinType}</h2>
+              <FilterHelp entry={getGlossaryEntry("skinType")} />
+            <ul className="flex flex-col items-start gap-2">
               <li>
-                <Link
-                  className={`${skin === "all" && "font-bold"}`}
-                  href={getFilterUrl({ sk: "all" })}
-                >
-                  Tous
-                </Link>
+                <FilterLink active={skin === "all"} href={getFilterUrl({ sk: "all" })}>{t.allFilter}</FilterLink>
               </li>
               {skinTypes.map((sk) => (
                 <li key={sk.id}>
-                  <Link
-                    href={getFilterUrl({ sk: sk.material })}
-                    className={`${skin === sk.material && "font-bold"}`}
-                  >
-                    {sk.material}
-                  </Link>
+                  <FilterLink active={skin === sk.material} href={getFilterUrl({ sk: sk.material })}>{sk.material}</FilterLink>
                 </li>
               ))}
             </ul>
 
-            <div className="text-xl mb-2 mt-8">Dimensions</div>
-            <ul className="space-y-1">
+            <h2 className="section-title mb-3 mt-8">{t.dimensions}</h2>
+              <FilterHelp entry={getGlossaryEntry("dimensions")} />
+            <ul className="flex flex-col items-start gap-2">
               <li>
-                <Link
-                  className={`${dimension === "all" && "font-bold"}`}
-                  href={getFilterUrl({ d: "all" })}
-                >
-                  Tous
-                </Link>
+                <FilterLink active={dimension === "all"} href={getFilterUrl({ d: "all" })}>{t.allFilter}</FilterLink>
               </li>
               {dimensions.map((dim) => (
                 <li key={dim.id}>
-                  <Link
-                    href={getFilterUrl({ d: dim.size })}
-                    className={`${dimension === dim.size && "font-bold"}`}
-                  >
-                    {dim.size}
-                  </Link>
+                  <FilterLink active={dimension === dim.size} href={getFilterUrl({ d: dim.size })}>{dim.size}</FilterLink>
                 </li>
               ))}
             </ul>
@@ -204,72 +232,37 @@ const SearchPage = async (props: {
       </div>
 
       <div className="md:hidden mb-8">
-        <ul className="space-x-4 flex flex-row mb-2">
+        <ul className="mb-2 flex flex-row flex-wrap gap-2">
           <li>
-            <Link
-              className={`${category === "all" && "font-bold"}`}
-              href={getFilterUrl({ c: "all" })}
-            >
-              Tous
-            </Link>
+            <FilterLink active={category === "all"} href={getFilterUrl({ c: "all" })}>{t.allFilter}</FilterLink>
           </li>
           <li>
-            <Link
-              className={`${category === "Drum" && "font-bold"}`}
-              href={getFilterUrl({ c: "Drum" })}
-            >
-              Tambours
-            </Link>
+            <FilterLink active={category === "Drum"} href={getFilterUrl({ c: "Drum" })}>{t.drums}</FilterLink>
           </li>
           <li>
-            <Link
-              className={`${category === "Other" && "font-bold"}`}
-              href={getFilterUrl({ c: "Other" })}
-            >
-              Autre
-            </Link>
+            <FilterLink active={category === "Other"} href={getFilterUrl({ c: "Other" })}>{t.accessories}</FilterLink>
           </li>
         </ul>
         {category === "Drum" && (
           <>
-            <ul className="space-x-4 flex flex-row mb-2">
+            <ul className="mb-2 flex flex-row flex-wrap gap-2">
               <li>
-                <Link
-                  className={`${skin === "all" && "font-bold"}`}
-                  href={getFilterUrl({ sk: "all" })}
-                >
-                  Tous
-                </Link>
+                <FilterLink active={skin === "all"} href={getFilterUrl({ sk: "all" })}>{t.allFilter}</FilterLink>
               </li>
               {skinTypes.map((sk) => (
                 <li key={sk.id}>
-                  <Link
-                    href={getFilterUrl({ sk: sk.material })}
-                    className={`${skin === sk.material && "font-bold"}`}
-                  >
-                    {sk.material}
-                  </Link>
+                  <FilterLink active={skin === sk.material} href={getFilterUrl({ sk: sk.material })}>{sk.material}</FilterLink>
                 </li>
               ))}
             </ul>
 
-            <ul className="space-x-4 flex flex-row">
+            <ul className="flex flex-row flex-wrap gap-2">
               <li>
-                <Link
-                  className={`${dimension === "all" && "font-bold"}`}
-                  href={getFilterUrl({ d: "all" })}
-                >
-                  Tous
-                </Link>
+                <FilterLink active={dimension === "all"} href={getFilterUrl({ d: "all" })}>{t.allFilter}</FilterLink>
               </li>
               {dimensions.map((dim) => (
                 <li key={dim.id}>
-                  <Link
-                    href={getFilterUrl({ d: dim.size })}
-                    className={`${dimension === dim.size && "font-bold"}`}
-                  >
-                    {dim.size}
-                  </Link>
+                  <FilterLink active={dimension === dim.size} href={getFilterUrl({ d: dim.size })}>{dim.size}</FilterLink>
                 </li>
               ))}
             </ul>
@@ -280,17 +273,15 @@ const SearchPage = async (props: {
       <div className="md:col-span-4 space-y-4">
         <div className="flex-between flex-col md:flex-row my-4">
           <div className="flex items-center space-x-4">
-            <div>
-              {products.data.length > 0
-                ? `${products.totalCount} produit${products.totalCount > 1 ? "s" : ""} trouvé${products.totalCount > 1 ? "s" : ""}`
-                : "Aucun produit trouvé"}
+            <div className="text-muted-foreground">
+              {products.data.length > 0 ? t.productCount(products.totalCount) : null}
             </div>
 
             {(category !== "all" && category !== "") ||
             dimension !== "all" ||
             skin !== "all" ? (
               <Button variant="link" asChild>
-                <Link href="/search">Effacer</Link>
+                <Link href="/search">{t.clearFilters}</Link>
               </Button>
             ) : null}
           </div>
@@ -299,26 +290,29 @@ const SearchPage = async (props: {
             {sortOrders
               .filter((el) => category !== "Other" || el.query === "newest")
               .map((el) => (
-                <Link
+                <FilterLink
                   key={el.query}
-                  className={`mx-2 ${sort === el.query && "font-bold"}`}
+                  active={sort === el.query}
                   href={getFilterUrl({ s: el.query })}
                 >
                   {el.label}
-                </Link>
+                </FilterLink>
               ))}
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-          {products.data.length === 0 ? (
-            <div>Aucun produit</div>
-          ) : (
-            products.data.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))
-          )}
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+          {products.data.map((product) => (
+            <ProductCard key={product.id} product={product} />
+          ))}
         </div>
+
+        {products.data.length === 0 ? (
+          <EmptyState
+            message={t.noProducts}
+            action={{ label: t.clearFilters, href: "/search" }}
+          />
+        ) : null}
         <div className="w-full flex justify-end">
           {products.totalPages > 1 ? (
             <Pagination
@@ -327,6 +321,7 @@ const SearchPage = async (props: {
             />
           ) : null}
         </div>
+      </div>
       </div>
     </div>
   );

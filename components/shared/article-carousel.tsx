@@ -1,12 +1,26 @@
 "use client";
 
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import ArticleCard from "@/components/shared/article-card";
+import { blog as t } from "@/lib/labels";
 import { Article } from "@/types";
-import { Navigation } from "swiper/modules";
-import { Swiper, SwiperSlide } from "swiper/react";
-import CarouselCard from "../carousel-card";
-import "swiper/css";
-import "swiper/css/navigation";
 
+/**
+ * Une catégorie du journal, et ses articles.
+ *
+ * Il tournait sur swiper, qui portait une faille critique de pollution de
+ * prototype sans montée non cassante. Le projet embarquait déjà embla pour le
+ * carrousel de l'accueil : une seule bibliothèque suffit.
+ *
+ * Les commandes ne sont rendues que s'il y a matière à faire défiler. Une
+ * catégorie d'un seul article affichait deux flèches inertes.
+ */
 const ArticleCarousel = ({
   title,
   data,
@@ -14,43 +28,36 @@ const ArticleCarousel = ({
   title: string;
   data: Article[];
 }) => {
-  return (
-    <div className="p-4">
-      <h2 className="h2-bold mb-4">{`${title.toUpperCase()} (${data.length})`}</h2>
+  const scrollable = data.length > 1;
 
-      <Swiper
-        modules={[Navigation]}
-        spaceBetween={20}
-        slidesPerView={4}
-        navigation
-        breakpoints={{
-          320: {
-            slidesPerView: 1.2,
-            spaceBetween: 10,
-          },
-          640: {
-            slidesPerView: 3.5,
-            spaceBetween: 15,
-          },
-          1024: {
-            slidesPerView: 4,
-            spaceBetween: 20,
-          },
-        }}
-      >
-        {data.map((slideContent) => (
-          <SwiperSlide key={slideContent.id}>
-            <div className="transition-transform duration-300 hover:scale-105">
-              <CarouselCard
-                title={slideContent.title}
-                img={slideContent.thumbnail ?? ""}
-                slug={slideContent.slug}
+  return (
+    <section className="space-y-4">
+      <h2 className="section-title">{t.categoryHeading(title, data.length)}</h2>
+
+      <Carousel opts={{ align: "start", loop: false }} className="w-full">
+        <CarouselContent className="-ml-4">
+          {data.map((article) => (
+            <CarouselItem
+              key={article.id}
+              className="basis-4/5 pl-4 sm:basis-1/2 lg:basis-1/3 xl:basis-1/4"
+            >
+              <ArticleCard
+                title={article.title}
+                slug={article.slug}
+                thumbnail={article.thumbnail}
+                createdAt={article.createdAt}
               />
-            </div>
-          </SwiperSlide>
-        ))}
-      </Swiper>
-    </div>
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+        {scrollable ? (
+          <>
+            <CarouselPrevious />
+            <CarouselNext />
+          </>
+        ) : null}
+      </Carousel>
+    </section>
   );
 };
 

@@ -1,3 +1,5 @@
+import StatusBadge from "@/components/shared/status-badge";
+import { CheckCircle2, Clock, PackageCheck } from "lucide-react";
 import Pagination from "@/components/shared/pagination";
 import {
   Table,
@@ -10,10 +12,11 @@ import {
 import { getUserOrders } from "@/lib/actions/order.actions";
 import { formatCurrency, formatDateTime, formatId } from "@/lib/utils";
 import { Metadata } from "next";
+import { account as t, common } from "@/lib/labels";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "My Orders",
+  title: "Mes commandes",
 };
 
 const OrdersPage = async (props: {
@@ -27,17 +30,17 @@ const OrdersPage = async (props: {
   });
   return (
     <div className="space-y-2">
-      <h2 className="h2-bold">Orders</h2>
+      <h2 className="h2-bold">{t.ordersTitle}</h2>
       <div className="overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>ID</TableHead>
-              <TableHead>DATE</TableHead>
-              <TableHead>TOTAL</TableHead>
-              <TableHead>PAID</TableHead>
-              <TableHead>DELIVERED</TableHead>
-              <TableHead>ACTIONS</TableHead>
+              <TableHead>{t.orderReference}</TableHead>
+              <TableHead>{t.orderedOn}</TableHead>
+              <TableHead>{common.total}</TableHead>
+              <TableHead>{t.paid}</TableHead>
+              <TableHead>{t.delivered}</TableHead>
+              <TableHead>{common.actions}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -49,18 +52,30 @@ const OrdersPage = async (props: {
                 </TableCell>
                 <TableCell>{formatCurrency(order.totalPrice)}</TableCell>
                 <TableCell>
-                  {order.isPaid && order.paidAt
-                    ? formatDateTime(order.paidAt).dateTime
-                    : "Not Paid"}
+                  {order.isPaid && order.paidAt ? (
+                    <StatusBadge
+                      tone="done"
+                      icon={<CheckCircle2 />}
+                      label={formatDateTime(order.paidAt).dateTime}
+                    />
+                  ) : (
+                    <StatusBadge tone="pending" icon={<Clock />} label={t.notPaidShort} />
+                  )}
                 </TableCell>
                 <TableCell>
-                  {order.isDelivered && order.deliveredAt
-                    ? formatDateTime(order.deliveredAt).dateTime
-                    : "Not Delivered"}
+                  {order.isDelivered && order.deliveredAt ? (
+                    <StatusBadge
+                      tone="done"
+                      icon={<PackageCheck />}
+                      label={formatDateTime(order.deliveredAt).dateTime}
+                    />
+                  ) : (
+                    <StatusBadge tone="pending" icon={<Clock />} label={t.notDeliveredShort} />
+                  )}
                 </TableCell>
                 <TableCell>
                   <Link href={`/order/${order.id}`}>
-                    <span className="px-2">Details</span>
+                    <span className="px-2">{common.details}</span>
                   </Link>
                 </TableCell>
               </TableRow>

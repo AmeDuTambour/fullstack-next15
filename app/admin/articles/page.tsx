@@ -6,10 +6,12 @@ import {
 } from "@/components/ui/card";
 import { getAllArticles } from "@/lib/actions/article.actions";
 import Link from "next/link";
-import Image from "next/image";
-import { EyeClosed, EyeIcon, ImageOff, PenIcon } from "lucide-react";
+import ContentImage from "@/components/ui/content-image";
+import StatusBadge from "@/components/shared/status-badge";
+import { EyeClosed, EyeIcon, PenIcon } from "lucide-react";
 import { formatDateTime } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { admin as t } from "@/lib/labels";
 
 const AdminArticlesPage = async () => {
   const articles = await getAllArticles({
@@ -21,11 +23,11 @@ const AdminArticlesPage = async () => {
   return (
     <div className="space-y-2">
       <div className="flex-between mb-8">
-        <h1 className="h1-bold">Articles</h1>
+        <h1 className="h1-bold">{t.articlesTitle}</h1>
         <Button asChild variant="default">
           <Link href="/admin/articles/editor/new/enter-title">
             <PenIcon />
-            New Article
+            {t.newArticle}
           </Link>
         </Button>
       </div>
@@ -35,44 +37,35 @@ const AdminArticlesPage = async () => {
             <Card key={article.id}>
               <CardHeader className="flex items-center content-center">
                 <Link href={`/admin/articles/editor/${article.id}/enter-title`}>
-                  {article.thumbnail ? (
-                    <Image
-                      src={article.thumbnail}
-                      alt={article.title}
-                      height={300}
-                      width={300}
-                      objectFit="cover"
-                    />
-                  ) : (
-                    <div className="flex justify-center items-center h-60">
-                      <ImageOff />
-                    </div>
-                  )}
+                  <ContentImage
+                    src={article.thumbnail}
+                    alt={article.title}
+                    width={300}
+                    height={300}
+                    sizes="(min-width: 1024px) 20vw, 33vw"
+                    className="h-auto w-full object-cover"
+                  />
                 </Link>
               </CardHeader>
-              <CardContent className="='p-4 grid gap-4">
+              <CardContent className="p-4 grid gap-4">
                 <h3 className="h3-bold truncate">{article.title}</h3>
                 <Link
                   href={`/admin/articles/editor/${article.id}/add-sections`}
                 >
                   <h2 className="text-xs font-medium">
-                    Created at: {formatDateTime(article.createdAt).dateOnly}
+                    {t.createdAt} {formatDateTime(article.createdAt).dateOnly}
                   </h2>
                   <h2 className="text-xs font-medium">
-                    Updated at: {formatDateTime(article.updatedAt).dateOnly}
+                    {t.updatedAt} {formatDateTime(article.updatedAt).dateOnly}
                   </h2>
                 </Link>
               </CardContent>
               <CardFooter className="w-full flex justify-end p-4">
-                {article.isPublished ? (
-                  <div className="flex flex-row">
-                    <EyeIcon /> <span>Published</span>
-                  </div>
-                ) : (
-                  <div className="flex flex-row">
-                    <EyeClosed /> <span>Draft</span>
-                  </div>
-                )}
+                <StatusBadge
+                  tone={article.isPublished ? "done" : "muted"}
+                  icon={article.isPublished ? <EyeIcon /> : <EyeClosed />}
+                  label={article.isPublished ? t.published : t.draft}
+                />
               </CardFooter>
             </Card>
           ))}

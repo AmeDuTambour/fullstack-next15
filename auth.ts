@@ -5,17 +5,17 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { compareSync } from "bcrypt-ts-edge";
 import type { NextAuthConfig } from "next-auth";
 import { cookies } from "next/headers";
-import { NextResponse } from "next/server";
+import { authConfig } from "./auth.config";
 
+/**
+ * Configuration complète, côté Node uniquement.
+ *
+ * Elle étend `auth.config.ts` — qui porte tout ce qui doit rester compatible
+ * Edge — en y ajoutant l'adapter Prisma, le fournisseur d'identifiants et les
+ * callbacks qui touchent la base. `middleware.ts` n'importe jamais ce fichier.
+ */
 export const config = {
-  pages: {
-    signIn: "/sign-in",
-    error: "/sign-in",
-  },
-  session: {
-    strategy: "jwt",
-    maxAge: 30 * 24 * 60 * 60,
-  },
+  ...authConfig,
   adapter: PrismaAdapter(prisma),
   providers: [
     CredentialsProvider({
@@ -49,6 +49,9 @@ export const config = {
     }),
   ],
   callbacks: {
+    ...authConfig.callbacks,
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async session({ session, user, trigger, token }: any) {
       session.user.id = token.sub;
       session.user.role = token.role;
@@ -59,6 +62,8 @@ export const config = {
       }
       return session;
     },
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async jwt({ token, user, trigger, session }: any) {
       if (user) {
         token.id = user.id;
@@ -71,6 +76,8 @@ export const config = {
             data: { name: token.name },
           });
         }
+
+        // Rattache le panier anonyme (cookie posé par le middleware) au compte.
         if (trigger === "signIn" || trigger === "signUp") {
           const cookiesObject = await cookies();
           const sessionCartId = cookiesObject.get("sessionCartId")?.value;
@@ -93,49 +100,11 @@ export const config = {
         }
       }
 
-      // Handle session update
       if (session?.user.name && trigger === "update") {
         token.name = session.user.name;
       }
 
       return token;
-    },
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    authorized({ request, auth }): any {
-      // Array of regex patterns of the paths we want to protect
-      const protectedPaths = [
-        /\/shipping-address/,
-        /\/payment-method/,
-        /\/place-order/,
-        /\/profile/,
-        /\/user\/(.*)/,
-        /\/order\/(.*)/,
-        /\/admin/,
-      ];
-
-      // Get pathname from the req URL object
-      const { pathname } = request.nextUrl;
-
-      // Check if user is not authenticated and accessing a protected path
-      if (!auth && protectedPaths.some((p) => p.test(pathname))) return false;
-
-      if (!request.cookies.get("sessionCartId")) {
-        const sessionCartId = crypto.randomUUID();
-
-        const newRequestHeaders = new Headers(request.headers);
-
-        const response = NextResponse.next({
-          request: {
-            headers: newRequestHeaders,
-          },
-        });
-
-        response.cookies.set("sessionCartId", sessionCartId);
-
-        return response;
-      } else {
-        return true;
-      }
     },
   },
 } satisfies NextAuthConfig;

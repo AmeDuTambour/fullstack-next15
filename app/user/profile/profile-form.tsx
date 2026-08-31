@@ -1,11 +1,14 @@
 "use client";
 
+import { account as t, common } from "@/lib/labels";
+
 import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
+  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -64,10 +67,11 @@ const ProfileForm = () => {
             name="email"
             render={({ field }) => (
               <FormItem className="w-full">
+                <FormLabel>{common.email}</FormLabel>
                 <FormControl>
                   <Input
                     disabled
-                    placeholder="Email"
+                    placeholder={common.email}
                     className="input-field "
                     {...field}
                   />
@@ -81,9 +85,10 @@ const ProfileForm = () => {
             name="name"
             render={({ field }) => (
               <FormItem className="w-full">
+                <FormLabel>{common.name}</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="Name"
+                    placeholder={common.name}
                     className="input-field "
                     {...field}
                   />
@@ -99,7 +104,7 @@ const ProfileForm = () => {
           className="button col-span-2 w-full"
           disabled={form.formState.isSubmitting}
         >
-          {form.formState.isSubmitting ? "Submitting..." : "Update Profile"}
+          {form.formState.isSubmitting ? common.submitting : t.updateProfile}
         </Button>
       </form>
     </Form>

@@ -1,24 +1,16 @@
-import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
-const NavigationLinks = () => {
-  const links = [
-    { title: "Accueil", path: "/" },
-    { title: "Boutique", path: "/search" },
-    { title: "Blog", path: "/blog" },
-    { title: "À propos", path: "/about" },
-    { title: "Contact", path: "/contact" },
-  ];
+import { Button } from "@/components/ui/button";
+import { NAVIGATION } from "./navigation";
 
-  return (
-    <div className="flex gap-6 pl-8">
-      {links.map((link) => (
-        <Button key={link.title} asChild variant="ghost">
-          <Link href={link.path}>{link.title}</Link>
-        </Button>
-      ))}
-    </div>
-  );
-};
+const NavigationLinks = () => (
+  <nav className="flex items-center gap-1">
+    {NAVIGATION.map((link) => (
+      <Button key={link.path} asChild variant="ghost" size="sm">
+        <Link href={link.path}>{link.title}</Link>
+      </Button>
+    ))}
+  </nav>
+);
 
 export default NavigationLinks;

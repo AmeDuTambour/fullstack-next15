@@ -6,6 +6,10 @@ import { auth } from "@/auth";
 import { cookies } from "next/headers";
 import { cartItemSchema, insertCartSchema } from "../validators";
 import { prisma } from "@/db/prisma";
+import {
+  FREE_SHIPPING_THRESHOLD,
+  SHIPPING_FLAT_RATE,
+} from "@/lib/constants";
 import { revalidatePath } from "next/cache";
 import { Prisma } from "@prisma/client";
 
@@ -14,7 +18,9 @@ const calcPrice = (items: CartItem[]) => {
       items.reduce((acc, item) => acc + Number(item.price) * item.qty, 0)
     ),
     taxPrice = round2(itemsPrice / 6),
-    shippingPrice = round2(itemsPrice > 150 ? 0 : 10),
+    shippingPrice = round2(
+      itemsPrice > FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FLAT_RATE
+    ),
     totalPrice = round2(itemsPrice + shippingPrice);
 
   return {
@@ -101,8 +107,6 @@ export async function addItemToCart(data: CartItem) {
       };
     }
   } catch (error) {
-    console.log("Catch error:", error);
-
     return {
       success: false,
       message: formatError(error),

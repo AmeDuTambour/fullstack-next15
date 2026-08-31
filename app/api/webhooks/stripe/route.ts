@@ -3,11 +3,29 @@ import Stripe from "stripe";
 import { updateOrderToPaid } from "@/lib/actions/order.actions";
 
 export async function POST(req: NextRequest) {
-  const event = await Stripe.webhooks.constructEvent(
-    await req.text(),
-    req.headers.get("stripe-signature") as string,
-    process.env.STRIPE_WEBHOOK_SECRET as string
-  );
+  const secret = process.env.STRIPE_WEBHOOK_SECRET;
+  const signature = req.headers.get("stripe-signature");
+
+  if (!secret) {
+    console.error("STRIPE_WEBHOOK_SECRET est absent.");
+    return NextResponse.json({ message: "Server misconfigured" }, { status: 500 });
+  }
+
+  let event: Stripe.Event;
+
+  try {
+    // La vérification de signature n'était pas encadrée : une signature
+    // invalide remontait en 500, et Stripe réessayait la livraison en boucle.
+    // Une signature invalide est une erreur du client, donc une 400.
+    event = Stripe.webhooks.constructEvent(
+      await req.text(),
+      signature as string,
+      secret
+    );
+  } catch (error) {
+    console.error("Signature de webhook Stripe invalide :", error);
+    return NextResponse.json({ message: "Invalid signature" }, { status: 400 });
+  }
 
   if (event.type === "charge.succeeded") {
     const { object } = event.data;

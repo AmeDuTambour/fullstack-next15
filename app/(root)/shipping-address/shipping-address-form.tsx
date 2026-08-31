@@ -1,14 +1,19 @@
 "use client";
 
+import { PendingButton } from "@/components/ui/pending-button";
+import { common, order as t } from "@/lib/labels";
 import { useToast } from "@/hooks/use-toast";
 import { shippingAddressSchema } from "@/lib/validators";
 import { ShippingAddress } from "@/types";
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ControllerRenderProps, SubmitHandler, useForm } from "react-hook-form";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
-import { shippingAddressDefaultValues } from "@/lib/constants";
+import {
+  SHIPPING_COUNTRIES,
+  shippingAddressDefaultValues,
+} from "@/lib/constants";
 import {
   Form,
   FormControl,
@@ -18,8 +23,14 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { ArrowRight, Loader } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { ArrowRight } from "lucide-react";
 import { updateUserAddress } from "@/lib/actions/user.actions";
 
 type ShippingAddressFormProps = {
@@ -56,148 +67,126 @@ const ShippingAddressForm: React.FC<ShippingAddressFormProps> = ({
   };
 
   return (
-    <>
-      <div className="max-w-md mx-auto space-y-4">
-        <h1 className="h2-bold mt-4">Adresse de livraison</h1>
-        <p className="text-sm text-muted-foreground">
-          Saisissez une adresse de livraison
-        </p>
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            method="post"
-            className="space-y-4"
+    <div className="mx-auto max-w-md space-y-4">
+      <h1 className="page-title mt-4">{t.shippingAddress}</h1>
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          method="post"
+          className="space-y-4"
+        >
+          <FormField
+            control={form.control}
+            name="fullName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t.fullName}</FormLabel>
+                <FormControl>
+                  <Input
+                    autoComplete="name"
+                    placeholder={t.fullNamePlaceholder}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="streetAddress"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t.streetAddress}</FormLabel>
+                <FormControl>
+                  <Input
+                    autoComplete="street-address"
+                    placeholder={t.streetAddressPlaceholder}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* Code postal et ville forment une seule information postale : les
+              séparer sur deux lignes pleine largeur allongeait le formulaire
+              sans rien clarifier. */}
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-[8rem_1fr]">
+            <FormField
+              control={form.control}
+              name="postalCode"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t.postalCode}</FormLabel>
+                  <FormControl>
+                    <Input
+                      inputMode="numeric"
+                      autoComplete="postal-code"
+                      placeholder={t.postalCodePlaceholder}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="city"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t.city}</FormLabel>
+                  <FormControl>
+                    <Input
+                      autoComplete="address-level2"
+                      placeholder={t.cityPlaceholder}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          <FormField
+            control={form.control}
+            name="country"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t.country}</FormLabel>
+                <Select onValueChange={field.onChange} value={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder={t.countryPlaceholder} />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {SHIPPING_COUNTRIES.map((country) => (
+                      <SelectItem key={country} value={country}>
+                        {country}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <PendingButton
+            type="submit"
+            pending={isPending}
+            icon={<ArrowRight className="h-4 w-4" />}
           >
-            <div className="flex flex-col md:flex-row gap-5">
-              <FormField
-                control={form.control}
-                name="fullName"
-                render={({
-                  field,
-                }: {
-                  field: ControllerRenderProps<
-                    z.infer<typeof shippingAddressSchema>,
-                    "fullName"
-                  >;
-                }) => (
-                  <FormItem className="w-full">
-                    <FormLabel>Nom et prénom</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Saisissez votre nom et votre prénom"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-            <div className="flex flex-col md:flex-row gap-5">
-              <FormField
-                control={form.control}
-                name="streetAddress"
-                render={({
-                  field,
-                }: {
-                  field: ControllerRenderProps<
-                    z.infer<typeof shippingAddressSchema>,
-                    "streetAddress"
-                  >;
-                }) => (
-                  <FormItem className="w-full">
-                    <FormLabel>Adresse</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Saisissez votre adresse" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-            <div className="flex flex-col md:flex-row gap-5">
-              <FormField
-                control={form.control}
-                name="postalCode"
-                render={({
-                  field,
-                }: {
-                  field: ControllerRenderProps<
-                    z.infer<typeof shippingAddressSchema>,
-                    "postalCode"
-                  >;
-                }) => (
-                  <FormItem className="w-full">
-                    <FormLabel>Code postal</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Saisissez votre code postal"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-            <div className="flex flex-col md:flex-row gap-5">
-              <FormField
-                control={form.control}
-                name="city"
-                render={({
-                  field,
-                }: {
-                  field: ControllerRenderProps<
-                    z.infer<typeof shippingAddressSchema>,
-                    "city"
-                  >;
-                }) => (
-                  <FormItem className="w-full">
-                    <FormLabel>Ville</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Saisissez votre ville" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-            <div className="flex flex-col md:flex-row gap-5">
-              <FormField
-                control={form.control}
-                name="country"
-                render={({
-                  field,
-                }: {
-                  field: ControllerRenderProps<
-                    z.infer<typeof shippingAddressSchema>,
-                    "country"
-                  >;
-                }) => (
-                  <FormItem className="w-full">
-                    <FormLabel>Pays</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Saisissez votre pays" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-            <div className="flex gap-2">
-              <Button type="submit" disabled={isPending}>
-                {isPending ? (
-                  <Loader className="w-4 h-4 animate-spin" />
-                ) : (
-                  <ArrowRight className="w-4 h-4" />
-                )}{" "}
-                Continuer
-              </Button>
-            </div>
-          </form>
-        </Form>
-      </div>
-    </>
+            {common.next}
+          </PendingButton>
+        </form>
+      </Form>
+    </div>
   );
 };
 

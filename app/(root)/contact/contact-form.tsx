@@ -1,10 +1,11 @@
 "use client";
 
+import { PendingButton } from "@/components/ui/pending-button";
+import { common } from "@/lib/labels";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
 import { SubmitHandler } from "react-hook-form";
 import { contactFormSchema } from "@/lib/validators";
 import { ContactFormData } from "@/types";
@@ -17,7 +18,7 @@ import {
   FormControl,
   FormMessage,
 } from "@/components/ui/form";
-import { Loader, SendIcon } from "lucide-react";
+import { SendIcon } from "lucide-react";
 import { handleContactRequest } from "@/lib/actions/contact.actions";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
@@ -114,23 +115,15 @@ const ContactForm = () => {
           )}
         />
 
-        <Button
+        <PendingButton
           type="submit"
-          disabled={form.formState.isSubmitting || !form.formState.isValid}
+          pending={form.formState.isSubmitting}
+          disabled={!form.formState.isValid}
+          icon={<SendIcon className="h-4 w-4" />}
           className="w-full flex items-center justify-center gap-2"
         >
-          {form.formState.isSubmitting ? (
-            <>
-              <Loader className="h-4 w-4 animate-spin" />
-              Envoi en cours...
-            </>
-          ) : (
-            <>
-              <SendIcon className="h-4 w-4" />
-              Envoyer
-            </>
-          )}
-        </Button>
+          {common.send}
+        </PendingButton>
       </form>
     </Form>
   );

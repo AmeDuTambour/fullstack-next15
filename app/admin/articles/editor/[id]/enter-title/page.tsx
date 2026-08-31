@@ -5,9 +5,10 @@ import {
   getArticleCategories,
 } from "@/lib/actions/article.actions";
 import { Metadata } from "next";
+import { admin as t } from "@/lib/labels";
 
 export const metadata: Metadata = {
-  title: "Create an article",
+  title: "Créer un article",
 };
 
 const EnterTitlePage = async (props: {
@@ -28,7 +29,7 @@ const EnterTitlePage = async (props: {
     <>
       <EditorSteps current={0} />
       <div className="flex flex-col p-4 gap-4">
-        <h1 className="h2-bold mt-4">Create an article</h1>
+        <h1 className="h2-bold mt-4">{t.createArticleTitle}</h1>
       </div>
       <ArticleTitleForm
         article={article ?? undefined}

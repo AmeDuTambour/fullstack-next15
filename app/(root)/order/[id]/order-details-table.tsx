@@ -1,6 +1,11 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
+import { useRouter } from "next/navigation";
+
+import StatusBadge from "@/components/shared/status-badge";
+import TrackingBlock from "@/components/shared/tracking-block";
+import MarkDeliveredForm from "./mark-delivered-form";
+import { CheckCircle2, Clock, PackageCheck } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Table,
@@ -22,13 +27,13 @@ import {
 import {
   approvePayPalOrder,
   markOrderAsPaid,
-  markOrderAsDelivered,
   createPayPalOrder,
 } from "@/lib/actions/order.actions";
 import { useToast } from "@/hooks/use-toast";
 import { useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import StripePayment from "./stripe-payment";
+import { common, order as t } from "@/lib/labels";
 
 type OrderDetailsTableProps = {
   order: Omit<Order, "paymentResult">;
@@ -58,16 +63,27 @@ const OrderDetailsTable: React.FC<OrderDetailsTableProps> = ({
     deliveredAt,
   } = order;
 
+  const router = useRouter();
   const { toast } = useToast();
+
+  // Composée hors du balisage : une adresse est une donnée, pas un libellé.
+  const formattedAddress = [
+    shippingAddress.streetAddress,
+    shippingAddress.city,
+    shippingAddress.postalCode,
+    shippingAddress.country,
+  ]
+    .filter(Boolean)
+    .join(", ");
 
   const PrintLoadingState = () => {
     const [{ isPending, isRejected }] = usePayPalScriptReducer();
     let status = "";
     if (isPending) {
-      status = "Loading PayPal...";
+      status = t.paypalLoading;
     }
     if (isRejected) {
-      status = "Error Loading PayPal";
+      status = t.paypalError;
     }
     return status;
   };
@@ -84,14 +100,16 @@ const OrderDetailsTable: React.FC<OrderDetailsTableProps> = ({
   };
   const handleApprovePayPalOrder = async (data: { orderID: string }) => {
     const res = await approvePayPalOrder(order.id, data);
-    toast({
-      variant: res.success ? "default" : "destructive",
-      description: res.message,
-    });
+    if (!res.success) {
+      toast({ variant: "destructive", description: res.message });
+      return;
+    }
+    router.push(`/order/${order.id}/thank-you`);
   };
 
   const MarkAsPaidButton = () => {
     const { toast } = useToast();
+
     const [isPending, startTransition] = useTransition();
 
     return (
@@ -108,78 +126,68 @@ const OrderDetailsTable: React.FC<OrderDetailsTableProps> = ({
           })
         }
       >
-        {isPending ? "Processing..." : "Mark As Paid"}
-      </Button>
-    );
-  };
-
-  const MarkAsDeliveredButton = () => {
-    const { toast } = useToast();
-    const [isPending, startTransition] = useTransition();
-
-    return (
-      <Button
-        type="button"
-        disabled={isPending}
-        onClick={() =>
-          startTransition(async () => {
-            const res = await markOrderAsDelivered(order.id);
-            toast({
-              variant: res.success ? "default" : "destructive",
-              description: res.message,
-            });
-          })
-        }
-      >
-        {isPending ? "Processing..." : "Mark As Delivered"}
+        {isPending ? common.processing : t.markAsPaid}
       </Button>
     );
   };
 
   return (
     <>
-      <h1 className="py-4 text-2xl">Order {formatId(id)}</h1>
+      <h1 className="py-4 text-2xl">{t.title(formatId(id))}</h1>
       <div className="grid md:grid-cols-3 md:gap-5">
         <div className="col-span-2 space-4-y overflow-x-auto">
           <Card>
             <CardContent className="p-4 gap-4">
-              <h2 className="text-xl pb-4">Payment Method</h2>
+              <h2 className="text-xl pb-4">{t.paymentMethod}</h2>
               <p className="mb-2">{paymentMethod}</p>
               {isPaid ? (
-                <Badge variant="secondary">
-                  Paid at {formatDateTime(paidAt!).dateTime}
-                </Badge>
+                <StatusBadge
+                  tone="done"
+                  icon={<CheckCircle2 />}
+                  label={t.paidAt(formatDateTime(paidAt!).dateTime)}
+                />
               ) : (
-                <Badge variant="destructive">Not paid</Badge>
+                <StatusBadge
+                  tone="pending"
+                  icon={<Clock />}
+                  label={t.awaitingPayment}
+                />
               )}
             </CardContent>
           </Card>
           <Card className="my-2">
             <CardContent className="p-4 gap-4">
-              <h2 className="text-xl pb-4">Shipping Address</h2>
+              <h2 className="text-xl pb-4">{t.shippingAddress}</h2>
               <p>{shippingAddress.fullName}</p>
-              <p className="mb-2">
-                {shippingAddress.streetAddress}, {shippingAddress.city}{" "}
-                {shippingAddress.postalCode}, {shippingAddress.country}
-              </p>
+              <p className="mb-2">{formattedAddress}</p>
               {isDelivered ? (
-                <Badge variant="secondary">
-                  Delivered at {formatDateTime(deliveredAt!).dateTime}
-                </Badge>
+                <StatusBadge
+                  tone="done"
+                  icon={<PackageCheck />}
+                  label={t.deliveredAt(formatDateTime(deliveredAt!).dateTime)}
+                />
               ) : (
-                <Badge variant="destructive">Not delivered</Badge>
+                <StatusBadge
+                  tone="pending"
+                  icon={<Clock />}
+                  label={t.notDelivered}
+                />
               )}
+              <TrackingBlock
+                carrier={order.carrier}
+                trackingNumber={order.trackingNumber}
+              />
             </CardContent>
           </Card>
           <Card className="my-2">
             <CardContent className="p-4 gap-4">
-              <h2 className="text-xl pb-4">Order Items</h2>
+              <h2 className="text-xl pb-4">{t.items}</h2>
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Item</TableHead>
-                    <TableHead>Quantity</TableHead>
-                    <TableHead>Price</TableHead>
+                    <TableHead>{common.product}</TableHead>
+                    <TableHead>{common.quantity}</TableHead>
+                    <TableHead>{common.price}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -203,7 +211,7 @@ const OrderDetailsTable: React.FC<OrderDetailsTableProps> = ({
                         <span className="px-2">{item.qty}</span>
                       </TableCell>
                       <TableCell className="text-right">
-                        €{item.price}
+                        {formatCurrency(item.price)}
                       </TableCell>
                     </TableRow>
                   ))}
@@ -216,19 +224,19 @@ const OrderDetailsTable: React.FC<OrderDetailsTableProps> = ({
           <Card>
             <CardContent className="p-4 gap-4 space-y-4">
               <div className="flex justify-between">
-                <div>Items</div>
+                <div>{t.itemsSubtotal}</div>
                 <div>{formatCurrency(itemsPrice)}</div>
               </div>
               <div className="flex justify-between">
-                <div>Tax</div>
+                <div>{t.tax}</div>
                 <div>{formatCurrency(taxPrice)}</div>
               </div>
               <div className="flex justify-between">
-                <div>Shipping</div>
+                <div>{t.shipping}</div>
                 <div>{formatCurrency(shippingPrice)}</div>
               </div>
               <div className="flex justify-between">
-                <div>Total</div>
+                <div>{t.total}</div>
                 <div>{formatCurrency(totalPrice)}</div>
               </div>
               {!isPaid && paymentMethod === "PayPal" ? (
@@ -256,26 +264,22 @@ const OrderDetailsTable: React.FC<OrderDetailsTableProps> = ({
               ) : null}
 
               {!isPaid && paymentMethod === "Transfer" ? (
-                <div className="bg-blue-300 p-3 rounded-md text-black">
-                  <p>
-                    Merci pour votre commande. Notre équipe vous contactera très
-                    prochainement pour finaliser le paiement par virement
-                    bancaire.
-                  </p>
-                  <p className="text-sm mt-2">
-                    Vous recevrez un email avec les détails du compte de
-                    virement sous peu.
+                <div className="rounded-md border p-3">
+                  <p className="font-medium">{t.transferPendingTitle}</p>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    {t.transferPendingBody}
                   </p>
                 </div>
               ) : null}
 
-              <div className="bg-red-800 p-3 rounded-md text-blue-800">
-                {isAdmin && !isPaid ? <MarkAsPaidButton /> : null}
-
-                {isAdmin && isPaid && !isDelivered ? (
-                  <MarkAsDeliveredButton />
-                ) : null}
-              </div>
+              {isAdmin && (!isPaid || !isDelivered) ? (
+                <div className="rounded-md border p-3">
+                  {!isPaid ? <MarkAsPaidButton /> : null}
+                  {isPaid && !isDelivered ? (
+                    <MarkDeliveredForm orderId={order.id} />
+                  ) : null}
+                </div>
+              ) : null}
             </CardContent>
           </Card>
         </div>

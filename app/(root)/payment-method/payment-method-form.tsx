@@ -1,5 +1,6 @@
 "use client";
 
+import { PendingButton } from "@/components/ui/pending-button";
 import { useToast } from "@/hooks/use-toast";
 import { paymentMethodSchema } from "@/lib/validators";
 import { useRouter } from "next/navigation";
@@ -7,7 +8,11 @@ import React, { useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { DEFAULT_PAYMENT_METHOD, PAYMENT_METHODS } from "@/lib/constants";
+import {
+  DEFAULT_PAYMENT_METHOD,
+  PAYMENT_METHODS,
+  PAYMENT_METHOD_LABELS,
+} from "@/lib/constants";
 import {
   Form,
   FormControl,
@@ -16,8 +21,8 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Button } from "@/components/ui/button";
-import { ArrowRight, Loader } from "lucide-react";
+import { ArrowRight } from "lucide-react";
+import { common } from "@/lib/labels";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { updateUserPaymentMethod } from "@/lib/actions/user.actions";
 
@@ -89,9 +94,8 @@ const PaymentMethodForm: React.FC<PaymentMethodFormProps> = ({
                               />
                             </FormControl>
                             <FormLabel className="font-normal">
-                              {paymentMethod === "Stripe"
-                                ? "Carte Bancaire"
-                                : "Virement"}
+                              {PAYMENT_METHOD_LABELS[paymentMethod] ??
+                                paymentMethod}
                             </FormLabel>
                           </FormItem>
                         ))}
@@ -104,14 +108,13 @@ const PaymentMethodForm: React.FC<PaymentMethodFormProps> = ({
             </div>
 
             <div className="flex gap-2">
-              <Button type="submit" disabled={isPending}>
-                {isPending ? (
-                  <Loader className="w-4 h-4 animate-spin" />
-                ) : (
-                  <ArrowRight className="w-4 h-4" />
-                )}{" "}
-                Continuer
-              </Button>
+              <PendingButton
+                type="submit"
+                pending={isPending}
+                icon={<ArrowRight className="h-4 w-4" />}
+              >
+                {common.next}
+              </PendingButton>
             </div>
           </form>
         </Form>

@@ -1,3 +1,4 @@
+import { CARRIERS } from "@/lib/carriers";
 import { z } from "zod";
 import { PAYMENT_METHODS } from "./constants";
 import { formatNumberWithDecimal } from "./utils";
@@ -6,7 +7,7 @@ const currency = z
   .string()
   .refine(
     (value) => /^\d+(\.\d{2})?$/.test(formatNumberWithDecimal(Number(value))),
-    "Price must have exatcly two decimal places"
+    "Le prix doit comporter exactement deux décimales"
   );
 
 export const baseProductSchema = z.object({
@@ -24,7 +25,7 @@ export const baseProductSchema = z.object({
 });
 
 export const updateBaseProductSchema = baseProductSchema.extend({
-  id: z.string().min(1, "ID is required"),
+  id: z.string().min(1, "L'identifiant est obligatoire"),
 });
 
 export const drumSpecificationsSchema = z.object({
@@ -44,7 +45,7 @@ export const specificationsSchema = z.union([
 ]);
 
 export const UpdateProductSpecificationsSchema = z.object({
-  productId: z.string().uuid("Invalid UUID format for productId"),
+  productId: z.string().uuid("Identifiant de produit invalide"),
   specifications: specificationsSchema,
 });
 
@@ -67,12 +68,12 @@ export const ProductSchema = baseProductSchema
 
       return isDrumSpec !== isOtherSpec;
     },
-    { message: "Specifications must be either drum or other, but not both." }
+    { message: "Les spécifications doivent être celles d'un tambour ou d'un accessoire, pas les deux." }
   );
 
 export const UpdateProductSchema = baseProductSchema
   .extend({
-    id: z.string().uuid("Invalid UUID format"),
+    id: z.string().uuid("Identifiant invalide"),
     drum: drumSpecificationsSchema.optional(),
     other: otherSpecificationsSchema.optional(),
   })
@@ -83,41 +84,41 @@ export const UpdateProductSchema = baseProductSchema
       }
       return true;
     },
-    { message: "A product cannot have both drum and other specifications." }
+    { message: "Un produit ne peut pas avoir à la fois des spécifications de tambour et d'accessoire." }
   );
 
 export const insertProductCategory = z.object({
-  name: z.string().min(1, "Category must contain at least 1 character"),
+  name: z.string().min(1, "La catégorie doit comporter au moins 1 caractère"),
 });
 
 export const updateProductCategory = insertProductCategory.extend({
-  id: z.string().uuid("Invalid UUID format"),
+  id: z.string().uuid("Identifiant invalide"),
 });
 
 export const signInFormSchema = z.object({
-  email: z.string().email("Invalid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
+  email: z.string().email("Adresse e-mail invalide"),
+  password: z.string().min(6, "Le mot de passe doit comporter au moins 6 caractères"),
 });
 
 export const signUpFormSchema = z
   .object({
-    name: z.string().min(3, "Name must be at least 3 characters"),
-    email: z.string().email("Invalid email address"),
-    password: z.string().min(6, "Password must be at least 6 characters"),
+    name: z.string().min(3, "Le nom doit comporter au moins 3 caractères"),
+    email: z.string().email("Adresse e-mail invalide"),
+    password: z.string().min(6, "Le mot de passe doit comporter au moins 6 caractères"),
     confirmPassword: z
       .string()
-      .min(6, "Confirm password must be at least 6 characters"),
+      .min(6, "La confirmation doit comporter au moins 6 caractères"),
   })
   .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords don't match",
+    message: "Les mots de passe ne correspondent pas",
     path: ["confirmPassword"],
   });
 
 export const cartItemSchema = z.object({
-  productId: z.string().min(1, "Product is required"),
-  name: z.string().min(1, "Name is required"),
-  slug: z.string().min(1, "slug is required"),
-  qty: z.number().int().nonnegative("Quantity is required"),
+  productId: z.string().min(1, "Le produit est obligatoire"),
+  name: z.string().min(1, "Le nom est obligatoire"),
+  slug: z.string().min(1, "Le lien est obligatoire"),
+  qty: z.number().int().nonnegative("La quantité est obligatoire"),
   image: z.string().optional(),
   price: currency,
 });
@@ -128,37 +129,37 @@ export const insertCartSchema = z.object({
   totalPrice: currency,
   shippingPrice: currency,
   taxPrice: currency,
-  sessionCartId: z.string().min(1, "Session cart id is required"),
+  sessionCartId: z.string().min(1, "Identifiant de panier manquant"),
   userId: z.string().optional().nullable(),
 });
 
 export const shippingAddressSchema = z.object({
-  fullName: z.string().min(3, "Name must be at least 3 characters"),
-  streetAddress: z.string().min(3, "Address must be at least 3 characters"),
-  city: z.string().min(3, "City must be at least 3 characters"),
-  postalCode: z.string().min(3, "Postal code must be at least 3 characters"),
-  country: z.string().min(3, "Country must be at least 3 characters"),
+  fullName: z.string().min(3, "Le nom doit comporter au moins 3 caractères"),
+  streetAddress: z.string().min(3, "L'adresse doit comporter au moins 3 caractères"),
+  city: z.string().min(3, "La ville doit comporter au moins 3 caractères"),
+  postalCode: z.string().min(3, "Le code postal doit comporter au moins 3 caractères"),
+  country: z.string().min(3, "Le pays doit comporter au moins 3 caractères"),
   lat: z.number().optional(),
   lng: z.number().optional(),
 });
 
 export const paymentMethodSchema = z
   .object({
-    type: z.string().min(1, "Payment method is required"),
+    type: z.string().min(1, "Le moyen de paiement est obligatoire"),
   })
   .refine((data) => PAYMENT_METHODS.includes(data.type), {
     path: ["type"],
-    message: "Invalid payment method",
+    message: "Moyen de paiement invalide",
   });
 
 export const insertOrderSchema = z.object({
-  userId: z.string().min(1, "User is required"),
+  userId: z.string().min(1, "L'utilisateur est obligatoire"),
   itemsPrice: currency,
   shippingPrice: currency,
   taxPrice: currency,
   totalPrice: currency,
   paymentMethod: z.string().refine((data) => PAYMENT_METHODS.includes(data), {
-    message: "Invalid payment method",
+    message: "Moyen de paiement invalide",
   }),
   shippingAddress: shippingAddressSchema,
 });
@@ -180,18 +181,18 @@ export const paymentResultSchema = z.object({
 });
 
 export const updateProfileSchema = z.object({
-  name: z.string().min(3, "Name must be at lest 3 characters"),
-  email: z.string().min(3, "Email must be at lest 3 characters"),
+  name: z.string().min(3, "Le nom doit comporter au moins 3 caractères"),
+  email: z.string().min(3, "L'adresse e-mail doit comporter au moins 3 caractères"),
 });
 
 export const updateUserSchema = updateProfileSchema.extend({
-  id: z.string().min(1, "ID is required"),
-  role: z.string().min(1, "Role is required"),
+  id: z.string().min(1, "L'identifiant est obligatoire"),
+  role: z.string().min(1, "Le rôle est obligatoire"),
 });
 
 export const insertArticleSchema = z.object({
-  title: z.string().min(1, "Title must be at least 1 character"),
-  slug: z.string().min(1, "Slug must be at least 3 characters"),
+  title: z.string().min(1, "Le titre doit comporter au moins 1 caractère"),
+  slug: z.string().min(1, "Le lien doit comporter au moins 1 caractère"),
   thumbnail: z.string().nullable().default("").optional(),
   categoryId: z.string().uuid().optional().nullable(),
   isPublished: z.boolean().nullable().default(false),
@@ -200,7 +201,7 @@ export const insertArticleSchema = z.object({
 });
 
 export const updateArticleSchema = insertArticleSchema.extend({
-  id: z.string().min(1, "ID is required"),
+  id: z.string().min(1, "L'identifiant est obligatoire"),
 });
 
 export const insertArticleSectionSchema = z.object({
@@ -213,17 +214,35 @@ export const insertArticleSectionSchema = z.object({
 });
 
 export const updateArticleSectionSchema = insertArticleSectionSchema.extend({
-  sectionId: z.string().min(1, "ID is required"),
+  sectionId: z.string().min(1, "L'identifiant est obligatoire"),
 });
 
 export const insertArticleCommentSchema = z.object({
-  title: z.string().min(1, "Title must contain at least 1 character"),
-  body: z.string().min(1, "Body must contain at least 1 character"),
+  title: z.string().min(1, "Le titre doit comporter au moins 1 caractère"),
+  body: z.string().min(1, "Le message doit comporter au moins 1 caractère"),
 });
 
 export const contactFormSchema = z.object({
-  name: z.string().min(3, "Name must contain at least 3 characters"),
-  email: z.string().email("Invalid email address"),
+  name: z.string().min(3, "Le nom doit comporter au moins 3 caractères"),
+  email: z.string().email("Adresse e-mail invalide"),
   subject: z.string(),
   message: z.string().nonempty(),
+});
+
+/**
+ * Suivi de colis.
+ *
+ * Le transporteur doit exister dans le référentiel : un identifiant inventé
+ * produirait un lien de suivi qui ne mène nulle part.
+ */
+export const trackingSchema = z.object({
+  carrier: z
+    .string()
+    .refine((id) => CARRIERS.some((carrier) => carrier.id === id), {
+      message: "Choisissez un transporteur dans la liste.",
+    }),
+  trackingNumber: z
+    .string()
+    .min(4, "Le numéro de suivi est trop court.")
+    .max(40, "Le numéro de suivi est trop long."),
 });

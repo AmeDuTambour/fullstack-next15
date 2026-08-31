@@ -1,36 +1,27 @@
+import AdminList from "@/components/admin/admin-list";
 import DeleteDialog from "@/components/shared/delete-dialog";
-import Pagination from "@/components/shared/pagination";
 import { Button } from "@/components/ui/button";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { TableCell, TableRow } from "@/components/ui/table";
 import {
   deleteProduct,
   getAllProductCategories,
   getAllProducts,
 } from "@/lib/actions/product.actions";
-import { formatId, getProductCategory } from "@/lib/utils";
+import { admin as t, common } from "@/lib/labels";
+import { formatCurrency, formatId, getProductCategory } from "@/lib/utils";
+import StatusBadge from "@/components/shared/status-badge";
 import { Eye, EyeClosed } from "lucide-react";
+import { Metadata } from "next";
 import Link from "next/link";
 
-type AdminProductsPageProps = {
-  page?: string;
-  query?: string;
-  category?: string;
-};
+export const metadata: Metadata = { title: "Produits" };
 
 const AdminProductsPage = async (props: {
-  searchParams: Promise<AdminProductsPageProps>;
+  searchParams: Promise<{ page?: string; query?: string; category?: string }>;
 }) => {
   const { page = "1", query = "", category = "" } = await props.searchParams;
 
   const categories = await getAllProductCategories();
-
   const products = await getAllProducts({
     query,
     page: Number(page),
@@ -38,79 +29,65 @@ const AdminProductsPage = async (props: {
   });
 
   return (
-    <div className="space-y-2">
-      <div className="flex-between">
-        <div className="flex items-center gap-3">
-          <h1 className="h2-bold">Products</h1>
-          {query && (
-            <div>
-              Filtered by <i>&quot;{query}&quot;</i>{" "}
-              <Link href="/admin/products">
-                <Button variant="outline" size="sm">
-                  Remove filter
-                </Button>
-              </Link>
-            </div>
-          )}
-        </div>
-        <Button asChild variant="default">
+    <AdminList
+      title={t.productsTitle}
+      basePath="/admin/products"
+      query={query}
+      action={
+        <Button asChild>
           <Link href="/admin/products/editor/new/base-product">
-            Create Product
+            {t.createProduct}
           </Link>
         </Button>
-      </div>
+      }
+      headers={[
+        t.reference,
+        common.name,
+        common.price,
+        t.category,
+        t.stock,
+        t.published,
+        common.actions,
+      ]}
+      page={Number(page) || 1}
+      totalPages={products.totalPages}
+      isEmpty={products.data.length === 0}
+      emptyMessage={t.noProducts}
+    >
+      {products.data.map((product) => {
+        const productCategory = getProductCategory(
+          product.categoryId,
+          categories
+        );
 
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>ID</TableHead>
-            <TableHead>NAME</TableHead>
-            <TableHead className="text-right">PRICE</TableHead>
-            <TableHead>CATEGORY</TableHead>
-            <TableHead>STOCK</TableHead>
-            <TableHead>PUBLISHED</TableHead>
-            <TableHead>ACTIONS</TableHead>
+        return (
+          <TableRow key={product.id}>
+            <TableCell>{formatId(product.id)}</TableCell>
+            <TableCell>{product.name}</TableCell>
+            <TableCell>{formatCurrency(product.price)}</TableCell>
+            <TableCell>{productCategory?.name}</TableCell>
+            <TableCell>{product.stock}</TableCell>
+            <TableCell>
+              <StatusBadge
+                tone={product.isPublished ? "done" : "muted"}
+                icon={product.isPublished ? <Eye /> : <EyeClosed />}
+                label={product.isPublished ? t.published : t.draft}
+              />
+            </TableCell>
+            <TableCell className="flex gap-1">
+              <Button asChild size="sm" variant="outline">
+                <Link
+                  href={`/admin/products/editor/${product.id}/base-product`}
+                >
+                  {common.edit}
+                </Link>
+              </Button>
+              <DeleteDialog id={product.id} action={deleteProduct} />
+            </TableCell>
           </TableRow>
-        </TableHeader>
-        <TableBody>
-          {products.data.map((product) => {
-            const category = getProductCategory(product.categoryId, categories);
-            return (
-              <TableRow key={product.id}>
-                <TableCell>{formatId(product.id)}</TableCell>
-                <TableCell>{product.name}</TableCell>
-                <TableCell className="text-right">
-                  {Number(product.price).toFixed(2)} €
-                </TableCell>
-                <TableCell>{category.name || "N/A"}</TableCell>
-                <TableCell>{product.stock}</TableCell>
-                <TableCell>
-                  {product.isPublished ? (
-                    <Eye className="text-blue-500" />
-                  ) : (
-                    <EyeClosed className="text-orange-500" />
-                  )}
-                </TableCell>
-                <TableCell className="flex gap-1">
-                  <Button asChild size="sm" variant="outline">
-                    <Link
-                      href={`/admin/products/editor/${product.id}/base-product`}
-                    >
-                      Edit
-                    </Link>
-                  </Button>
-                  <DeleteDialog id={product.id} action={deleteProduct} />
-                </TableCell>
-              </TableRow>
-            );
-          })}
-        </TableBody>
-      </Table>
-
-      {products.totalPages > 1 && (
-        <Pagination page={Number(page)} totalPages={products.totalPages} />
-      )}
-    </div>
+        );
+      })}
+    </AdminList>
   );
 };
 

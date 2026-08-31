@@ -7,21 +7,22 @@ import { getUserCart } from "./cart.actions";
 import { getUserById } from "./user.actions";
 import { insertOrderSchema } from "../validators";
 import { prisma } from "@/db/prisma";
+import { trackingSchema } from "@/lib/validators";
+import { sendShipmentNotice } from "@/email";
 import { CartItem, PaymentResult, ShippingAddress } from "@/types";
 import { paypal } from "../paypal";
 import { revalidatePath } from "next/cache";
 import { PAGE_SIZE } from "../constants";
 import { Prisma } from "@prisma/client";
 import { sendPurchaseReceipt } from "@/email";
+import { requireAdmin, requireOwnerOrAdmin } from "../auth-guards";
 
 export async function createOrder() {
   try {
     const session = await auth();
-    console.log("Session récupérée:", session);
     if (!session) throw new Error("User is not authenticated");
 
     const cart = await getUserCart();
-    console.log("Panier récupéré:", cart);
 
     const userId = session?.user?.id;
     if (!userId) throw new Error("User not found");
@@ -94,10 +95,16 @@ export async function createOrder() {
 
     if (!insertedOrderId) throw new Error("Order not created");
 
+    // Le virement n'a pas d'étape de paiement en ligne : la commande est
+    // complète dès sa création, l'acheteur va directement à la confirmation.
+    // Carte et PayPal passent d'abord par le détail de commande, où ils paient.
     return {
       success: true,
       message: "Order created",
-      redirectTo: `/order/${insertedOrderId}`,
+      redirectTo:
+        user.paymentMethod === "Transfer"
+          ? `/order/${insertedOrderId}/thank-you`
+          : `/order/${insertedOrderId}`,
     };
   } catch (error) {
     if (isRedirectError(error)) throw error;
@@ -116,6 +123,12 @@ export async function getOrderById(orderId: string) {
     },
   });
 
+  if (!data) return null;
+
+  // Sans ce contrôle, n'importe qui pouvait lire la commande de n'importe qui
+  // via /order/<id> — adresse de livraison comprise.
+  await requireOwnerOrAdmin(data.userId);
+
   return convertToPlainObject(data);
 }
 
@@ -127,6 +140,7 @@ export async function createPayPalOrder(orderId: string) {
       },
     });
     if (order) {
+      await requireOwnerOrAdmin(order.userId);
       const payPalOrder = await paypal.createOrder(Number(order.totalPrice));
       await prisma.order.update({
         where: {
@@ -167,6 +181,8 @@ export async function approvePayPalOrder(
     });
 
     if (!order) throw new Error("Order not found");
+    await requireOwnerOrAdmin(order.userId);
+
     const captureData = await paypal.capturePayment(data.orderID);
     if (
       !captureData ||
@@ -183,7 +199,7 @@ export async function approvePayPalOrder(
         status: captureData.status,
         email_address: captureData.payer.email_address,
         pricePaid:
-          captureData.purchase_units[0]?.payments?.captures[0]?.amout?.value,
+          captureData.purchase_units[0]?.payments?.captures[0]?.amount?.value,
       },
     });
 
@@ -291,6 +307,8 @@ type SalesDataType = {
 }[];
 
 export async function getOrderSummary() {
+  await requireAdmin();
+
   const ordersCount = await prisma.order.count();
   const productsCount = await prisma.product.count();
   const usersCount = await prisma.user.count();
@@ -339,6 +357,8 @@ export async function getAllOrders({
   page: number;
   query: string;
 }) {
+  await requireAdmin();
+
   const queryFilter =
     query && query !== "all"
       ? {
@@ -371,6 +391,7 @@ export async function getAllOrders({
 
 export async function deleteOrder(id: string) {
   try {
+    await requireAdmin();
     await prisma.order.delete({
       where: { id },
     });
@@ -384,6 +405,7 @@ export async function deleteOrder(id: string) {
 
 export async function markOrderAsPaid(orderId: string) {
   try {
+    await requireAdmin();
     await updateOrderToPaid({ orderId });
     revalidatePath(`/order/${orderId}`);
 
@@ -393,8 +415,19 @@ export async function markOrderAsPaid(orderId: string) {
   }
 }
 
-export async function markOrderAsDelivered(orderId: string) {
+/**
+ * Marque l'expédition, avec le suivi du colis s'il est connu.
+ *
+ * Le suivi se renseigne dans le même geste que l'expédition : ce sont les deux
+ * moitiés d'un même moment à l'atelier. Il reste facultatif — un colis remis en
+ * main propre s'expédie sans numéro.
+ */
+export async function markOrderAsDelivered(
+  orderId: string,
+  tracking?: { carrier?: string; trackingNumber?: string }
+) {
   try {
+    await requireAdmin();
     const order = await prisma.order.findFirst({
       where: {
         id: orderId,
@@ -403,6 +436,13 @@ export async function markOrderAsDelivered(orderId: string) {
     if (!order) throw new Error("Order not found");
     if (!order.isPaid) throw new Error("Order is not paid");
 
+    const parsed = tracking?.trackingNumber?.trim()
+      ? trackingSchema.parse({
+          carrier: tracking.carrier,
+          trackingNumber: tracking.trackingNumber.trim(),
+        })
+      : null;
+
     await prisma.order.update({
       where: {
         id: orderId,
@@ -410,8 +450,44 @@ export async function markOrderAsDelivered(orderId: string) {
       data: {
         isDelivered: true,
         deliveredAt: new Date(),
+        carrier: parsed?.carrier ?? null,
+        trackingNumber: parsed?.trackingNumber ?? null,
       },
     });
+
+    // L'avis d'expédition ne conditionne pas l'expédition : le colis est parti,
+    // et un serveur de messagerie indisponible ne doit pas défaire ce fait.
+    if (parsed) {
+      try {
+        const shipped = await prisma.order.findFirst({
+          where: { id: orderId },
+          include: {
+            orderitems: true,
+            user: { select: { name: true, email: true } },
+          },
+        });
+
+        if (shipped) {
+          await sendShipmentNotice({
+            order: {
+              ...shipped,
+              itemsPrice: shipped.itemsPrice.toString(),
+              shippingPrice: shipped.shippingPrice.toString(),
+              taxPrice: shipped.taxPrice.toString(),
+              totalPrice: shipped.totalPrice.toString(),
+              orderitems: shipped.orderitems.map((item) => ({
+                ...item,
+                price: item.price.toString(),
+              })),
+              shippingAddress: shipped.shippingAddress as ShippingAddress,
+              paymentResult: shipped.paymentResult as PaymentResult,
+            },
+          });
+        }
+      } catch (error) {
+        console.error("Shipment notice not sent", error);
+      }
+    }
 
     revalidatePath(`/order/${orderId}`);
 
@@ -420,6 +496,6 @@ export async function markOrderAsDelivered(orderId: string) {
       message: "Order has been marked delivered",
     };
   } catch (error) {
-    return { succes: false, message: formatError(error) };
+    return { success: false, message: formatError(error) };
   }
 }

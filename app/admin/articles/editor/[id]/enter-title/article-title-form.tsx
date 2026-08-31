@@ -1,4 +1,5 @@
 "use client";
+import { admin as t, common } from "@/lib/labels";
 
 import { Button } from "@/components/ui/button";
 import { SubmitHandler, useForm } from "react-hook-form";
@@ -24,7 +25,7 @@ import { useEffect, useState, useTransition } from "react";
 import { useDebounce } from "@uidotdev/usehooks";
 import Link from "next/link";
 import Image from "next/image";
-import { UploadButton } from "@/lib/uploadthing";
+import ImageUpload from "@/components/shared/image-upload";
 import {
   Select,
   SelectContent,
@@ -112,9 +113,9 @@ const ArticleTitleForm: React.FC<ArticleTitleFormProps> = ({
             name="title"
             render={({ field }) => (
               <FormItem className="w-full">
-                <FormLabel>Title</FormLabel>
+                <FormLabel>{t.articleTitle}</FormLabel>
                 <FormControl>
-                  <Input placeholder="Enter title" {...field} />
+                  <Input placeholder={t.articleTitlePlaceholder} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -126,13 +127,13 @@ const ArticleTitleForm: React.FC<ArticleTitleFormProps> = ({
             name="slug"
             render={({ field }) => (
               <FormItem className="w-full">
-                <FormLabel>Slug</FormLabel>
+                <FormLabel>{t.slug}</FormLabel>
                 <FormControl>
                   <div className="relative">
-                    <Input placeholder="Enter slug" {...field} />
+                    <Input placeholder={t.articleSlugPlaceholder} {...field} />
                     <Button
                       type="button"
-                      className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-1 mt-2"
+                      className="bg-secondary text-secondary-foreground hover:bg-secondary/80 px-4 py-1 mt-2"
                       onClick={() => {
                         setValue(
                           "slug",
@@ -143,7 +144,7 @@ const ArticleTitleForm: React.FC<ArticleTitleFormProps> = ({
                         form.trigger();
                       }}
                     >
-                      Generate
+                      {t.generate}
                     </Button>
                   </div>
                 </FormControl>
@@ -157,7 +158,7 @@ const ArticleTitleForm: React.FC<ArticleTitleFormProps> = ({
             name="categoryId"
             render={({ field }) => (
               <FormItem className="w-full">
-                <FormLabel>Category</FormLabel>
+                <FormLabel>{t.category}</FormLabel>
                 <FormControl>
                   <div className="flex items-center gap-4">
                     <Select
@@ -169,7 +170,7 @@ const ArticleTitleForm: React.FC<ArticleTitleFormProps> = ({
                       }}
                     >
                       <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder="Select category" />
+                        <SelectValue placeholder={t.selectCategory} />
                       </SelectTrigger>
                       <SelectContent>
                         {categories.map((category) => (
@@ -188,7 +189,7 @@ const ArticleTitleForm: React.FC<ArticleTitleFormProps> = ({
                               <PopoverTrigger asChild>
                                 <div className="w-full flex justify-end p-1">
                                   <Button variant="ghost" size="icon">
-                                    <EditIcon className="h-4 w-4 text-blue-500" />
+                                    <EditIcon className="h-4 w-4 text-muted-foreground" />
                                   </Button>
                                 </div>
                               </PopoverTrigger>
@@ -206,7 +207,7 @@ const ArticleTitleForm: React.FC<ArticleTitleFormProps> = ({
 
                     <Popover open={isCreateOpen} onOpenChange={setIsCreateOpen}>
                       <PopoverTrigger>
-                        <PlusIcon className="h-6 w-6 text-blue-700 cursor-pointer" />
+                        <PlusIcon className="h-6 w-6 text-primary cursor-pointer" />
                       </PopoverTrigger>
                       <PopoverContent className="p-4 w-64">
                         <CategoryForm onClose={() => setIsCreateOpen(false)} />
@@ -224,7 +225,7 @@ const ArticleTitleForm: React.FC<ArticleTitleFormProps> = ({
             name="thumbnail"
             render={({ field }) => (
               <FormItem className="w-full">
-                <FormLabel>Thumbnail</FormLabel>
+                <FormLabel>{t.thumbnail}</FormLabel>
                 <div className="flex items-center space-x-2">
                   {field.value && (
                     <Image
@@ -236,20 +237,13 @@ const ArticleTitleForm: React.FC<ArticleTitleFormProps> = ({
                     />
                   )}
                   <FormControl>
-                    <UploadButton
-                      endpoint="imageUploader"
-                      onClientUploadComplete={(res: { url: string }[]) => {
-                        form.setValue("thumbnail", res[0].url, {
+                    <ImageUpload
+  onUploaded={(url) => {
+    form.setValue("thumbnail", url, {
                           shouldValidate: true,
                         });
-                      }}
-                      onUploadError={(error: Error) => {
-                        toast({
-                          variant: "destructive",
-                          description: `Error: ${error.message}`,
-                        });
-                      }}
-                    />
+  }}
+/>
                   </FormControl>
                 </div>
                 <FormMessage />
@@ -266,7 +260,7 @@ const ArticleTitleForm: React.FC<ArticleTitleFormProps> = ({
           variant="default"
         >
           <Link href={`/admin/articles/editor/${article?.id}/add-sections`}>
-            Next
+            {common.next}
           </Link>
         </Button>
       </div>

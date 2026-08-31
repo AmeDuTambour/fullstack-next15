@@ -1,7 +1,8 @@
 import { Button } from "@/components/ui/button";
-import ModeToggle from "./mode-toggle";
 import { EllipsisVertical, ShoppingCart } from "lucide-react";
 import Link from "next/link";
+
+import { common } from "@/lib/labels";
 import {
   Sheet,
   SheetContent,
@@ -16,22 +17,26 @@ const Menu = () => {
   return (
     <div className="flex justify-end gap-3">
       <nav className="hidden lg:flex w-full max-w-xs gap-1">
-        <ModeToggle />
-        <Button asChild variant="ghost">
-          <Link href="/cart">
-            <ShoppingCart />
+        <Button asChild variant="ghost" size="icon">
+          <Link href="/cart" aria-label={common.cart}>
+            <ShoppingCart aria-hidden="true" />
           </Link>
         </Button>
         <UserButton />
       </nav>
       <nav className="lg:hidden">
         <Sheet>
-          <SheetTrigger className="align-middle">
-            <EllipsisVertical />
+          {/* 44 pixels de côté : la taille de cible tactile recommandée. Le
+              déclencheur mesurait la hauteur de son icône. */}
+          <SheetTrigger
+            aria-label={common.openAccountMenu}
+            className="flex h-11 w-11 items-center justify-center rounded-md align-middle"
+          >
+            <EllipsisVertical aria-hidden="true" />
           </SheetTrigger>
           <SheetContent className="flex flex-col items-start">
             <div className="flex flex-row items-start">
-              <SheetTitle>Menu</SheetTitle>
+              <SheetTitle>{common.menu}</SheetTitle>
             </div>
             <UserButtonMobile />
             <SheetDescription></SheetDescription>

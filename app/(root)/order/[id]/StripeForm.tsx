@@ -8,6 +8,7 @@ import {
   useStripe,
 } from "@stripe/react-stripe-js";
 import { FormEvent, useState } from "react";
+import { order as t } from "@/lib/labels";
 
 type StripeFormProps = {
   priceInCents: number;
@@ -40,9 +41,9 @@ const StripeForm: React.FC<StripeFormProps> = ({ priceInCents, orderId }) => {
           error?.type === "card_error" ||
           error?.type === "validation_error"
         ) {
-          setErrorMessage(error?.message ?? "An unknown error occurred");
+          setErrorMessage(error?.message ?? t.paymentError);
         } else if (error) {
-          setErrorMessage("An unknown error occurred");
+          setErrorMessage(t.paymentError);
         }
       })
       .finally(() => setIsLoading(false));
@@ -50,7 +51,7 @@ const StripeForm: React.FC<StripeFormProps> = ({ priceInCents, orderId }) => {
 
   return (
     <form className="space-y-4" onSubmit={handleSubmit}>
-      <div className="text-xl">Paiement Stripe(CB)</div>
+      <div className="text-xl">{t.cardPaymentTitle}</div>
       {errorMessage && <div className="text-destructive">{errorMessage}</div>}
       <PaymentElement />
       <div>
@@ -62,8 +63,8 @@ const StripeForm: React.FC<StripeFormProps> = ({ priceInCents, orderId }) => {
         disabled={stripe == null || elements == null || isLoading}
       >
         {isLoading
-          ? "Purchasing..."
-          : `Purchase ${formatCurrency(priceInCents / 100)}`}
+          ? t.paymentInProgress
+          : t.payAmount(formatCurrency(priceInCents / 100))}
       </Button>
     </form>
   );

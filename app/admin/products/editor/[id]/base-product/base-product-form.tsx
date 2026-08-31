@@ -1,4 +1,5 @@
 "use client";
+import { admin as t, common } from "@/lib/labels";
 
 import {
   Form,
@@ -25,7 +26,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { UploadButton } from "@/lib/uploadthing";
+import ImageUpload from "@/components/shared/image-upload";
 import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -121,10 +122,11 @@ const BaseProductForm = ({ product, categories }: BaseProductFormProps) => {
 
   return (
     <>
+      {/* Un dump JSON de l'état du formulaire n'est pas un message d'interface.
+          Chaque champ affiche déjà son erreur ; ce bloc annonce simplement
+          qu'il en reste. */}
       {Object.keys(form.formState.errors).length > 0 && (
-        <pre className="text-red-500">
-          {JSON.stringify(form.formState.errors, null, 2)}
-        </pre>
+        <p className="text-destructive text-sm">{t.formHasErrors}</p>
       )}
       <Form {...form}>
         <form
@@ -138,9 +140,9 @@ const BaseProductForm = ({ product, categories }: BaseProductFormProps) => {
               name="name"
               render={({ field }) => (
                 <FormItem className="w-full">
-                  <FormLabel>Name</FormLabel>
+                  <FormLabel>{t.productName}</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter product name" {...field} />
+                    <Input placeholder={t.productNamePlaceholder} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -151,13 +153,13 @@ const BaseProductForm = ({ product, categories }: BaseProductFormProps) => {
               name="slug"
               render={({ field }) => (
                 <FormItem className="w-full">
-                  <FormLabel>Slug</FormLabel>
+                  <FormLabel>{t.slug}</FormLabel>
                   <FormControl>
                     <div className="relative flex gap-2">
-                      <Input placeholder="Enter slug" {...field} />
+                      <Input placeholder={t.productSlugPlaceholder} {...field} />
                       <Button
                         type="button"
-                        className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-1"
+                        className="bg-secondary text-secondary-foreground hover:bg-secondary/80 px-4 py-1"
                         onClick={() => {
                           form.setValue(
                             "slug",
@@ -165,7 +167,7 @@ const BaseProductForm = ({ product, categories }: BaseProductFormProps) => {
                           );
                         }}
                       >
-                        Generate
+                        {t.generate}
                       </Button>
                     </div>
                   </FormControl>
@@ -180,13 +182,13 @@ const BaseProductForm = ({ product, categories }: BaseProductFormProps) => {
             name="categoryId"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Category</FormLabel>
+                <FormLabel>{t.category}</FormLabel>
                 <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select a category">
+                      <SelectValue placeholder={t.selectCategory}>
                         {categories.find((c) => c.id === field.value)?.name ||
-                          "Select a category"}
+                          t.selectCategory}
                       </SelectValue>
                     </SelectTrigger>
                   </FormControl>
@@ -208,7 +210,7 @@ const BaseProductForm = ({ product, categories }: BaseProductFormProps) => {
             name="images"
             render={() => (
               <FormItem className="w-full">
-                <FormLabel>Images</FormLabel>
+                <FormLabel>{t.images}</FormLabel>
                 <Card>
                   <CardContent className="space-y-2 mt-2 min-h-48">
                     <div className="flex-start space-x-2">
@@ -225,21 +227,14 @@ const BaseProductForm = ({ product, categories }: BaseProductFormProps) => {
                         />
                       ))}
                       <FormControl>
-                        <UploadButton
-                          endpoint="imageUploader"
-                          onClientUploadComplete={(res: { url: string }[]) => {
-                            form.setValue("images", [
+                        <ImageUpload
+  onUploaded={(url) => {
+    form.setValue("images", [
                               ...(form.watch("images") || []),
-                              res[0].url,
+                              url,
                             ]);
-                          }}
-                          onUploadError={(error: Error) => {
-                            toast({
-                              variant: "destructive",
-                              description: `Error: ${error.message}`,
-                            });
-                          }}
-                        />
+  }}
+/>
                       </FormControl>
                     </div>
                   </CardContent>
@@ -254,9 +249,9 @@ const BaseProductForm = ({ product, categories }: BaseProductFormProps) => {
               name="price"
               render={({ field }) => (
                 <FormItem className="w-full">
-                  <FormLabel>Price</FormLabel>
+                  <FormLabel>{t.price}</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter product price" {...field} />
+                    <Input placeholder={t.pricePlaceholder} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -267,9 +262,9 @@ const BaseProductForm = ({ product, categories }: BaseProductFormProps) => {
               name="stock"
               render={({ field }) => (
                 <FormItem className="w-full">
-                  <FormLabel>Stock</FormLabel>
+                  <FormLabel>{t.stock}</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter stock" {...field} />
+                    <Input placeholder={t.stockPlaceholder} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -281,10 +276,10 @@ const BaseProductForm = ({ product, categories }: BaseProductFormProps) => {
             name="description"
             render={({ field }) => (
               <FormItem className="w-full">
-                <FormLabel>Description</FormLabel>
+                <FormLabel>{t.description}</FormLabel>
                 <FormControl>
                   <Textarea
-                    placeholder="Enter product description"
+                    placeholder={t.descriptionPlaceholder}
                     className="resize-none"
                     {...field}
                     value={field.value ?? ""}
@@ -301,11 +296,11 @@ const BaseProductForm = ({ product, categories }: BaseProductFormProps) => {
             render={({ field }) => (
               <div className="flex flex-col gap-4 items-center">
                 <FormItem className="w-full">
-                  <FormLabel>QR Code Value</FormLabel>
+                  <FormLabel>{t.qrCodeValue}</FormLabel>
                   <FormControl>
                     <Input
                       className="w-80"
-                      placeholder="Enter QR Code value"
+                      placeholder={t.qrCodePlaceholder}
                       {...field}
                       value={field.value ?? ""}
                     />
@@ -314,7 +309,7 @@ const BaseProductForm = ({ product, categories }: BaseProductFormProps) => {
                 </FormItem>
 
                 {field.value && (
-                  <div className="p-4 bg-white rounded-lg shadow-md flex flex-col items-center">
+                  <div className="p-4 bg-card rounded-lg border shadow-sm flex flex-col items-center">
                     <QRCode
                       id="GeneratedQRCode"
                       size={128}
@@ -326,7 +321,7 @@ const BaseProductForm = ({ product, categories }: BaseProductFormProps) => {
                       className="mt-4"
                       onClick={downloadQRCode}
                     >
-                      Download QR
+                      {t.downloadQrCode}
                     </Button>
                   </div>
                 )}
@@ -341,8 +336,10 @@ const BaseProductForm = ({ product, categories }: BaseProductFormProps) => {
             className="button w-fit"
           >
             {form.formState.isSubmitting
-              ? "Submitting"
-              : `${product ? "Update" : "Create"}` + " Product"}
+              ? common.submitting
+              : product
+                ? common.save
+                : t.createProduct}
           </Button>
         </form>
       </Form>
@@ -357,7 +354,7 @@ const BaseProductForm = ({ product, categories }: BaseProductFormProps) => {
           <Link
             href={`/admin/products/editor/${product?.id}/product-specifications`}
           >
-            Next
+            {common.next}
           </Link>
           <ArrowBigRight />
         </Button>

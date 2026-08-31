@@ -1,8 +1,11 @@
 "use server";
 
+import { isDynamicServerError } from "next/dist/client/components/hooks-server-context";
+
 import { prisma } from "@/db/prisma";
 import { convertToPlainObject, formatError } from "../utils";
 import {
+  insertArticleCommentSchema,
   insertArticleSchema,
   updateArticleSchema,
   updateArticleSectionSchema,
@@ -12,6 +15,12 @@ import { z } from "zod";
 import { Prisma } from "@prisma/client";
 import { articleSectionFormDefaultValues } from "../constants";
 import { Article } from "@/types";
+import {
+  isAdmin,
+  requireAdmin,
+  requireOwnerOrAdmin,
+  requireUser,
+} from "../auth-guards";
 
 function sortByCategory(articles: Array<Article>): {
   [key: string]: Article[];
@@ -44,6 +53,11 @@ export async function getAllArticles({
   withSorting?: boolean;
 }) {
   try {
+    // Lister les brouillons est une opération d'administration.
+    if (filter !== "published") {
+      await requireAdmin();
+    }
+
     const stateFilter: Prisma.ArticleWhereInput =
       filter === "published"
         ? { isPublished: true }
@@ -63,6 +77,10 @@ export async function getAllArticles({
         comments: true,
         category: true,
       },
+      // Du plus récent au plus ancien. Il n'y avait aucun tri : les articles
+      // remontaient dans l'ordre où la base voulait bien les rendre, qui n'est
+      // garanti par rien et change avec les mises à jour.
+      orderBy: { createdAt: "desc" },
       skip: (page - 1) * limit,
       take: limit,
     });
@@ -77,6 +95,9 @@ export async function getAllArticles({
       totalPages: Math.ceil(dataCount / limit),
     };
   } catch (error) {
+    // Next signale le passage en rendu dynamique par une exception : l'avaler
+    // ferait rendre une page vide au lieu de la marquer dynamique.
+    if (isDynamicServerError(error)) throw error;
     console.error("Error fetching articles:", error);
     return {
       success: false,
@@ -100,6 +121,8 @@ export async function getFeaturedArticles() {
 }
 
 export async function getArticleById(id: string) {
+  await requireAdmin();
+
   const data = await prisma.article.findFirst({
     where: { id },
     include: {
@@ -124,11 +147,17 @@ export async function getArticleBySlug(slug: string) {
       category: true,
     },
   });
+
+  // Un brouillon reste visible en prévisualisation pour un administrateur, mais
+  // pas pour un visiteur qui devinerait l'URL.
+  if (data && !data.isPublished && !(await isAdmin())) return null;
+
   return convertToPlainObject(data);
 }
 
 export async function createArticle(data: z.infer<typeof insertArticleSchema>) {
   try {
+    await requireAdmin();
     const newArticle = insertArticleSchema.parse(data);
 
     const res = await prisma.article.create({
@@ -151,6 +180,7 @@ export async function createArticle(data: z.infer<typeof insertArticleSchema>) {
 
 export async function updateArticle(data: z.infer<typeof updateArticleSchema>) {
   try {
+    await requireAdmin();
     const article = updateArticleSchema.parse(data);
     const articleExists = await prisma.article.findFirst({
       where: { id: article.id },
@@ -179,6 +209,7 @@ export async function updateArticle(data: z.infer<typeof updateArticleSchema>) {
 
 export async function deleteArticle(articleId: string) {
   try {
+    await requireAdmin();
     const articleExists = await prisma.article.findFirst({
       where: { id: articleId },
     });
@@ -213,6 +244,7 @@ export async function getAllArticleSections(articleId: string) {
 
 export async function createArticleSection(articleId: string) {
   try {
+    await requireAdmin();
     const lastSection = await prisma.articleSection.findFirst({
       where: { articleId },
       orderBy: { position: "desc" },
@@ -244,6 +276,7 @@ export async function updateArticleSection(
   data: z.infer<typeof updateArticleSectionSchema>
 ) {
   try {
+    await requireAdmin();
     const section = updateArticleSectionSchema.parse(data);
     const sectionExists = await prisma.articleSection.findFirst({
       where: { sectionId: section.sectionId },
@@ -276,6 +309,7 @@ export async function updateArticleSection(
 
 export async function deleteArticleSection(sectionId: string) {
   try {
+    await requireAdmin();
     const sectionExists = await prisma.articleSection.findFirst({
       where: { sectionId },
     });
@@ -297,6 +331,7 @@ export async function deleteArticleSection(sectionId: string) {
 
 export async function createArticleCategory(name: string, articleId?: string) {
   try {
+    await requireAdmin();
     const res = await prisma.articleCategory.create({
       data: { name },
     });
@@ -320,6 +355,7 @@ export async function createArticleCategory(name: string, articleId?: string) {
 
 export async function deleteArticleCategory(id: string, articleId?: string) {
   try {
+    await requireAdmin();
     await prisma.articleCategory.delete({ where: { id } });
 
     revalidatePath(
@@ -340,6 +376,7 @@ export async function updateArticleCategory(
   articleId?: string
 ) {
   try {
+    await requireAdmin();
     await prisma.articleCategory.update({
       where: { id },
       data: { name },
@@ -361,6 +398,96 @@ export async function getArticleCategories() {
   try {
     const data = await prisma.articleCategory.findMany();
     return { success: true, data };
+  } catch (error) {
+    return { success: false, message: formatError(error) };
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/*                          Commentaires d'articles                           */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Les commentaires sont publics en lecture, réservés aux membres connectés en
+ * écriture. Chacun peut supprimer les siens ; un administrateur peut supprimer
+ * n'importe lequel, ce qui tient lieu de modération.
+ */
+export async function getArticleComments(articleId: string) {
+  try {
+    const data = await prisma.articleComment.findMany({
+      where: { articleId },
+      // Ordre de rédaction : une réponse affichée avant sa question rend le fil
+      // incompréhensible.
+      orderBy: { createdAt: "asc" },
+      include: {
+        user: { select: { id: true, name: true } },
+      },
+    });
+
+    return { success: true, data: convertToPlainObject(data) };
+  } catch (error) {
+    return { success: false, message: formatError(error), data: [] };
+  }
+}
+
+export async function createArticleComment(
+  articleId: string,
+  data: z.infer<typeof insertArticleCommentSchema>
+) {
+  try {
+    const { userId } = await requireUser();
+    const comment = insertArticleCommentSchema.parse(data);
+
+    const article = await prisma.article.findFirst({
+      where: { id: articleId },
+      select: { slug: true, isPublished: true },
+    });
+
+    if (!article) throw new Error("Article introuvable");
+
+    // Pas de commentaire sur un brouillon : il n'est pas censé être visible.
+    if (!article.isPublished) {
+      throw new Error("Cet article n'est pas publié");
+    }
+
+    const res = await prisma.articleComment.create({
+      data: {
+        articleId,
+        userId,
+        title: comment.title,
+        body: comment.body,
+      },
+    });
+
+    revalidatePath(`/blog/${article.slug}`);
+
+    return {
+      success: true,
+      message: "Commentaire publié",
+      data: convertToPlainObject(res),
+    };
+  } catch (error) {
+    return { success: false, message: formatError(error) };
+  }
+}
+
+export async function deleteArticleComment(commentId: string) {
+  try {
+    const comment = await prisma.articleComment.findFirst({
+      where: { id: commentId },
+      include: { article: { select: { slug: true } } },
+    });
+
+    if (!comment) throw new Error("Commentaire introuvable");
+
+    // L'auteur supprime le sien, l'administrateur modère.
+    await requireOwnerOrAdmin(comment.userId);
+
+    await prisma.articleComment.delete({ where: { id: commentId } });
+
+    revalidatePath(`/blog/${comment.article.slug}`);
+
+    return { success: true, message: "Commentaire supprimé" };
   } catch (error) {
     return { success: false, message: formatError(error) };
   }

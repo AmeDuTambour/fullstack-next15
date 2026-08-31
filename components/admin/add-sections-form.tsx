@@ -1,8 +1,10 @@
 "use client";
+import { PendingButton } from "@/components/ui/pending-button";
+import { admin as t, common } from "@/lib/labels";
 
 import { ArticleSection } from "@/types";
 import { Button } from "../ui/button";
-import { Loader, PlusIcon } from "lucide-react";
+import { PlusIcon } from "lucide-react";
 import { SectionEditor } from "./section-editor";
 import Link from "next/link";
 import { createArticleSection } from "@/lib/actions/article.actions";
@@ -44,25 +46,27 @@ const AddSectionsForm: React.FC<ArticleSectionsFormProps> = ({
         </div>
       ))}
       <div className="flex justify-center">
-        <Button type="button" variant="outline" onClick={addSection}>
-          {isCreating ? (
-            <Loader className="h-4 w-4 animate-spin" />
-          ) : (
-            <PlusIcon className="h-4 w-4" />
-          )}{" "}
-          Add Section
-        </Button>
+        <PendingButton
+          type="button"
+          variant="outline"
+          pending={isCreating}
+          pendingLabel={t.addSection}
+          icon={<PlusIcon className="h-4 w-4" />}
+          onClick={addSection}
+        >
+          {t.addSection}
+        </PendingButton>
       </div>
       <div className="flex justify-between">
         <Button disabled={isSaving} asChild type="button" variant="outline">
           <Link href={`/admin/articles/editor/${articleId}/enter-title`}>
-            Previous
+            {common.previous}
           </Link>
         </Button>
 
         <Button disabled={isSaving} asChild type="button" variant="outline">
           <Link href={`/admin/articles/editor/${articleId}/publish-article`}>
-            Next
+            {common.next}
           </Link>
         </Button>
       </div>

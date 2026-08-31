@@ -33,6 +33,9 @@ export type OtherSpecs = {
 export type Product = Omit<z.infer<typeof ProductSchema>, "price"> & {
   id: string;
   price: string;
+  /** Présente dans les données depuis toujours, mais jamais déclarée : c'est
+   *  elle qui porte la nature du produit — pièce unique ou reproductible. */
+  category?: { id: string; name: string } | null;
   specifications?: DrumSpecs | null;
   createdAt: Date;
   updatedAt: Date;
@@ -49,6 +52,8 @@ export type Order = z.infer<typeof insertOrderSchema> & {
   paidAt: Date | null;
   isDelivered: boolean;
   deliveredAt: Date | null;
+  carrier: string | null;
+  trackingNumber: string | null;
   orderitems: OrderItem[];
   user: { name: string; email: string };
   paymentResult: PaymentResult;
@@ -78,6 +83,7 @@ export type ArticleComment = z.infer<typeof insertArticleCommentSchema> & {
   articleId: string;
   createdAt: Date;
   updatedAt: Date;
+  user?: { id: string; name: string };
 };
 
 export type ContactFormData = z.infer<typeof contactFormSchema>;

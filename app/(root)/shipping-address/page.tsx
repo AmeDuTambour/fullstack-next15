@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import ShippingAddressForm from "./shipping-address-form";
 import { ShippingAddress } from "@/types";
 import CheckoutSteps from "@/components/shared/checkout-steps";
+import OrderSummary from "@/components/shared/order-summary";
 
 export const metadata: Metadata = {
   title: "Adresse de livraison",
@@ -26,7 +27,12 @@ const ShippingAddressPage = async () => {
   return (
     <>
       <CheckoutSteps current={1} />
-      <ShippingAddressForm address={user.address as ShippingAddress} />
+      <div className="grid gap-8 lg:grid-cols-[1fr_20rem]">
+        <div><ShippingAddressForm address={user.address as ShippingAddress} /></div>
+        <aside className="lg:sticky lg:top-6 lg:self-start">
+          <OrderSummary />
+        </aside>
+      </div>
     </>
   );
 };

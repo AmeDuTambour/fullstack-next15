@@ -8,12 +8,21 @@ import { Cart, CartItem } from "@/types";
 import { Plus, Minus, Loader } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
+import { catalog as t } from "@/lib/labels";
 
 type AddToCartProps = {
   item: CartItem;
   cart?: Cart;
+  /** Une pièce unique ne se commande jamais en plusieurs exemplaires : le
+   *  sélecteur de quantité n'a pas de sens et promet un second exemplaire qui
+   *  n'existe pas. */
+  allowsQuantity?: boolean;
 };
-const AddToCart: React.FC<AddToCartProps> = ({ item, cart }) => {
+const AddToCart: React.FC<AddToCartProps> = ({
+  item,
+  cart,
+  allowsQuantity = true,
+}) => {
   const router = useRouter();
   const { toast } = useToast();
 
@@ -33,7 +42,7 @@ const AddToCart: React.FC<AddToCartProps> = ({ item, cart }) => {
         description: res.message,
         action: (
           <ToastAction
-            className="bg-primary text-white , hover:bg-gray-800"
+            className="bg-primary text-primary-foreground hover:bg-primary/90"
             altText="Go To Cart"
             onClick={() => router.push("/cart")}
           >
@@ -56,6 +65,27 @@ const AddToCart: React.FC<AddToCartProps> = ({ item, cart }) => {
 
   const existItem =
     cart && cart.items.find((el) => el.productId === item.productId);
+
+  // Pièce unique déjà au panier : une seule action possible, présentée avec le
+  // même poids visuel que « Ajouter au panier ».
+  if (existItem && !allowsQuantity) {
+    return (
+      <Button
+        disabled={isPending}
+        type="button"
+        variant="outline"
+        className="w-full"
+        onClick={handleRemoveFromCart}
+      >
+        {isPending ? (
+          <Loader className="h-4 w-4 animate-spin" />
+        ) : (
+          <Minus className="h-4 w-4" />
+        )}
+        {t.removeFromCart}
+      </Button>
+    );
+  }
 
   return existItem ? (
     <div>
@@ -88,7 +118,7 @@ const AddToCart: React.FC<AddToCartProps> = ({ item, cart }) => {
   ) : (
     <Button
       disabled={isPending}
-      className="'w-full"
+      className="w-full"
       type="button"
       onClick={handleAddToCart}
     >
@@ -97,7 +127,7 @@ const AddToCart: React.FC<AddToCartProps> = ({ item, cart }) => {
       ) : (
         <Plus className="h-4 w-4" />
       )}
-      Ajouter au panier
+      {t.addToCart}
     </Button>
   );
 };
